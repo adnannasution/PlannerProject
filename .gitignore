@@ -20,3 +20,10 @@ packages/
 
 # Ignore front-end dependencies (jika ada)
 node_modules/
+
+# Ignore uploads folder
+uploads/
+
+# Ignore uploads folder
+uploads/
+UploadedFiles/
