@@ -1,0 +1,30 @@
+@model Plan.Models.Budget
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit Budget</h1>
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Bulan"></label>
+        <input asp-for="Bulan" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Tahun"></label>
+        <input asp-for="Tahun" class="form-control" type="number" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Minggu"></label>
+        <input asp-for="Minggu" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Nominal"></label>
+        <input asp-for="Nominal" class="form-control" type="number" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

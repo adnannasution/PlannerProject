@@ -1,0 +1,55 @@
+@model Plan.Models.BudgetWbsData
+
+@{
+    ViewData["Title"] = "Edit Budget WBS";
+}
+
+
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+<div class="form-group">
+    <label for="JenisBiaya">Jenis Biaya</label>
+    <select asp-for="JenisBiaya" class="form-control">
+        <option value="RUTIN">RUTIN</option>
+        <option value="NON RUTIN">NON RUTIN</option>
+        <option value="OH">OH</option>
+    </select>
+    <span asp-validation-for="JenisBiaya" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="Tahun">Tahun</label>
+        <input asp-for="Tahun" type="number" class="form-control" />
+        <span asp-validation-for="Tahun" class="text-danger"></span>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="BudgetWbs">Budget WBS</label>
+         <div id="formattedCurrency" class="text-primary"></div>
+        <input asp-for="BudgetWbs" type="number" step="0.01" class="form-control" id="BudgetWbs" oninput="formatCurrency()" />
+        <span asp-validation-for="BudgetWbs" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+
+<script>
+    function formatCurrency() {
+        var budgetWbsInput = document.getElementById("BudgetWbs");
+        var formattedCurrencyDiv = document.getElementById("formattedCurrency");
+
+        var value = parseFloat(budgetWbsInput.value);
+        if (!isNaN(value)) {
+            formattedCurrencyDiv.textContent = value.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+        } else {
+            formattedCurrencyDiv.textContent = '';
+        }
+    }
+</script>

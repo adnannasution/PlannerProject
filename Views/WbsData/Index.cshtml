@@ -1,0 +1,115 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewBag.Title = "WbsData";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<div class="form-group">
+    <label for="yearFilter">Filter by Year:</label>
+    <select id="yearFilter" class="form-control">
+        <option value="">All Years</option>
+    </select>
+</div>
+
+<table id="wbsTable" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Jenis Biaya</th>
+            <th>Tahun</th>
+            <th>Total Actual WBS RT</th>
+            <th>Total Commitment WBS RT</th>
+            <th>Total ROP WBS RT</th>
+            <th>Budget WBS</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in Model.GroupBy(x => new { x.JenisBiaya, x.Tahun }))
+        {
+            var totalActualWbsRt = group.Sum(x => (decimal)x.ActualWbsRt); // Explicitly cast to decimal
+            var totalCommitmentWbsRt = group.Sum(x => (decimal)x.CommitmentWbsRt); // Explicitly cast to decimal
+            var totalRopWbsRt = group.Sum(x => (decimal)x.RopWbsRt); // Explicitly cast to decimal
+            var budgetWbs = group.FirstOrDefault()?.BudgetWbs ?? 0; // Use FirstOrDefault to get the first item in the group and check for BudgetWbs
+
+            <tr data-tahun="@group.Key.Tahun">
+                <td>@group.Key.JenisBiaya</td>
+                <td>@group.Key.Tahun</td>
+                <td>@totalActualWbsRt.ToString("N0")</td>
+                <td>@totalCommitmentWbsRt.ToString("N0")</td>
+                <td>@totalRopWbsRt.ToString("N0")</td>
+                <td>@budgetWbs.ToString("N0")</td>
+                <td>
+                    <a asp-action="Details" asp-route-jenisBiaya="@group.Key.JenisBiaya" asp-route-tahun="@group.Key.Tahun" class="btn btn-info btn-sm">Detail</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const yearFilter = document.getElementById("yearFilter");
+        const tableRows = document.querySelectorAll("#wbsTable tbody tr");
+
+        // Populate the year filter dropdown
+        const years = [...new Set(Array.from(tableRows).map(row => row.getAttribute("data-tahun")))];
+
+        // Sort years and set default to the latest year
+        years.sort();
+        const latestYear = years[years.length - 1]; // Get the last (latest) year
+
+        years.forEach(year => {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            yearFilter.appendChild(option);
+        });
+
+        // Set the default selection to the latest year
+        yearFilter.value = latestYear;
+
+        // Filter table rows based on the default selected year
+        tableRows.forEach(row => {
+            if (row.getAttribute("data-tahun") === latestYear) {
+                row.style.display = ""; // Show row
+            } else {
+                row.style.display = "none"; // Hide row
+            }
+        });
+
+        // Add event listener for filtering
+        yearFilter.addEventListener("change", function () {
+            const selectedYear = this.value;
+            tableRows.forEach(row => {
+                if (selectedYear === "" || row.getAttribute("data-tahun") === selectedYear) {
+                    row.style.display = ""; // Show row
+                } else {
+                    row.style.display = "none"; // Hide row
+                }
+            });
+        });
+    });
+</script>
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>

@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Grafik Resume Status Kontrak";
+}
+
+<h1>Grafik Resume Status Kontrak</h1>
+
+<!-- Tempatkan canvas untuk grafik -->
+<canvas id="statusKontrakBarChart" width="400" height="400"></canvas>
+
+<!-- Memuat Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ambil data dari controller menggunakan Fetch API
+        fetch('@Url.Action("GetResumeStatusKontrakData", "Home")')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // Menyiapkan data untuk grafik
+                    var labels = data.map(d => d.statusKontrak);  // Label sumbu X: Status Kontrak
+                    var counts = data.map(d => d.count);    // Data jumlah untuk setiap status kontrak
+
+                    // Menyiapkan konteks chart
+                    var ctx = document.getElementById('statusKontrakBarChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'bar',  // Tipe grafik bar
+                        data: {
+                            labels: labels,  // Label sumbu X: Status Kontrak
+                            datasets: [{
+                                label: 'Jumlah Status Kontrak',  // Label grafik
+                                data: counts,  // Data jumlah per status kontrak
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Warna latar belakang bar
+                                borderColor: 'rgba(54, 162, 235, 1)',  // Warna border bar
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    beginAtZero: true  // Mulai sumbu X dari 0
+                                },
+                                y: {
+                                    beginAtZero: true  // Mulai sumbu Y dari 0
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',  // Posisi legend di atas
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            var label = context.label || '';
+                                            var value = context.raw || 0;
+                                            return label + ': ' + value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    alert("Data tidak tersedia");
+                }
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                alert("Terjadi kesalahan saat memuat data.");
+            });
+    });
+</script>

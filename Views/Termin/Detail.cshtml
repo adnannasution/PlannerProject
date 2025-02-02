@@ -1,0 +1,137 @@
+@model List<TerminDetailViewModel>
+
+    @{
+    ViewData["Title"] = "Detail Termin List";
+}
+
+<a asp-action="Index" class="btn btn-secondary mb-2">Back to List</a>
+
+<table class="table table-bordered table-striped table-responsive" id="detailtable">
+    <thead>
+        <tr>
+     
+            <th>Kode Project</th>
+            <th>Jenis Termin</th>
+            <th>Evaluasi Planner</th>
+            <th>No WO Tagihan</th>
+            <th>Nilai Plan</th>
+            <th>Nilai Tagihan</th>
+          
+            <th>SA</th>
+            <th>Periode</th>
+         
+            <th>Nilai Purchasing Order</th>
+              <th>Prosentase Tagihan</th>
+              <th>Dokumen</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+          
+                <td>@item.Kode_Project</td>
+                <td>@item.JenisTermin</td>
+                <td>@item.Evaluasi_Planner</td>
+                <td>@item.No_WO_Tagihan</td>
+                <td>@item.Nilai_Plan.ToString("N0")</td>
+                <td>@item.Nilai_Tagihan.ToString("N0")</td>
+               
+                <td>@item.SA</td>
+                <td>@item.Periode.ToString("yyyy-MM-dd") S/D
+                @item.Periode2.ToString("yyyy-MM-dd")</td>
+                <td>@item.Nilai_Purchasing_Order?.ToString("N0")</td>
+                <td>
+    @if (item.Nilai_Purchasing_Order.HasValue && item.Nilai_Purchasing_Order > 0)
+    {
+        var prosentase = (item.Nilai_Tagihan / item.Nilai_Purchasing_Order.Value) * 100;
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: @prosentase%;" aria-valuenow="@prosentase" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+        <span>@Math.Round(prosentase).ToString("N0")%</span>  <!-- Display rounded percentage outside the bar -->
+    }
+                </td>
+                 <td>
+                    @if (!string.IsNullOrEmpty(item.Dokumen))
+                    {
+                        <a href="@item.Dokumen" target="_blank">View File</a>
+                    }
+                </td>
+                <td>
+
+<form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@item.Id" />
+    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+</form>
+ 
+@* <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form> *@
+
+<form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#detailtable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    
+}

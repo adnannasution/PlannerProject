@@ -1,0 +1,23 @@
+@model Plan.Models.AreaMaster
+
+@{
+    ViewData["Title"] = "Create Area Master";
+
+        ViewData["Title1"] = "Area Master";
+    ViewData["Title2"] = "Create";
+
+}
+
+
+
+<form asp-action="Create">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Area" class="control-label"></label>
+        <input asp-for="Area" class="form-control" required/>
+        <span asp-validation-for="Area" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

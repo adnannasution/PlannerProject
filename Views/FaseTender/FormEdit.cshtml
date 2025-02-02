@@ -1,0 +1,217 @@
+@model Plan.Models.FaseTender
+
+@{
+    ViewData["Title"] = "Edit Fase Tender";
+}
+
+<form asp-action="Edit" method="post" id="faseform">
+  @Html.AntiForgeryToken()
+
+   <input asp-for="Id" class="form-control" type="hidden"  />
+
+
+    <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly />
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label for="No_Vendor">No Vendor</label>
+        <input asp-for="No_Vendor" class="form-control" />
+        <span asp-validation-for="No_Vendor" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Pelaksana">Pelaksana</label>
+        <input asp-for="Pelaksana" class="form-control" />
+        <span asp-validation-for="Pelaksana" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PO_OA">PO OA</label>
+        <input asp-for="PO_OA" class="form-control" />
+        <span asp-validation-for="PO_OA" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PO_SR">PO SR</label>
+        <input asp-for="PO_SR" class="form-control" />
+        <span asp-validation-for="PO_SR" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PO_RO">PO RO</label>
+        <input asp-for="PO_RO" class="form-control" />
+        <span asp-validation-for="PO_RO" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PR_OA">PR OA</label>
+        <input asp-for="PR_OA" class="form-control" />
+        <span asp-validation-for="PR_OA" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PR_MT">PR MT</label>
+        <input asp-for="PR_MT" class="form-control" />
+        <span asp-validation-for="PR_MT" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="PR_SR">PR SR</label>
+        <input asp-for="PR_SR" class="form-control" />
+        <span asp-validation-for="PR_SR" class="text-danger"></span>
+    </div>
+
+
+
+            </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+
+
+    <div class="form-group">
+        <label for="Nomor_SP3MK">Nomor SP3MK</label>
+        <input asp-for="Nomor_SP3MK" class="form-control" />
+        <span asp-validation-for="Nomor_SP3MK" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label for="Nilai_Purchasing_Order">Nilai Purchasing Order</label>
+    <div id="formatted_Nilai_Purchasing_Order" class="text-primary font-weight-bold"></div>
+    <input asp-for="Nilai_Purchasing_Order" id="Nilai_Purchasing_Order" class="form-control" />
+    <span asp-validation-for="Nilai_Purchasing_Order" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label for="Nilai_Purchasing_Request">Nilai Purchasing Request</label>
+    <div id="formatted_Nilai_Purchasing_Request" class="text-primary font-weight-bold"></div>
+    <input asp-for="Nilai_Purchasing_Request" id="Nilai_Purchasing_Request" class="form-control" />
+    <span asp-validation-for="Nilai_Purchasing_Request" class="text-danger"></span>
+</div>
+
+<script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatCurrency(value) {
+        if (!value) return ""; // Jika kosong, kembalikan string kosong
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Fungsi untuk memperbarui label currency
+    function updateCurrencyLabel(input, labelId) {
+        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+        const formattedValue = formatCurrency(value); // Format angka
+        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+    }
+
+    // Daftar input yang akan diformat
+    const inputs = [
+        {
+            input: document.getElementById("Nilai_Purchasing_Order"),
+            labelId: "formatted_Nilai_Purchasing_Order"
+        },
+        {
+            input: document.getElementById("Nilai_Purchasing_Request"),
+            labelId: "formatted_Nilai_Purchasing_Request"
+        }
+    ];
+
+    // Tambahkan event listener untuk memperbarui label
+    inputs.forEach(({ input, labelId }) => {
+        input.addEventListener("input", function () {
+            updateCurrencyLabel(this, labelId);
+        });
+
+        // Perbarui label saat halaman dimuat
+        updateCurrencyLabel(input, labelId);
+    });
+</script>
+
+
+
+
+    <div class="form-group">
+        <label for="Durasi_Masa_Penyelesaian_MPL">Durasi Masa Penyelesaian MPL</label>
+        <input asp-for="Durasi_Masa_Penyelesaian_MPL" class="form-control" />
+        <span asp-validation-for="Durasi_Masa_Penyelesaian_MPL" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Bulan">Bulan</label>
+        <input asp-for="Bulan" class="form-control" />
+        <span asp-validation-for="Bulan" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Otorisasi" class="control-label"></label>
+        <select asp-for="Otorisasi" class="form-control" id="Otorisasi" asp-items="ViewBag.Otorisasi"></select>
+        <span asp-validation-for="Otorisasi" class="text-danger"></span>
+    </div>
+
+        <div class="form-group">
+        <label for="Notif">Notif</label>
+        <input asp-for="Notif" class="form-control" />
+        <span asp-validation-for="Notif" class="text-danger"></span>
+    </div>
+
+
+        <div class="form-group">
+        <label for="Buyer">Buyer</label>
+        <input asp-for="Buyer" class="form-control" />
+        <span asp-validation-for="Buyer" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+   <button type="button" class="btn btn-primary" id="saveButton">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+
+
+            </div>
+    </div>
+</div>
+
+</form>
+
+
+
+ 
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

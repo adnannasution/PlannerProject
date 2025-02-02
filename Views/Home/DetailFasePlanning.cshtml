@@ -1,0 +1,97 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Detail Fase Planning";
+}
+
+<table class="table table-striped" id="tabelku">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Tanggal SLA/Timeline</th>
+            <th>Disiplin</th>
+            <th>Pekerjaan</th>
+            <th>Action</th> <!-- For Detail Button -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Kode_Project</td>
+                <td><b>@item.Tanggal.ToString("dd-MM-yyyy")</b></td>
+                <td>@item.Disiplin</td>
+                <td>@item.Pekerjaan</td>
+                <td>
+                    <!-- SweetAlert Button -->
+                    <button class="btn btn-info btn-sm btn-detail"
+                            data-id="@item.Kode_Project"
+                            data-tanggal="@item.Tanggal"
+                            data-disiplin="@item.Disiplin"
+                            data-pekerjaan="@item.Pekerjaan"
+                            data-statuskontrak="@item.Status_kontrak"
+                            data-statuspekerjaan="@item.ResumeStatusPekerjaan"
+                            data-task="@item.Task"
+                            data-pic="@item.Pic"
+                            data-targetdate="@item.Target"
+                            data-informasi="@item.Informasi_Detail">Detail</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Kembali ke Dashboard</a>
+
+@section Scripts {
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#tabelku').DataTable({
+                paging: true,  // Enable Pagination
+                searching: true, // Enable Searching
+                ordering: true, // Enable Sorting
+            });
+
+            // Handle Detail Button Click
+            $('.btn-detail').on('click', function () {
+                var button = $(this);
+
+                // Ambil data dari button
+                var id = button.data('id');
+                var tanggal = button.data('tanggal') ? new Date(button.data('tanggal')).toLocaleDateString() : 'N/A';
+                var disiplin = button.data('disiplin');
+                var pekerjaan = button.data('pekerjaan');
+                var statuskontrak = button.data('statuskontrak');
+                var statuspekerjaan = button.data('statuspekerjaan');
+                var task = button.data('task');
+                var pic = button.data('pic');
+                var target = button.data('targetdate') ? new Date(button.data('targetdate')).toLocaleDateString() : 'N/A';
+                var informasiDetail = button.data('informasi');
+
+                // Tampilkan SweetAlert dengan informasi detail
+                Swal.fire({
+                    title: 'Detail Fase Planning',
+                    html: `
+                        <div style="text-align: left;">
+                            <p><strong>Kode Project:</strong> ${id}<hr></p>
+                            <p><strong>Tanggal SLA/Timeline:</strong> ${tanggal}<hr></p>
+                            <p><strong>Disiplin:</strong> ${disiplin}<hr></p>
+                            <p><strong>Pekerjaan:</strong> ${pekerjaan}<hr></p>
+                            <p><strong>Status Kontrak:</strong> ${statuskontrak}<hr></p>
+                            <p><strong>Status Pekerjaan:</strong> ${statuspekerjaan}<hr></p>
+                            <p><strong>Task:</strong> ${task}<hr></p>
+                            <p><strong>PIC:</strong> ${pic}<hr></p>
+                            <p><strong>Target:</strong> ${target}<hr></p>
+                            <p><strong>Informasi Detail:</strong> ${informasiDetail}<hr></p>
+                        </div>
+                    `,
+                    icon: false,
+                    confirmButtonText: 'Tutup'
+                });
+            });
+        });
+    </script>
+}

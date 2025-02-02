@@ -1,0 +1,138 @@
+@model List<Plan.Models.FasePlanning>
+
+@{
+    ViewData["Title"] = "List Project";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">  
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var fase in Model)
+            {
+                <tr>
+                    <td>@fase.Kode_Project</td>
+                    <td>@fase.Pekerjaan</td>
+                    <td style="text-transform: lowercase;">
+                        <button class="btn btn-secondary btn-sm show-timeline" data-id="@fase.Kode_Project">
+                            Show Timeline
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function() {
+        $('.show-timeline').on('click', function() {
+            var projectId = $(this).data('id');
+
+            $.ajax({
+                url: '@Url.Action("Timeline", "Tahapan")',
+                type: 'GET',
+                data: { kodeProject: projectId },
+                success: function(data) {
+                    var htmlContent = '<table class="table">';
+                    htmlContent += '<thead><tr><th>Kode Project</th><th>Pekerjaan</th></tr></thead>';
+                    htmlContent += '<tbody>';
+
+                    data.forEach(function(item) {
+                        htmlContent += '<tr>';
+                        htmlContent += '<td>' + item.Kode_Project + '</td>';
+                        htmlContent += '<td>' + item.Pekerjaan + '</td>';
+                        htmlContent += '</tr>';
+                    });
+
+                    htmlContent += '</tbody></table>';
+
+                    Swal.fire({
+                        title: 'Timeline',
+                        html: '<div style="max-height: 70vh; overflow-y: auto; text-align: left;">' + htmlContent + '</div>',
+                        width: '90%',
+                        showCloseButton: true,
+                        focusConfirm: false,
+                        confirmButtonText: 'Close',
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went wrong!',
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $('#yourButtonSelector').on('click', function (event) {
+        var button = $(event.currentTarget);
+        var projectId = button.data('id');
+
+        $.ajax({
+            url: '@Url.Action("Timeline", "Tahapan")',
+            type: 'GET',
+            data: { kodeProject: projectId },
+            success: function (data) {
+                // Use SweetAlert to display the data
+                Swal.fire({
+                    title: 'Timeline',
+                    html: '<div style="max-height: 70vh; overflow-y: auto; text-align:left">' + data + '</div>', // Set the HTML content here
+                    width: '60%', // Adjust the width of the modal
+                    showCloseButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: 'Close',
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
+        });
+    });
+</script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>

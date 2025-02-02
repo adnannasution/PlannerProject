@@ -1,0 +1,23 @@
+@model Plan.Models.KategoriEquipmentMaster
+
+@{
+    ViewData["Title"] = "Kategori Equipment Master";
+
+            ViewData["Title1"] = "Kategori Equipment Master";
+    ViewData["Title2"] = "Create";
+
+}
+
+
+
+<form asp-action="Create">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Kategori" class="control-label"></label>
+        <input asp-for="Kategori" class="form-control" required/>
+        <span asp-validation-for="Kategori" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

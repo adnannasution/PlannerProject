@@ -1,0 +1,161 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Detail Fase Tender";
+}
+
+<style>
+.swal2-popup {
+    width: 60% !important; /* Makes the popup width 80% of the screen */
+    max-width: 1300px !important; /* Adjust to a maximum size */
+}
+</style>
+
+<table class="table table-striped table-responsive" id="tabelku">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Tanggal SLA/Timeline</th>
+            <th>No Vendor</th>
+            <th>Action</th> <!-- For Detail Button -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Kode_Project</td>
+                <td>@item.Pekerjaan</td>
+                <td><b>@item.Tanggal.ToString("dd-MM-yyyy")</b></td>
+                <td>@item.No_Vendor</td>
+                <td>
+                    <!-- Detail Button Trigger -->
+                    <button class="btn btn-info btn-sm" 
+                            data-id="@item.Kode_Project"
+                            data-pekerjaan="@item.Pekerjaan"
+                            data-tanggal="@item.Tanggal"
+                            data-noVendor="@item.No_Vendor"
+                            data-pelaksana="@item.Pelaksana"
+                            data-poOA="@item.PO_OA"
+                            data-poSR="@item.PO_SR"
+                            data-poRO="@item.PO_RO"
+                            data-prOA="@item.PR_OA"
+                            data-prMT="@item.PR_MT"
+                            data-prSR="@item.PR_SR"
+                            data-nomorSP3MK="@item.Nomor_SP3MK"
+                            data-nilaiPO="@item.Nilai_Purchasing_Order"
+                            data-nilaiPR="@item.Nilai_Purchasing_Request"
+                            data-durasiMPL="@item.Durasi_Masa_Penyelesaian_MPL"
+                            data-bulan="@item.Bulan"
+                            data-otorisasi="@item.Otorisasi"
+                            data-notif="@item.Notif"
+                            data-buyer="@item.Buyer"
+                            data-statusPekerjaan="@item.ResumeStatusPekerjaan"
+                            data-task="@item.Task"
+                            data-pic="@item.Pic"
+                            data-target="@item.Target">Detail</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Kembali ke Dashboard</a>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 4 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+
+            // SweetAlert Trigger for Detail
+            $('button[data-id]').on('click', function () {
+                var button = $(this); // Button that triggered the alert
+
+                // Get data attributes from the button
+                var id = button.data('id');
+                var pekerjaan = button.data('pekerjaan');
+                var tanggal = button.data('tanggal');
+                var noVendor = button.data('noVendor');
+                var pelaksana = button.data('pelaksana');
+                var poOA = button.data('poOA');
+                var poSR = button.data('poSR');
+                var poRO = button.data('poRO');
+                var prOA = button.data('prOA');
+                var prMT = button.data('prMT');
+                var prSR = button.data('prSR');
+                var nomorSP3MK = button.data('nomorSP3MK');
+                var nilaiPO = button.data('nilaiPO');
+                var nilaiPR = button.data('nilaiPR');
+                var durasiMPL = button.data('durasiMPL');
+                var bulan = button.data('bulan');
+                var otorisasi = button.data('otorisasi');
+                var notif = button.data('notif');
+                var buyer = button.data('buyer');
+                var statusPekerjaan = button.data('statusPekerjaan');
+                var task = button.data('task');
+                var pic = button.data('pic');
+                var target = button.data('target');
+
+              
+Swal.fire({
+    title: 'Detail Fase Tender',
+    html: `
+        <div style="margin: 0 auto; text-align: left; margin-top:10px">
+            <div style="display: flex; justify-content: ">
+                <!-- Left Column -->
+                <div style="flex: 1; margin-right:10px">
+                    <strong>Kode Project:</strong> ${id} <br><hr>
+                    <strong>Pekerjaan:</strong> ${pekerjaan} <br><hr>
+                    <strong>Tanggal SLA/Timeline:</strong> ${tanggal ? new Date(tanggal).toLocaleDateString() : 'N/A'} <br><hr>
+                    <strong>No Vendor:</strong> ${noVendor} <br><hr>
+                    <strong>Pelaksana:</strong> ${pelaksana} <br><hr>
+                    <strong>PO OA:</strong> ${poOA} <br><hr>
+                    <strong>PO SR:</strong> ${poSR} <br><hr>
+                    <strong>PO RO:</strong> ${poRO} <br><hr>
+                    <strong>PR OA:</strong> ${prOA} <br><hr>
+                    <strong>PR MT:</strong> ${prMT} <br><hr>
+                    <strong>PR SR:</strong> ${prSR} <br><hr>
+                    <strong>Nomor SP3MK:</strong> ${nomorSP3MK} <br><hr>
+                </div>
+
+                <!-- Right Column -->
+                <div style="flex: 1; min-width: 45%;">
+                    <strong>Nilai Purchasing Order:</strong> ${nilaiPO} <br><hr>
+                    <strong>Nilai Purchasing Request:</strong> ${nilaiPR} <br><hr>
+                    <strong>Durasi MPL:</strong> ${durasiMPL} <br><hr>
+                    <strong>Bulan:</strong> ${bulan} <br><hr>
+                    <strong>Otorisasi:</strong> ${otorisasi} <br><hr>
+                    <strong>Notif:</strong> ${notif} <br><hr>
+                    <strong>Buyer:</strong> ${buyer} <br><hr>
+                    <strong>Status Pekerjaan:</strong> ${statusPekerjaan} <br><hr>
+                    <strong>Task:</strong> ${task} <br><hr>
+                    <strong>PIC:</strong> ${pic} <br><hr>
+                    <strong>Target:</strong> ${target ? new Date(target).toLocaleDateString() : 'N/A'} <br><hr>
+                </div>
+            </div>
+        </div>
+    `,
+    icon: false,
+    confirmButtonText: 'Close',
+    customClass: {
+        popup: 'custom-modal' // Custom class for further customization
+    }
+});
+
+
+            });
+        });
+    </script>
+}
+
+

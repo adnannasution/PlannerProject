@@ -1,0 +1,35 @@
+@model Plan.Models.TabelSla
+
+@{
+    ViewData["Title"] = "Edit SLA Record";
+}
+
+
+
+<form asp-action="EditSla" method="post">
+    <input type="hidden" asp-for="Id" /> <!-- Hidden input for the Id -->
+
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <input asp-for="Kode_Project" class="form-control" readonly />
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Task" class="control-label"></label>
+        <input asp-for="Task" class="form-control" readonly/>
+        <span asp-validation-for="Task" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Target" class="control-label"></label>
+        <input asp-for="Target" class="form-control" type="date" />
+        <span asp-validation-for="Target" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="ViewSla" asp-route-kodeProject="@Model.Kode_Project" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

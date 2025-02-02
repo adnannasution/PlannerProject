@@ -1,0 +1,44 @@
+
+    <canvas id="memoChart" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+   $(document).ready(function () {
+    $.ajax({
+        url: '@Url.Action("GetMemoStatistics", "Memo")',
+        type: 'GET',
+        success: function (data) {
+            console.log("Data dari server:", data); // Debug di console browser
+
+            var ctx = document.getElementById('memoChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Belum Didisposisi", "Sudah Didisposisi", "Created Project"],
+                    datasets: [{
+                        label: 'Jumlah Memo',
+                        data: [data.emailNull, data.emailNotNull, data.fasePlanning], // Sesuaikan key dengan response JSON
+                        backgroundColor: ['#ff6384', '#36a2eb', '#ffcc56'],
+                        borderColor: ['#ff6384', '#36a2eb', '#ffcc56'],
+                        borderWidth: 1,
+                                      barThickness: 30, // Atur ketebalan bar
+                                    maxBarThickness: 30 // Atur ketebalan maksimum bar
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", status, error);
+        }
+    });
+});
+
+</script>

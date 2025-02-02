@@ -1,0 +1,103 @@
+@model Plan.Models.Timeline
+
+@{
+    ViewData["Title"] = "Create Timeline";
+}
+
+
+
+<form asp-action="Create" method="post">
+    <div class="row">
+        <!-- Kolom Kiri -->
+        <div class="col-md-6">
+  
+
+      <div class="form-group">
+    <label for="KodeProjectId">Kode Project</label>
+    <select asp-for="Kode_Project" asp-items="ViewBag.KodeProjects" class="form-control">
+        <option value="">-- Pilih Kode Project --</option>
+    </select>
+    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+</div>
+
+            <div class="form-group">
+                <label asp-for="Memo_turun"></label>
+                <input asp-for="Memo_turun" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Menyusun_GTC_dan_RAB"></label>
+                <input asp-for="Menyusun_GTC_dan_RAB" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Review_GTC_RAB"></label>
+                <input asp-for="Review_GTC_RAB" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Menyiapkan_dan_mengirim_memo_comment_bestek"></label>
+                <input asp-for="Menyiapkan_dan_mengirim_memo_comment_bestek" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Revisi_GTC_dan_RAB_sesuai_comment_bestek"></label>
+                <input asp-for="Revisi_GTC_dan_RAB_sesuai_comment_bestek" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Sourcing_penawaran_ke_vendor"></label>
+                <input asp-for="Sourcing_penawaran_ke_vendor" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Membuat_analisa_cost_estimasi"></label>
+                <input asp-for="Membuat_analisa_cost_estimasi" class="form-control" type="date" />
+            </div>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Review_analisa_cost_estimasi"></label>
+                <input asp-for="Review_analisa_cost_estimasi" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Menyiapkan_RKS"></label>
+                <input asp-for="Menyiapkan_RKS" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Menyiapkan_RAB"></label>
+                <input asp-for="Menyiapkan_RAB" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Membuat_analisa_TKDN"></label>
+                <input asp-for="Membuat_analisa_TKDN" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Membuat_analisa_RAM"></label>
+                <input asp-for="Membuat_analisa_RAM" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Membuat_ijin_persetujuan_prinsip"></label>
+                <input asp-for="Membuat_ijin_persetujuan_prinsip" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Jobplan_Ext_mengajukan_release_dan_print_PR"></label>
+                <input asp-for="Jobplan_Ext_mengajukan_release_dan_print_PR" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Membuat_checklist_kelengkapan_DP3"></label>
+                <input asp-for="Membuat_checklist_kelengkapan_DP3" class="form-control" type="date" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Baris Tambahan -->
+    <div class="form-group">
+        <label asp-for="Menyiapkan_memo_pengantar_DP3_Paket"></label>
+        <input asp-for="Menyiapkan_memo_pengantar_DP3_Paket" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Mengirim_dokumen_DP3_Paket_via_P_Office"></label>
+        <input asp-for="Mengirim_dokumen_DP3_Paket_via_P_Office" class="form-control" type="date" />
+    </div>
+
+    <!-- Tombol -->
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

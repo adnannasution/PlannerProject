@@ -1,0 +1,137 @@
+@model IEnumerable<Plan.Models.BiayaRealisasi>
+
+@{
+    ViewData["Title"] = "Biaya Realisasi";
+
+    ViewData["Title1"] = "Biaya Realisasi";
+    ViewData["Title2"] = "Data";
+}
+
+<a asp-action="Create" class="btn btn-primary mb-3">Create New</a>
+
+<table class="table table-striped table-responsive table-bordered" id="areaMasterTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Jenis Biaya</th>
+            <th>CI</th>
+            <th>ApprRKPL</th>
+            <th>Realisasi Assign SD</th>
+            <th>% Realisasi Assign</th>
+            <th>Realisasi Actual SD</th>
+            <th>% Realisasi Actual</th>
+            <th>Realisasi Commit SD</th>
+            <th>% Realisasi Commit</th>
+            <th>Realisasi ROP</th>
+            <th>% Realisasi ROP</th>
+            <th>Bulan</th>
+            <th>Tahun</th>
+            <th>Minggu</th>
+            <th>Tipe Project</th>
+            <th>OH</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.JenisBiaya</td>
+                <td>@item.CI</td>
+                <td>@item.ApprRKPL</td>
+                <td>@item.RealisasiAssign.ToString("N0")</td>
+                <td>@item.PersenRealisasiAssign</td>
+                <td>@item.RealisasiActual.ToString("N0")</td>
+                <td>@item.PersenRealisasiActual</td>
+                <td>@item.RealisasiCommit.ToString("N0")</td>
+                <td>@item.PersenRealisasiCommit</td>
+                <td>@item.RealisasiROP.ToString("N0")</td>
+                <td>@item.PersenRealisasiROP</td>
+                <td>@item.Bulan</td>
+                <td>@item.Tahun</td>
+                <td>@item.Minggu</td>
+                <td>@item.Tipe_Project</td>
+                <td>@item.OH</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                 
+<form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form>
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#areaMasterTable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

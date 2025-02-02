@@ -1,0 +1,112 @@
+@{
+  ViewData["Title"] = "Grafik Bar Resume Status Pekerjaan";
+}
+
+<!-- Dropdown untuk memilih tahun -->
+<select id="tahunresume" onchange="loadChart()" class="form-control">
+  <option value="">Pilih Tahun</option>
+</select>
+
+<!-- Canvas untuk menampilkan chart -->
+<canvas id="resumeStatusPekerjaanChart" width="400" height="200"></canvas>
+
+<!-- Memuat Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var tahunresume = document.getElementById("tahunresume");
+    var currentYear = new Date().getFullYear();
+    var startYear = currentYear - 2;
+    var endYear = currentYear + 2;
+
+    // Menambahkan opsi tahun ke dropdown
+    for (var year = startYear; year <= endYear; year++) {
+      var option = document.createElement("option");
+      option.value = year;
+      option.text = year;
+      tahunresume.appendChild(option);
+    }
+
+    // Set tahun default ke tahun berjalan
+    tahunresume.value = currentYear;
+    loadChart();  // Memuat grafik saat halaman dimuat
+  });
+
+  function loadChart() {
+    var tahunresume = document.getElementById('tahunresume').value;
+
+    fetch('@Url.Action("GetResumeStatusPekerjaanData", "Home2")' + '?tahunresume=' + encodeURIComponent(tahunresume))
+      .then(response => response.json())
+      .then(data => {
+        var labels = data.map(d => d.resumeStatusPekerjaan);
+        var counts = data.map(d => d.count);
+
+        var ctx = document.getElementById('resumeStatusPekerjaanChart').getContext('2d');
+        if (window.myChart) {
+          window.myChart.destroy();  // Menghancurkan chart sebelumnya jika ada
+        }
+
+        window.myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Jumlah Resume Status Pekerjaan',
+              data: counts,
+              backgroundColor: 'rgba(75, 192, 192)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+                                    barThickness: 30, // Atur ketebalan bar
+                                    maxBarThickness: 30 // Atur ketebalan maksimum bar
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { beginAtZero: true },
+              y: { beginAtZero: true }
+            },
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    var label = context.label || '';
+                    var value = context.raw || 0;
+                    return label + ': ' + value;
+                  }
+                }
+              }
+            },
+            
+              onClick: function (event, elements) {
+                if (elements.length > 0) {
+                  var index = elements[0].index;
+                  var selectedStatus = labels[index];
+
+                  var targetUrl = '';
+                  if (selectedStatus === "REKOMENDASI" || selectedStatus === "JOBPLAN" || selectedStatus === "TUNGGU MATERIAL") {
+                      targetUrl = '/Home2/DetailFasePlanning?status=' + encodeURIComponent(selectedStatus) + '&tahun=' + document.getElementById("tahunresume").value;
+                  } else if (selectedStatus === "TENDER") {
+                      targetUrl = '/Home2/DetailFaseTender?status=' + encodeURIComponent(selectedStatus) + '&tahun=' + document.getElementById("tahunresume").value;
+                  } else if (selectedStatus === "EKSEKUSI" || selectedStatus === "RUNNING KONTRAK") {
+                      targetUrl = '/Home2/DetailFaseExecution?status=' + encodeURIComponent(selectedStatus) + '&tahun=' + document.getElementById("tahunresume").value;
+                  } else if (selectedStatus === "SELESAI") {
+                      targetUrl = '/Home2/DetailResumeStatusPekerjaan?status=' + encodeURIComponent(selectedStatus) + '&tahun=' + document.getElementById("tahunresume").value;
+                  } else {
+                      //alert("Status tidak dikenali.");
+                      return;
+                  }
+
+                  window.location.href = targetUrl;
+                }
+              }
+          }
+        });
+      })
+      .catch(error => {
+        console.error("Terjadi kesalahan saat memuat data:", error);
+      });
+  }
+</script>

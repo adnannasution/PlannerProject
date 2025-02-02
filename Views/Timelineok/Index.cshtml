@@ -1,0 +1,125 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Monitoring Project";
+}
+
+
+<a asp-action="Create" class="btn btn-primary">Create New</a>
+<br><br>
+
+
+
+@{
+    var disiplinClaim = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+    // Memastikan Model sudah dikelompokkan berdasarkan Kode_Project
+    var uniqueProjects = Model
+        .Where(item => 
+            !string.IsNullOrEmpty(item.Kode_Project) && 
+            item.Kode_Project.Split('/').Length > 2 && // Cek panjang array untuk menghindari error
+            (string.IsNullOrEmpty(disiplinClaim) || disiplinClaim == "All" || item.Kode_Project.Split('/')[2].Equals(disiplinClaim, StringComparison.OrdinalIgnoreCase))
+        ) // Filter berdasarkan klaim disiplin
+        .GroupBy(item => item.Kode_Project)
+        .Select(group => group.First()) // Ambil data unik berdasarkan Kode_Project
+        .ToList();
+}
+
+
+<table class="table table-bordered mt-3 table-striped" id="timelineoktable">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Show</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int counter = 1;
+        }
+
+        @foreach (var item in uniqueProjects)
+        {
+            <tr>
+                <td>@counter</td>
+                <td>@item.Kode_Project</td>
+                <td>@item.Pekerjaan</td>
+                <td><a asp-action="Detail" asp-route-kode_project="@item.Kode_Project" class="btn btn-info btn-sm">Detail</a></td>
+            </tr>
+            counter++;
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#timelineoktable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true,
+                order: [], // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

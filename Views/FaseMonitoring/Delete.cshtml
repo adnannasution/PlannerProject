@@ -1,0 +1,45 @@
+@model Plan.Models.FaseMonitoring
+
+<h1>Delete Fase Monitoring</h1>
+
+<div>
+    <h4>Are you sure you want to delete this item?</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">ID</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+
+        <dt class="col-sm-2">Status LKP</dt>
+        <dd class="col-sm-10">@Model.Status_LKP</dd>
+
+        <dt class="col-sm-2">Status Volume</dt>
+        <dd class="col-sm-10">@Model.Status_Volume</dd>
+
+        <dt class="col-sm-2">Count Days Progress</dt>
+        <dd class="col-sm-10">@Model.Count_Days_Progress</dd>
+
+        <dt class="col-sm-2">Count Days Over</dt>
+        <dd class="col-sm-10">@Model.Count_Days_Over</dd>
+
+        <dt class="col-sm-2">Status Durasi</dt>
+        <dd class="col-sm-10">@Model.Status_Durasi</dd>
+
+        <dt class="col-sm-2">Status Kontrak</dt>
+        <dd class="col-sm-10">@Model.Status_Kontrak</dd>
+
+        <dt class="col-sm-2">Amandemen Nilai</dt>
+        <dd class="col-sm-10">@Model.Amandemen_Nilai</dd>
+
+        <dt class="col-sm-2">Total Nilai Kontrak</dt>
+        <dd class="col-sm-10">@Model.Total_Nilai_Kontrak</dd>
+
+        <dt class="col-sm-2">Nilai Tagihan</dt>
+        <dd class="col-sm-10">@Model.Nilai_Tagihan</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

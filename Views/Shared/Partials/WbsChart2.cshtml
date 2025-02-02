@@ -1,0 +1,108 @@
+@{
+    ViewData["Title"] = "Grafik Line WBS";
+    int currentYear2 = DateTime.Now.Year;
+}
+
+
+<!-- Dropdown untuk memilih tahun -->
+
+<select id="yearSelect2">
+    @for (int i = 2020; i <= DateTime.Now.Year; i++)
+    {
+        if (i == currentYear2)
+        {
+            <option value="@i" selected>@i</option>
+        }
+        else
+        {
+            <option value="@i">@i</option>
+        }
+    }
+</select>
+
+
+
+<!-- Tempatkan canvas untuk chart -->
+<canvas id="wbsLineChart2" width="400" height="200"></canvas>
+
+<!-- Memuat Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Fungsi untuk memuat data dan memperbarui chart
+        function loadChartData2(year) {
+            fetch(`/Home/GetChartData2?year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var labels2 = data.map(d => d.bulan);
+                        var percentActual2 = data.map(d => d.percentActual2);
+                        var percentForecasting2 = data.map(d => d.percentForecasting2);
+
+                        var ctx = document.getElementById('wbsLineChart2').getContext('2d');
+                        if (window.wbsChart) {
+                            window.wbsChart.destroy();
+                        }
+                        window.wbsChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels2,
+                                datasets: [{
+                                    label: 'Percent Actual',
+                                    data: percentActual,
+                                    backgroundColor: 'rgba(75, 192, 192)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 2,
+                                    fill: false
+                                }, {
+                                    label: 'Percent Forecasting',
+                                    data: percentForecasting,
+                                    backgroundColor: 'rgba(255, 159, 64)',
+                                    borderColor: 'rgba(255, 159, 64, 1)',
+                                    borderWidth: 2,
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        title: { display: true, text: 'Bulan' },
+                                        beginAtZero: true
+                                    },
+                                    y: {
+                                        title: { display: true, text: 'Persentase' },
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    legend: { position: 'top' },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                var label = context.label || '';
+                                                var value = context.raw || 0;
+                                                return label + ': ' + value + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        alert("Data tidak tersedia untuk tahun tersebut");
+                    }
+                })
+                .catch(error => console.error("Terjadi kesalahan saat memuat data:", error));
+        }
+
+        // Event listener untuk dropdown tahun
+        document.getElementById('yearSelect2').addEventListener('change', function () {
+            loadChartData2(this.value);
+        });
+
+        // Memuat data untuk tahun pertama kali (default)
+        loadChartData2(document.getElementById('yearSelect2').value);
+    });
+</script>

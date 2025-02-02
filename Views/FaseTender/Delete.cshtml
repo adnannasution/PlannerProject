@@ -1,0 +1,64 @@
+@model Plan.Models.FaseTender
+
+
+@{
+    ViewData["Title"] = "Delete Fase Tender";
+}
+
+<h2>Delete Fase Tender</h2>
+
+<h4>Are you sure you want to delete this item?</h4>
+<hr />
+
+<div>
+    <h5>FaseTender</h5>
+    <dl class="dl-horizontal">
+        <dt>ID</dt>
+        <dd>@Model.Id</dd>
+
+        <dt>No Vendor</dt>
+        <dd>@Model.No_Vendor</dd>
+
+        <dt>Pelaksana</dt>
+        <dd>@Model.Pelaksana</dd>
+
+        <dt>PO OA</dt>
+        <dd>@Model.PO_OA</dd>
+
+        <dt>PO SR</dt>
+        <dd>@Model.PO_SR</dd>
+
+        <dt>PO RO</dt>
+        <dd>@Model.PO_RO</dd>
+
+        <dt>PR OA</dt>
+        <dd>@Model.PR_OA</dd>
+
+        <dt>PR MT</dt>
+        <dd>@Model.PR_MT</dd>
+
+        <dt>PR SR</dt>
+        <dd>@Model.PR_SR</dd>
+
+        <dt>Nomor SP3MK</dt>
+        <dd>@Model.Nomor_SP3MK</dd>
+
+        <dt>Nilai Purchasing Order</dt>
+        <dd>@Model.Nilai_Purchasing_Order</dd>
+
+        <dt>Nilai Purchasing Request</dt>
+        <dd>@Model.Nilai_Purchasing_Request</dd>
+
+        <dt>Durasi Masa Penyelesaian MPL</dt>
+        <dd>@Model.Durasi_Masa_Penyelesaian_MPL</dd>
+
+        <dt>Bulan</dt>
+        <dd>@Model.Bulan</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

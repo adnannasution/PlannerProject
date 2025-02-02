@@ -1,0 +1,197 @@
+@model Plan.Models.BiayaRealisasi
+
+@{
+    ViewData["Title"] = "Biaya Realisasi";
+
+    ViewData["Title1"] = "Biaya Realisasi";
+    ViewData["Title2"] = "Create";
+}
+
+<form asp-action="Create" id="faseform">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="JenisBiaya">Jenis Biaya</label>
+        <input asp-for="JenisBiaya" class="form-control" />
+        <span asp-validation-for="JenisBiaya" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="CI">CI</label>
+        <input asp-for="CI" class="form-control" />
+        <span asp-validation-for="CI" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="ApprRKPL">ApprRKPL</label>
+        <input asp-for="ApprRKPL" class="form-control" />
+        <span asp-validation-for="ApprRKPL" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label for="RealisasiAssign">Realisasi Assign</label>
+    <div id="formatted_RealisasiAssign" class="text-primary font-weight-bold"></div>
+    <input asp-for="RealisasiAssign" class="form-control" id="RealisasiAssign" />
+    <span asp-validation-for="RealisasiAssign" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="PersenRealisasiAssign">% Realisasi Assign</label>
+        <input asp-for="PersenRealisasiAssign" class="form-control" />
+        <span asp-validation-for="PersenRealisasiAssign" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label for="RealisasiActual">Realisasi Actual</label>
+    <div id="formatted_RealisasiActual" class="text-primary font-weight-bold"></div>
+    <input asp-for="RealisasiActual" class="form-control" id="RealisasiActual" />
+    <span asp-validation-for="RealisasiActual" class="text-danger"></span>
+</div>
+
+
+    <div class="form-group">
+        <label for="PersenRealisasiActual">% Realisasi Actual</label>
+        <input asp-for="PersenRealisasiActual" class="form-control" />
+        <span asp-validation-for="PersenRealisasiActual" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label for="RealisasiCommit">Realisasi Commit</label>
+    <div id="formatted_RealisasiCommit" class="text-primary font-weight-bold"></div>
+    <input asp-for="RealisasiCommit" class="form-control" id="RealisasiCommit" />
+    <span asp-validation-for="RealisasiCommit" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="PersenRealisasiCommit">% Realisasi Commit</label>
+        <input asp-for="PersenRealisasiCommit" class="form-control" />
+        <span asp-validation-for="PersenRealisasiCommit" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label for="RealisasiROP">Realisasi ROP</label>
+    <div id="formatted_RealisasiROP" class="text-primary font-weight-bold"></div>
+    <input asp-for="RealisasiROP" class="form-control" id="RealisasiROP" />
+    <span asp-validation-for="RealisasiROP" class="text-danger"></span>
+</div>
+
+
+
+
+    <div class="form-group">
+        <label for="PersenRealisasiROP">% Realisasi ROP</label>
+        <input asp-for="PersenRealisasiROP" class="form-control" />
+        <span asp-validation-for="PersenRealisasiROP" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Bulan">Bulan</label>
+        <input asp-for="Bulan" class="form-control" />
+        <span asp-validation-for="Bulan" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Tahun">Tahun</label>
+        <input asp-for="Tahun" class="form-control" />
+        <span asp-validation-for="Tahun" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Minggu">Minggu</label>
+        <input asp-for="Minggu" class="form-control" />
+        <span asp-validation-for="Minggu" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+    <label asp-for="Tipe_Project" class="control-label"></label>
+    <select asp-for="Tipe_Project" class="form-control" id="Tipe_Project">
+        <option value="Rutin">Rutin</option>
+        <option value="Non Rutin">Non Rutin</option>
+    </select>
+    <span asp-validation-for="Tipe_Project" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="OH" class="control-label"></label>
+    <select asp-for="OH" class="form-control" id="OH">
+        <option value="">Tidak</option>
+        <option value="OH">OH</option>
+    </select>
+    <span asp-validation-for="OH" class="text-danger"></span>
+</div>
+
+
+
+ <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatCurrency(value) {
+        if (!value) return ""; // Jika kosong, kembalikan string kosong
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Fungsi untuk memperbarui label currency
+    function updateCurrencyLabel(input, labelId) {
+        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+        const formattedValue = formatCurrency(value); // Format angka
+        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+    }
+
+    // Daftar input yang akan diformat
+    const inputs = [
+        {
+            input: document.getElementById("RealisasiAssign"),
+            labelId: "formatted_RealisasiAssign"
+        },
+        {
+            input: document.getElementById("RealisasiActual"),
+            labelId: "formatted_RealisasiActual"
+        },
+        {
+            input: document.getElementById("RealisasiCommit"),
+            labelId: "formatted_RealisasiCommit"
+        },
+        {
+            input: document.getElementById("RealisasiROP"),
+            labelId: "formatted_RealisasiROP"
+        }
+    ];
+
+    // Tambahkan event listener untuk memperbarui label
+    inputs.forEach(({ input, labelId }) => {
+        input.addEventListener("input", function () {
+            updateCurrencyLabel(this, labelId);
+        });
+
+        // Perbarui label saat halaman dimuat
+        updateCurrencyLabel(input, labelId);
+    });
+</script>

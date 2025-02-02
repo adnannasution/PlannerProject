@@ -1,0 +1,79 @@
+@model Plan.Models.BudgetWbsData
+
+@{
+    ViewData["Title"] = "Create Budget WBS";
+}
+
+
+
+<form asp-action="Create" method="post" id="faseform">
+  @Html.AntiForgeryToken()
+<div class="form-group">
+    <label for="JenisBiaya">Jenis Biaya</label>
+    <select asp-for="JenisBiaya" class="form-control" required>
+    <option value="">Pilih</option>
+        <option value="RUTIN">RUTIN</option>
+        <option value="NON RUTIN">NON RUTIN</option>
+        <option value="OH">OH</option>
+    </select>
+    <span asp-validation-for="JenisBiaya" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="Tahun">Tahun</label>
+        <input asp-for="Tahun" type="number" class="form-control" required/>
+        <span asp-validation-for="Tahun" class="text-danger"></span>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="BudgetWbs">Budget WBS</label>
+         <div id="formattedCurrency" class="text-primary"></div>
+        <input asp-for="BudgetWbs" type="number" step="0.01" class="form-control" id="BudgetWbs" oninput="formatCurrency()" required>
+        <span asp-validation-for="BudgetWbs" class="text-danger"></span>
+    </div>
+ <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+
+<script>
+    function formatCurrency() {
+        var budgetWbsInput = document.getElementById("BudgetWbs");
+        var formattedCurrencyDiv = document.getElementById("formattedCurrency");
+
+        var value = parseFloat(budgetWbsInput.value);
+        if (!isNaN(value)) {
+            formattedCurrencyDiv.textContent = value.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+        } else {
+            formattedCurrencyDiv.textContent = '';
+        }
+    }
+</script>

@@ -1,0 +1,72 @@
+@model Plan.Models.FaseMonitoring
+
+@{
+    ViewData["Title"] = "Detail Fase Monitoring";
+}
+
+<div class="container">
+ 
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <p class="form-control-static">@Model.Kode_Project</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status_LKP" class="control-label"></label>
+        <p class="form-control-static">@Model.Status_LKP</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status_Volume" class="control-label"></label>
+        <p class="form-control-static">@Model.Status_Volume</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Count_Days_Progress" class="control-label"></label>
+        <p class="form-control-static">@Model.Count_Days_Progress</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Count_Days_Over" class="control-label"></label>
+        <p class="form-control-static">@Model.Count_Days_Over</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status_Durasi" class="control-label"></label>
+        <p class="form-control-static">@Model.Status_Durasi</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status_Kontrak" class="control-label"></label>
+        <p class="form-control-static">@Model.Status_Kontrak</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Amandemen_Nilai" class="control-label"></label>
+        <p class="form-control-static">@string.Format("{0:N0}", @Model.Amandemen_Nilai)</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Total_Nilai_Kontrak" class="control-label"></label>
+        <p class="form-control-static">@string.Format("{0:N0}", @Model.Total_Nilai_Kontrak)</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Nilai_Tagihan" class="control-label"></label>
+        <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Tagihan)</p>
+        <hr />
+    </div>
+
+    <div class="form-group">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

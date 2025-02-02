@@ -1,0 +1,24 @@
+@model Plan.Models.KategoriKontrakMaster
+
+@{
+    ViewData["Title"] = "Kategori Kontrak";
+
+            ViewData["Title1"] = "Kategori Kontrak";
+    ViewData["Title2"] = "Edit";
+
+}
+
+
+
+<form asp-action="Edit">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Kategori" class="control-label"></label>
+        <input asp-for="Kategori" class="form-control" />
+        <span asp-validation-for="Kategori" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

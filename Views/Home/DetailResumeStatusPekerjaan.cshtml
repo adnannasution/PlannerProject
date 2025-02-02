@@ -1,0 +1,61 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Detail Resume Status Pekerjaan Selesai";
+}
+
+
+
+<table class="table table-bordered" id="tabelku">
+    <thead>
+        <tr>
+           
+            <th>Kode Proyek</th>
+            <th>Pekerjaan</th>
+            <th>Status Pekerjaan</th>
+            <th>Task</th>
+            <th>Tanggal</th>
+             <th>Action</th>
+            <!-- Tambahkan kolom lainnya sesuai dengan tabel Timelineok -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+           
+                <td>@item.Kode_Project</td>
+                <td>@item.Pekerjaan</td>
+                <td>@item.ResumeStatusPekerjaan</td>
+                <td>@item.Task</td>
+                <td>@item.Tanggal.ToString("yyyy-MM-dd")</td>
+                 <td>
+                    <a  href="@Url.Action("ViewSla", "Timelineok", new { kodeProject = item.Kode_Project })" class="btn btn-sm btn-primary">Lihat SLA</a>
+                </td>
+         
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Kembali ke Dashboard</a>
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+    }

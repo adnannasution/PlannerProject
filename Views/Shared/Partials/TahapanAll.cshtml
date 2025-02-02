@@ -1,0 +1,87 @@
+@model List<Plan.Models.FasePlanning>
+
+@{
+    ViewData["Title"] = "List Project";
+}
+
+
+
+<!-- Load SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<table class="table table-bordered" id="tabelku">
+    <thead class="thead-light">
+        <tr>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+@if (Model == null || !Model.Any())
+{
+    <tr>
+        <td colspan="3" class="text-center">Data tidak ditemukan</td>
+    </tr>
+}
+else
+{
+    @foreach (var fase in Model)
+    {
+        <tr>
+            <td>@fase.Kode_Project</td>
+            <td>@fase.Pekerjaan</td>
+            <td>
+                <button class="btn btn-secondary btn-sm timeline-btn" data-id="@fase.Kode_Project">
+                    Timeline
+                </button>
+            </td>
+        </tr>
+    }
+}
+
+    </tbody>
+</table>
+
+<script>
+    // Menggunakan event delegation agar semua tombol bisa bekerja
+    $(document).on('click', '.timeline-btn', function () {
+        var projectId = $(this).data('id'); // Ambil Kode Project dari tombol yang diklik
+
+        $.ajax({
+            url: '@Url.Action("Timeline", "Tahapan")',
+            type: 'GET',
+            data: { kodeProject: projectId },
+            success: function (data) {
+                // Tampilkan SweetAlert dengan data yang diterima
+                Swal.fire({
+                    title: 'Timeline',
+                    html: '<div style="max-height: 70vh; overflow-y: auto; text-align:left">' + data + '</div>',
+                    width: '60%', 
+                    showCloseButton: true,
+                    confirmButtonText: 'Tutup'
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Gagal mengambil data timeline!',
+                });
+            }
+        });
+    });
+
+    // Inisialisasi DataTable
+    $(document).ready(function () {
+        $('#tabelku').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            order:[],
+            columnDefs: [
+                { orderable: false, targets: 2 } // Kolom 'Action' tidak bisa diurutkan
+            ]
+        });
+    });
+</script>

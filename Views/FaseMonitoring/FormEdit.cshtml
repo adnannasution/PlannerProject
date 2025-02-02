@@ -1,0 +1,169 @@
+@model Plan.Models.FaseMonitoring
+
+@{
+    ViewData["Title"] = "Edit Fase Monitoring";
+}
+
+
+<form asp-action="Edit" id="faseform" method="post">
+  @Html.AntiForgeryToken()
+
+
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly />
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+
+
+<div class="form-group">
+    <label for="Status_LKP">Status LKP</label>
+    <select asp-for="Status_LKP" class="form-control" required id="Status_LKP">
+        <option value="">Pilih</option>
+        <option value="WARNING">WARNING</option>
+        <option value="GOOD">GOOD</option>
+    </select>
+    <span asp-validation-for="Status_LKP" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label for="Status_Volume">Status Volume</label>
+    <select asp-for="Status_Volume" class="form-control" required id="Status_Volume">
+            <option value="">Pilih</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="NONACTIVE">NONACTIVE</option>
+    </select>
+    <span asp-validation-for="Status_Volume" class="text-danger"></span>
+</div>
+
+
+
+
+
+    <div class="form-group">
+        <label for="Count_Days_Progress">Count Days Progress</label>
+        <input asp-for="Count_Days_Progress" type="number" class="form-control" required id="Count_Days_Progress" />
+        <span asp-validation-for="Count_Days_Progress" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label for="Count_Days_Over">Count Days Over</label>
+        <input asp-for="Count_Days_Over" type="number" class="form-control" required id="Count_Days_Over" />
+        <span asp-validation-for="Count_Days_Over" class="text-danger"></span>
+    </div>
+    
+<div class="form-group">
+    <label for="Status_Durasi">Status Durasi</label>
+    <select asp-for="Status_Durasi" class="form-control" required id="Status_Durasi">
+        <option value="">Pilih</option>
+        <option value="IN PROGRESS">IN PROGRESS</option>
+        <option value="WARNING">WARNING</option>
+    </select>
+    <span asp-validation-for="Status_Durasi" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="Status_Kontrak">Status Kontrak</label>
+        <input asp-for="Status_Kontrak" class="form-control" required id="Status_Kontrak" />
+        <span asp-validation-for="Status_Kontrak" class="text-danger"></span>
+    </div>
+
+
+
+<div class="form-group">
+    <label for="Amandemen_Nilai">Amandemen Nilai</label>
+    <div id="formatted_Amandemen_Nilai" class="text-primary font-weight-bold"></div>
+    <input asp-for="Amandemen_Nilai" type="number" class="form-control" required id="Amandemen_Nilai" />
+    <span asp-validation-for="Amandemen_Nilai" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label for="Total_Nilai_Kontrak">Total Nilai Kontrak</label>
+    <div id="formatted_Total_Nilai_Kontrak" class="text-primary font-weight-bold"></div>
+    <input asp-for="Total_Nilai_Kontrak" type="number" step="0.01" class="form-control" required id="Total_Nilai_Kontrak" />
+    <span asp-validation-for="Total_Nilai_Kontrak" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label for="Nilai_Tagihan">Nilai Tagihan</label>
+    <div id="formatted_Nilai_Tagihan" class="text-primary font-weight-bold"></div>
+    <input asp-for="Nilai_Tagihan" type="number" step="0.01" class="form-control" required id="Nilai_Tagihan" />
+    <span asp-validation-for="Nilai_Tagihan" class="text-danger"></span>
+</div>
+
+<script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatCurrency(value) {
+        if (!value) return ""; // Jika kosong, kembalikan string kosong
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Fungsi untuk memperbarui label currency
+    function updateCurrencyLabel(input, labelId) {
+        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+        const formattedValue = formatCurrency(value); // Format angka
+        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+    }
+
+    // Daftar input yang akan diformat
+    const inputs = [
+        {
+            input: document.getElementById("Amandemen_Nilai"),
+            labelId: "formatted_Amandemen_Nilai"
+        },
+        {
+            input: document.getElementById("Total_Nilai_Kontrak"),
+            labelId: "formatted_Total_Nilai_Kontrak"
+        },
+        {
+            input: document.getElementById("Nilai_Tagihan"),
+            labelId: "formatted_Nilai_Tagihan"
+        }
+    ];
+
+    // Tambahkan event listener untuk memperbarui label
+    inputs.forEach(({ input, labelId }) => {
+        input.addEventListener("input", function () {
+            updateCurrencyLabel(this, labelId);
+        });
+
+        // Perbarui label saat halaman dimuat
+        updateCurrencyLabel(input, labelId);
+    });
+</script>
+
+
+
+  <button type="button" class="btn btn-primary" id="saveButton">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+

@@ -1,0 +1,188 @@
+@model Plan.Models.Timelineok
+
+@{
+    ViewData["Title"] = "Monitoring Project";
+}
+
+
+
+<form asp-action="Create" enctype="multipart/form-data" method="post" id="terminform">
+    @Html.AntiForgeryToken()
+
+
+
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <div class="input-group">
+            <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly required />
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#kodeProjectModal">Pilih</button>
+            </div>
+        </div>
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog" aria-labelledby="kodeProjectModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Table -->
+                    <table id="kodeProjectTable" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kode Project</th>
+                                <th>Pekerjaan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTables
+            var projects = @Html.Raw(ViewBag.KodeProjects);
+
+            // Dynamically populate table rows
+            projects.forEach(function (project) {
+                $('#kodeProjectTable tbody').append(
+                    '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
+                    '<td>' + project.Kode_Project + '</td>' +
+                    '<td>' + project.Pekerjaan + '</td>' +
+                    '</tr>'
+                );
+            });
+
+            // Initialize DataTable with search and pagination enabled
+            var table = $('#kodeProjectTable').DataTable({
+                order: [] // Disable initial ordering
+            });
+
+
+            // Bind event to select the project code
+            $('#kodeProjectTable').on('click', '.selectable-row', function () {
+                var kodeProject = $(this).data('kode');
+                $('#Kode_Project').val(kodeProject);
+            });
+        });
+    </script>
+
+
+
+    <div class="form-group">
+        <label asp-for="Task" class="control-label"></label>
+        <select asp-for="Task" class="form-control" id="Task" asp-items="ViewBag.Task" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Task" class="text-danger"></span>
+    </div>
+
+
+
+    <div class="form-group">
+        <label asp-for="Pic" class="control-label"></label>
+        <select asp-for="Pic" class="form-control" id="Pic" asp-items="ViewBag.PicStatusKontrak" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Pic" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Tanggal">Tanggal</label>
+        <input type="date" asp-for="Tanggal" class="form-control" required>
+        <span asp-validation-for="Tanggal" class="text-danger"></span>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <label for="Dokumen">Dokumen</label>
+        <input type="file" name="dokumenFile" class="form-control" accept=".pdf" id="dokumenInput" />
+        <span asp-validation-for="Dokumen" class="text-danger"></span>
+         <span id="fileError" class="text-danger" style="display: none;">Hanya file PDF yang diperbolehkan!</span>
+    </div>
+
+
+
+    <div class="form-group">
+        <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
+        <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan"
+            asp-items="ViewBag.Resume" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
+    </div>
+
+
+
+    <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+
+
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("terminform").submit();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    document.getElementById("dokumenInput").addEventListener("change", function () {
+        const fileInput = this;
+        const saveButton = document.getElementById("saveButton");
+        const fileError = document.getElementById("fileError");
+        const file = fileInput.files[0];
+
+        if (file) {
+            const fileType = file.type;
+            if (fileType === "application/pdf") {
+                saveButton.disabled = false; // Enable the Save button
+                fileError.style.display = "none"; // Hide the error message
+            } else {
+                fileError.style.display = "block"; // Show the error message
+                saveButton.disabled = true; // Disable the Save button
+                fileInput.value = ""; // Clear the input
+            }
+        } else {
+            saveButton.disabled = true; // Disable the Save button if no file is selected
+            fileError.style.display = "none"; // Hide the error message
+        }
+    });
+</script>

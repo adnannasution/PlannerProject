@@ -1,0 +1,94 @@
+@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Detail Fase Tender";
+}
+
+
+
+<table class="table table-striped table-responsive" id="tabelku">
+    <thead>
+        <tr>
+         
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+               <th>Tanggal SLA/Timeline</th>
+            <th>No Vendor</th>
+            <th>Pelaksana</th>
+            <th>PO OA</th>
+            <th>PO SR</th>
+            <th>PO RO</th>
+            <th>PR OA</th>
+            <th>PR MT</th>
+            <th>PR SR</th>
+            <th>Nomor SP3MK</th>
+            <th>Nilai Purchasing Order</th>
+            <th>Nilai Purchasing Request</th>
+            <th>Durasi MPL</th>
+            <th>Bulan</th>
+            <th>Otorisasi</th>
+            <th>Notif</th>
+            <th>Buyer</th>
+            <th>Status Pekerjaan</th>
+            <th>Task</th>
+            <th>PIC</th>
+         
+            <th>Target</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+            
+                <td>@item.Kode_Project</td>
+                 <td>@item.Pekerjaan</td>
+                  <td><b>@item.Tanggal.ToString("dd-MM-yyyy")</b></td>
+                <td>@item.No_Vendor</td>
+                <td>@item.Pelaksana</td>
+                <td>@item.PO_OA</td>
+                <td>@item.PO_SR</td>
+                <td>@item.PO_RO</td>
+                <td>@item.PR_OA</td>
+                <td>@item.PR_MT</td>
+                <td>@item.PR_SR</td>
+                <td>@item.Nomor_SP3MK</td>
+                <td>@item.Nilai_Purchasing_Order</td>
+                <td>@item.Nilai_Purchasing_Request</td>
+                <td>@item.Durasi_Masa_Penyelesaian_MPL</td>
+                <td>@item.Bulan</td>
+                <td>@item.Otorisasi</td>
+                <td>@item.Notif</td>
+                <td>@item.Buyer</td>
+                <td>@item.ResumeStatusPekerjaan</td>
+                <td>@item.Task</td>
+                <td>@item.Pic</td>
+              
+                <td>@item.Target?.ToString("dd-MM-yyyy")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Index", "Home2")" class="btn btn-primary">Kembali ke Dashboard</a>
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+    }

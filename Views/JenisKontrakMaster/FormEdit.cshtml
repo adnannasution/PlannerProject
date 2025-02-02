@@ -1,0 +1,21 @@
+@model Plan.Models.JenisKontrakMaster
+
+
+@{
+    ViewData["Title"] = "Jenis kontrak Master";
+
+    ViewData["Title1"] = "Jenis Kontrak Master";
+    ViewData["Title2"] = "Edit";
+
+}
+
+<form asp-action="Edit">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Jenis" class="control-label"></label>
+        <input asp-for="Jenis" class="form-control" />
+        <span asp-validation-for="Jenis" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

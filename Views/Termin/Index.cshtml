@@ -1,0 +1,174 @@
+@model List<TerminDetailViewModel>
+
+@{
+    ViewData["Title"] = "Termin List";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+@* @{
+    var uniqueProjects = new HashSet<string>();
+    var groupedItems = Model.GroupBy(x => x.Kode_Project);
+}
+
+<table class="table table-bordered table-striped" id="termintable">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Total Nilai Tagihan</th>
+            <th>Nilai Purchasing Order Terakhir</th>
+            <th>Persentase Nilai Tagihan</th>
+            <th>Persentase Sisa Kontrak</th>
+            <th>Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in groupedItems)
+        {
+            var totalNilaiTagihan = group.Sum(x => x.Nilai_Tagihan);
+            var nilaiPurchasingOrderTerakhir = group.OrderByDescending(x => x.Id).FirstOrDefault()?.Nilai_Purchasing_Order ?? 0;
+            var persentaseNilaiTagihan = nilaiPurchasingOrderTerakhir > 0 
+                ? (totalNilaiTagihan / nilaiPurchasingOrderTerakhir) * 100 
+                : 0;
+            var persentaseSisaKontrak = 100 - persentaseNilaiTagihan;
+            var pekerjaan = group.FirstOrDefault()?.Pekerjaan; // Ambil Pekerjaan dari item pertama dalam grup
+
+            <tr>
+                <td>@group.Key</td>
+                <td>@pekerjaan</td>
+                <td>@totalNilaiTagihan.ToString("N0")</td>
+                <td>@nilaiPurchasingOrderTerakhir.ToString("N0")</td>
+                <td>@persentaseNilaiTagihan.ToString("N2") %</td>
+                <td>@persentaseSisaKontrak.ToString("N2") %</td>
+                <td><a asp-action="Detail" asp-route-kode_project="@group.Key" class="btn btn-info btn-sm">Detail</a></td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+
+
+
+
+@{
+    var uniqueProjects = new HashSet<string>();
+    var groupedItems = Model.GroupBy(x => x.Kode_Project);
+
+    // Get the Disiplin claim from the user's claims
+    var disiplinClaim = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+}
+
+<table class="table table-bordered table-striped" id="termintable">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Pekerjaan</th>
+            <th>Total Nilai Tagihan</th>
+            <th>Nilai Purchasing Order Terakhir</th>
+            <th>Persentase Nilai Tagihan</th>
+            <th>Persentase Sisa Kontrak</th>
+            <th>Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var group in groupedItems)
+{
+    // Filter berdasarkan klaim Disiplin dan Kode_Project
+    if (string.IsNullOrEmpty(disiplinClaim) || disiplinClaim == "All" || group.Key.Split('/')[2].Equals(disiplinClaim, StringComparison.OrdinalIgnoreCase))
+    {
+                var totalNilaiTagihan = group.Sum(x => x.Nilai_Tagihan);
+                var nilaiPurchasingOrderTerakhir = group.OrderByDescending(x => x.Id).FirstOrDefault()?.Nilai_Purchasing_Order ?? 0;
+                var persentaseNilaiTagihan = nilaiPurchasingOrderTerakhir > 0 
+                    ? (totalNilaiTagihan / nilaiPurchasingOrderTerakhir) * 100 
+                    : 0;
+                var persentaseSisaKontrak = 100 - persentaseNilaiTagihan;
+                var pekerjaan = group.FirstOrDefault()?.Pekerjaan; // Ambil Pekerjaan dari item pertama dalam grup
+
+                <tr>
+                    <td>@group.Key</td>
+                    <td>@pekerjaan</td>
+                    <td>@totalNilaiTagihan.ToString("N0")</td>
+                    <td>@nilaiPurchasingOrderTerakhir.ToString("N0")</td>
+                    <td>@persentaseNilaiTagihan.ToString("N2") %</td>
+                    <td>@persentaseSisaKontrak.ToString("N2") %</td>
+                    <td><a asp-action="Detail" asp-route-kode_project="@group.Key" class="btn btn-info btn-sm">Detail</a></td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#termintable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, 
+                order: [],// Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

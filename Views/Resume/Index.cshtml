@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Resume Nilai Tagihan";
+
+
+
+        ViewData["Title1"] = "Resume";
+    ViewData["Title2"] = "Data";
+}
+
+
+
+<table class="table table-bordered table-striped" id="resumetable">
+    <thead>
+        <tr>
+            <th>Disiplin</th>
+            <th>Total Nilai Tagihan</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.ResumeData)
+        {
+            <tr>
+                <td>@item.Disiplin</td>
+                <td>@item.TotalTagihan.ToString("N0")</td>
+                <td>
+                    <a asp-action="Details" asp-route-disiplin="@item.Disiplin" class="btn btn-info btn-sm">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#resumetable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+}

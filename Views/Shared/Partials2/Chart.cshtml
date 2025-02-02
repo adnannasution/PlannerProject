@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Pie Chart Kategori Kontrak";
+}
+
+<!-- Dropdown Tahun -->
+<select id="tahunDropdown" onchange="updateChart()" class="form-control">
+    <!-- Tahun akan diisi secara otomatis -->
+</select>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Mendapatkan elemen dropdown tahun
+    var tahunDropdown = document.getElementById("tahunDropdown");
+
+    // Mendapatkan tahun berjalan
+    var currentYear = new Date().getFullYear();
+
+    // Menentukan tahun yang ingin ditampilkan
+    var startYear = currentYear - 2; // Dua tahun sebelumnya
+    var endYear = currentYear + 2;   // Dua tahun yang akan datang
+
+    // Menambahkan opsi tahun ke dropdown
+    for (var year = startYear; year <= endYear; year++) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        tahunDropdown.appendChild(option);
+    }
+
+    // Set default tahun berjalan sebagai yang terpilih
+    tahunDropdown.value = currentYear;
+});
+</script>
+
+<!-- Canvas untuk chart -->
+<canvas id="kategoriKontrakChart" width="400" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global variable untuk menyimpan instance chart
+    var kategoriKontrakChart = null;
+
+    // Fungsi untuk update chart berdasarkan tahun yang dipilih
+    function updateChart() {
+        var tahun = document.getElementById('tahunDropdown').value;
+        fetch('@Url.Action("GetKategoriKontrakData", "Home2")' + '?tahun=' + tahun)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // Ganti nilai null dengan 'Tidak Diketahui' untuk kategoriKontrak
+                    var labels = data.map(d => d.kategoriKontrak || 'Tidak Diketahui');
+                    var counts = data.map(d => d.count);
+
+                    // Hapus chart lama jika ada
+                    if (kategoriKontrakChart) {
+                        kategoriKontrakChart.destroy();
+                    }
+
+                    var ctx = document.getElementById('kategoriKontrakChart').getContext('2d');
+                    kategoriKontrakChart = new Chart(ctx, {
+                        type: 'doughnut', // Jenis chart (doughnut)
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Kategori Kontrak',
+                                data: counts,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132)',
+                                    'rgba(54, 162, 235)',
+                                    'rgba(255, 206, 86)',
+                                    'rgba(75, 192, 192)',
+                                    'rgba(153, 102, 255)',
+                                    'rgba(255, 159, 64)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1,
+                                    barThickness: 30, // Atur ketebalan bar
+                                    maxBarThickness: 30 // Atur ketebalan maksimum bar
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                                  cutout: '70%', // Atur besar lubang di tengah (persentase dari radius
+                            plugins: {
+                                legend: {
+                                    position: 'left', // Memindahkan legend ke kiri
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            var label = context.label || '';
+                                            var value = context.raw || 0;
+                                            return label + ': ' + value;
+                                        }
+                                    }
+                                }
+                            },
+                            onClick: function (evt, item) {
+                                if (item.length > 0) {
+                                    var index = item[0].index; // Mendapatkan indeks kategori yang diklik
+                                    var kategoriKontrak = labels[index]; // Nama kategori berdasarkan indeks
+                                    // Redirect ke halaman detail dengan kategori kontrak
+window.location.href = '@Url.Action("DetailKategoriKontrak", "Home2")' + '?kategori=' + encodeURIComponent(kategoriKontrak) + '&tahun=' + document.getElementById("tahunDropdown").value;
+
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    //alert("Data tidak tersedia");
+                }
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                //alert("Terjadi kesalahan saat memuat data.");
+            });
+    }
+
+    // Panggil fungsi updateChart ketika halaman pertama kali dimuat
+    document.addEventListener("DOMContentLoaded", function () {
+        updateChart();
+    });
+</script>

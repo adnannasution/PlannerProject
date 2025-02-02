@@ -1,0 +1,16 @@
+@model Plan.Models.OtorisasiKontrakMaster
+
+@{
+    ViewData["Title"] = "Otorisasi";
+}
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Otorisasi"></label>
+        <input asp-for="Otorisasi" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

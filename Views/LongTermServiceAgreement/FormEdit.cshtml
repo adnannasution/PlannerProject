@@ -1,0 +1,178 @@
+@model Plan.Models.LongTermServiceAgreement
+
+@{
+    ViewData["Title"] = "Edit Long-Term Service Agreement";
+}
+
+
+
+
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+
+  <input asp-for="Id" class="form-control" type="hidden" />
+
+     <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+    <div class="form-group">
+        <label for="No">No</label>
+        <input type="text" class="form-control" id="No" asp-for="No" required />
+    </div>
+    <div class="form-group">
+        <label for="Pekerjaan">Pekerjaan</label>
+        <input type="text" class="form-control" id="Pekerjaan" asp-for="Pekerjaan" />
+    </div>
+    <div class="form-group">
+        <label for="SpNo">SP No</label>
+        <input type="text" class="form-control" id="SpNo" asp-for="SpNo" />
+    </div>
+    <div class="form-group">
+        <label for="PoNo">PO No</label>
+        <input type="text" class="form-control" id="PoNo" asp-for="PoNo" />
+    </div>
+    <div class="form-group">
+        <label for="MulaiPekerjaan">Mulai Pekerjaan</label>
+        <input type="date" class="form-control" id="MulaiPekerjaan" asp-for="MulaiPekerjaan" required />
+    </div>
+    <div class="form-group">
+        <label for="SelesaiPekerjaan">Selesai Pekerjaan</label>
+        <input type="date" class="form-control" id="SelesaiPekerjaan" asp-for="SelesaiPekerjaan" required />
+    </div>
+    <div class="form-group">
+        <label for="Pemborong">Pemborong</label>
+        <input type="text" class="form-control" id="Pemborong" asp-for="Pemborong" />
+    </div>
+    <div class="form-group">
+        <label for="Uraian">Uraian</label>
+        <textarea class="form-control" id="Uraian" asp-for="Uraian"></textarea>
+    </div>
+<div class="form-group">
+    <label for="NilaiKontrak">Nilai Kontrak</label>
+    <div id="formatted_NilaiKontrak" class="text-primary font-weight-bold"></div>
+    <input type="number" class="form-control" id="NilaiKontrak" asp-for="NilaiKontrak" step="0.01" />
+    <span asp-validation-for="NilaiKontrak" class="text-danger"></span>
+</div>
+    <div class="form-group">
+        <label for="NilaiKontrak_Persen">Nilai Kontrak (%)</label>
+        <input type="number" class="form-control" id="NilaiKontrak_Persen" asp-for="NilaiKontrak_Persen" step="0.01" />
+    </div>
+
+              </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+<div class="form-group">
+    <label for="TagihanSebelumnya">Tagihan Sebelumnya</label>
+    <div id="formatted_TagihanSebelumnya" class="text-primary font-weight-bold"></div>
+    <input type="number" class="form-control" id="TagihanSebelumnya" asp-for="TagihanSebelumnya" step="0.01" />
+    <span asp-validation-for="TagihanSebelumnya" class="text-danger"></span>
+</div>
+    <div class="form-group">
+        <label for="TagihanSebelumnya_Persen">Tagihan Sebelumnya (%)</label>
+        <input type="number" class="form-control" id="TagihanSebelumnya_Persen" asp-for="TagihanSebelumnya_Persen" step="0.01" />
+    </div>
+
+<div class="form-group">
+    <label for="TagihanII">Tagihan II</label>
+    <div id="formatted_TagihanII" class="text-primary font-weight-bold"></div>
+    <input type="number" class="form-control" id="TagihanII" asp-for="TagihanII" step="0.01" />
+    <span asp-validation-for="TagihanII" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="TagihanII_Persen">Tagihan II (%)</label>
+        <input type="number" class="form-control" id="TagihanII_Persen" asp-for="TagihanII_Persen" step="0.01" />
+    </div>
+<div class="form-group">
+    <label for="Akumulasi">Akumulasi</label>
+    <div id="formatted_Akumulasi" class="text-primary font-weight-bold"></div>
+    <input type="number" class="form-control" id="Akumulasi" asp-for="Akumulasi" step="0.01" />
+    <span asp-validation-for="Akumulasi" class="text-danger"></span>
+</div>
+    <div class="form-group">
+        <label for="Akumulasi_Persen">Akumulasi (%)</label>
+        <input type="number" class="form-control" id="Akumulasi_Persen" asp-for="Akumulasi_Persen" step="0.01" />
+    </div>
+<div class="form-group">
+    <label for="SisaKontrak">Sisa Kontrak</label>
+    <div id="formatted_SisaKontrak" class="text-primary font-weight-bold"></div>
+    <input type="number" class="form-control" id="SisaKontrak" asp-for="SisaKontrak" step="0.01" />
+    <span asp-validation-for="SisaKontrak" class="text-danger"></span>
+</div>
+    <div class="form-group">
+        <label for="SisaKontrak_Persen">Sisa Kontrak (%)</label>
+        <input type="number" class="form-control" id="SisaKontrak_Persen" asp-for="SisaKontrak_Persen" step="0.01" />
+    </div>
+    <div class="form-group">
+        <label for="Status">Status</label>
+        <input type="text" class="form-control" id="Status" asp-for="Status" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+                    </div>
+    </div>
+</div>
+
+</form>
+
+
+
+<script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatCurrency(value) {
+        if (!value) return ""; // Jika kosong, kembalikan string kosong
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Fungsi untuk memperbarui label currency
+    function updateCurrencyLabel(input, labelId) {
+        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+        const formattedValue = formatCurrency(value); // Format angka
+        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+    }
+
+    // Daftar input yang akan diformat
+    const inputs = [
+        {
+            input: document.getElementById("NilaiKontrak"),
+            labelId: "formatted_NilaiKontrak"
+        },
+        {
+            input: document.getElementById("TagihanSebelumnya"),
+            labelId: "formatted_TagihanSebelumnya"
+        },
+        {
+            input: document.getElementById("TagihanII"),
+            labelId: "formatted_TagihanII"
+        },
+        {
+            input: document.getElementById("Akumulasi"),
+            labelId: "formatted_Akumulasi"
+        },
+        {
+            input: document.getElementById("SisaKontrak"),
+            labelId: "formatted_SisaKontrak"
+        }
+    ];
+
+    // Tambahkan event listener untuk memperbarui label
+    inputs.forEach(({ input, labelId }) => {
+        input.addEventListener("input", function () {
+            updateCurrencyLabel(this, labelId);
+        });
+
+        // Perbarui label saat halaman dimuat
+        updateCurrencyLabel(input, labelId);
+    });
+</script>

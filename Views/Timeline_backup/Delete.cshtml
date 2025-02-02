@@ -1,0 +1,24 @@
+@model Plan.Models.Timeline
+
+@{
+    ViewData["Title"] = "Delete Timeline";
+}
+
+<h2>Delete Timeline</h2>
+
+<div>
+    <h3>Are you sure you want to delete this?</h3>
+
+    <div class="form-group">
+        <label><strong>Memo Turun:</strong></label> @Model.Memo_turun
+    </div>
+    @* Lanjutkan untuk semua kolom lainnya *@
+    <div class="form-group">
+        <label><strong>Dokumen DP3 Paket:</strong></label> @Model.Mengirim_dokumen_DP3_Paket_via_P_Office
+    </div>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

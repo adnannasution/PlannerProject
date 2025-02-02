@@ -1,0 +1,24 @@
+@model Plan.Models.DisiplinMaster
+
+@{
+    ViewData["Title"] = "DisiplinMaster";
+
+        ViewData["Title1"] = "Disiplin Master";
+    ViewData["Title2"] = "Edit";
+
+}
+
+
+
+<form asp-action="Edit">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Disiplin" class="control-label"></label>
+        <input asp-for="Disiplin" class="form-control" />
+        <span asp-validation-for="Disiplin" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

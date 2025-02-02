@@ -1,0 +1,26 @@
+@model Plan.Models.TaskMaster
+
+@{
+    ViewData["Title"] = "Edit Task";
+}
+
+
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+     <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label for="Task">Task</label>
+        <input type="text" asp-for="Task" class="form-control" />
+        <span asp-validation-for="Task" class="text-danger"></span>
+    </div>
+
+        <div class="form-group">
+        <label for="Task">SLA</label>
+        <input type="text" asp-for="Sla" class="form-control" />
+        <span asp-validation-for="Sla" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

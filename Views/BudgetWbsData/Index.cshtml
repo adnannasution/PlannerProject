@@ -1,0 +1,118 @@
+@model IEnumerable<Plan.Models.BudgetWbsData>
+
+@{
+    ViewData["Title"] = "Budget WBS List";
+}
+
+
+
+<a asp-action="Create" class="btn btn-primary">Create New</a>
+<br><br>
+<table class="table table-bordered table-striped mt-3" id="tabelku">
+    <thead>
+        <tr>
+            
+            <th>Jenis Biaya</th>
+            <th>Tahun</th>
+            <th>Budget WBS</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+               
+                <td>@item.JenisBiaya</td>
+                <td>@item.Tahun</td>
+                <td>@item.BudgetWbs.ToString("N0")</td>
+                <td>
+
+<form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@item.Id" />
+    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+</form>
+
+<form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, 
+                order: [],// Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

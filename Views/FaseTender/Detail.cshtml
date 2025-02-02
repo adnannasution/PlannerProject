@@ -1,0 +1,123 @@
+@model Plan.Models.FaseTender
+
+@{
+    ViewData["Title"] = "Detail Fase Tender";
+}
+
+<div class="container">
+  
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Kode_Project" class="control-label"></label>
+                <p class="form-control-static">@Model.Kode_Project</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="No_Vendor" class="control-label">No Vendor</label>
+                <p class="form-control-static">@Model.No_Vendor</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Pelaksana" class="control-label">Pelaksana</label>
+                <p class="form-control-static">@Model.Pelaksana</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PO_OA" class="control-label">PO OA</label>
+                <p class="form-control-static">@Model.PO_OA</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PO_SR" class="control-label">PO SR</label>
+                <p class="form-control-static">@Model.PO_SR</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PO_RO" class="control-label">PO RO</label>
+                <p class="form-control-static">@Model.PO_RO</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PR_OA" class="control-label">PR OA</label>
+                <p class="form-control-static">@Model.PR_OA</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PR_MT" class="control-label">PR MT</label>
+                <p class="form-control-static">@Model.PR_MT</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PR_SR" class="control-label">PR SR</label>
+                <p class="form-control-static">@Model.PR_SR</p>
+                <hr />
+            </div>
+        </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Nomor_SP3MK" class="control-label">Nomor SP3MK</label>
+                <p class="form-control-static">@Model.Nomor_SP3MK</p>
+                <hr />
+            </div>
+
+<div class="form-group">
+    <label asp-for="Nilai_Purchasing_Order" class="control-label">Nilai Purchasing Order</label>
+    <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Order)</p>
+    <hr />
+</div>
+
+<div class="form-group">
+    <label asp-for="Nilai_Purchasing_Request" class="control-label">Nilai Purchasing Request</label>
+    <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Request)</p>
+    <hr />
+</div>
+
+
+            <div class="form-group">
+                <label asp-for="Durasi_Masa_Penyelesaian_MPL" class="control-label">Durasi Masa Penyelesaian MPL</label>
+                <p class="form-control-static">@Model.Durasi_Masa_Penyelesaian_MPL</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Bulan" class="control-label">Bulan</label>
+                <p class="form-control-static">@Model.Bulan</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Otorisasi" class="control-label"></label>
+                <p class="form-control-static">@Model.Otorisasi</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Notif" class="control-label">Notif</label>
+                <p class="form-control-static">@Model.Notif</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Buyer" class="control-label">Buyer</label>
+                <p class="form-control-static">@Model.Buyer</p>
+                <hr />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

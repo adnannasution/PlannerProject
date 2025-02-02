@@ -1,0 +1,337 @@
+@{
+    ViewData["Title"] = "Dashboard";
+       var disiplinClaim = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+}
+
+
+ @if (disiplinClaim != "All")
+    {
+        <script type="text/javascript">
+            window.location.href = '@Url.Action("Index", "Home2")'; // Redirect ke Home2 controller
+        </script>
+    }
+
+
+<div class="container">
+
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <select id="yearDropdown" class="form-control w-100 mx-auto">
+            <!-- Tahun akan diisi secara otomatis -->
+        </select>
+    </div>
+</div>
+
+
+<div class="row mb-3 container" style="width: 100%">
+    <!-- Card untuk data dashboard -->
+    <div  style="width: 20%;">
+        
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Jumlah On Progress</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text" id="jumlahAman">Loading...</p>
+            </div>
+        </div>
+         
+    </div>
+    <div class="ml-1" style="width: 20%;">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Jumlah Overdue</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text" id="jumlahTerlambat">Loading...</p>
+            </div>
+        </div>
+    </div>
+    <div class="ml-1" style="width: 20%;">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Jumlah Selesai</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text" id="jumlahSelesai">Loading...</p>
+            </div>
+        </div>
+    </div>
+    <div class="ml-1" style="width: 20%;">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Proyek 6 Bulan Terakhir</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text" id="totalProjectLastSixMonths">Loading...</p>
+            </div>
+        </div>
+    </div>
+    <div class="ml-1" style="width: 18%;">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Total Proyek</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <p class="card-text" id="totalProject">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var yearDropdown = document.getElementById('yearDropdown');
+
+        function updateDashboardData(year) {
+            fetch('@Url.Action("GetDashboardData", "Home")' + '?tahun=' + year)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('jumlahAman').textContent = data.jumlahAman;
+                    document.getElementById('jumlahTerlambat').textContent = data.jumlahTerlambat;
+                    document.getElementById('jumlahSelesai').textContent = data.jumlahSelesai;
+                    document.getElementById('totalProject').textContent = data.totalProject;
+                    document.getElementById('totalProjectLastSixMonths').textContent = data.totalProjectLastSixMonths;
+                })
+                .catch(error => {
+                    console.error("Terjadi kesalahan saat memuat data:", error);
+                });
+        }
+
+        // Set default to current year
+        var currentYear = new Date().getFullYear();
+        updateDashboardData(currentYear);
+
+        // Load year options for dropdown
+        for (var year = currentYear; year >= currentYear - 10; year--) {
+            var option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearDropdown.appendChild(option);
+        }
+
+        // When year is selected, update dashboard data
+        yearDropdown.addEventListener('change', function () {
+            var selectedYear = parseInt(this.value);
+            updateDashboardData(selectedYear);
+        });
+
+
+
+
+
+
+
+
+
+    });
+</script>
+
+
+
+
+
+      @* <div class="row">
+        <!-- Tile 3: Grafik Area Chart -->
+        <div class="col-md-12 card p-2">
+              <h4>List Project</h4>
+<iframe  src="@Url.Action("Index", "Tahapan")" width="100%" height="600" frameborder="0"></iframe>
+        </div>
+    </div> *@
+
+
+
+<div class="row">
+    <!-- Tile 3: Grafik Area Chart -->
+    <div class="col-md-12 card p-2">
+        <h4>List Project</h4>
+        <iframe id="myIframe" src="@Url.Action("Index", "Tahapan")" width="100%" frameborder="0" onload="resizeIframe(this)"  style="overflow-none"></iframe>
+    </div>
+</div>
+
+<script>
+    function resizeIframe(iframe) {
+        if (iframe.contentWindow) {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";
+        }
+    }
+
+    // Terima pesan dari halaman dalam iframe untuk update tinggi
+    window.addEventListener("message", function (event) {
+        if (event.data.iframeHeight) {
+            document.getElementById("myIframe").style.height = event.data.iframeHeight + "px";
+        }
+    }, false);
+</script>
+
+
+
+
+
+<script>
+    // Listen for messages from iframe
+    window.addEventListener('message', function (event) {
+        // Check if the message is for SweetAlert
+        if (event.data.type === 'SHOW_SWEET_ALERT') {
+            Swal.fire({
+                title: event.data.title,
+                html: '<div style="max-height: 70vh; overflow-y: auto; text-align:left">' + event.data.content + '</div>',
+                width: '60%',
+                showCloseButton: true,
+                focusConfirm: false,
+                confirmButtonText: 'Close',
+            });
+        }
+    });
+</script>
+
+
+
+
+<div class="row">
+    <!-- Grafik Memo -->
+    <div class="col-md-6 card p-2">
+        <h4>Memo By Status</h4>
+        @await Html.PartialAsync("Partials/MemoChart")
+    </div>
+
+    <!-- Grafik Disiplin -->
+    <div class="col-md-6 card p-2">
+        <h4>Memo By Disiplin</h4>
+        @await Html.PartialAsync("Partials/MemoDisiplinChart")
+    </div>
+</div>
+
+
+
+    <div class="row">
+        <!-- Tile 1: Card untuk Total Kode Project dan Grafik Direksi -->
+        
+
+                <!-- Grafik Direksi -->
+                <div class="col-md-12 card p-2">
+                    <h4>Direksi</h4>
+             @await Html.PartialAsync("Partials/DireksiChart")
+
+                </div>
+            </div>
+        
+     
+
+    @* <div class="row">
+        <!-- Tile 2: Card untuk Status Kosong dan Grafik Status Kontrak -->
+
+        <!-- Grafik Status Kontrak -->
+        <div class="col-md-6">
+            <div class="card p-2">
+                <h4>Kategori Kontrak</h4>
+            @await Html.PartialAsync("Partials/Chart")
+            </div>
+        </div>
+        <!-- Tile lainnya bisa disusun di sini dengan cara yang sama -->
+        <div class="col-md-6">
+            <div class="card p-2">
+                <h4>Jenis Kontrak</h4>
+            @await Html.PartialAsync("Partials/JenisKontrakChart")
+            </div>
+        </div>
+    </div> *@
+
+
+
+    <div class="row">
+    <!-- Grafik Memo -->
+    <div class="col-md-6 card p-2">
+          <h4>Kategori Kontrak</h4>
+            @await Html.PartialAsync("Partials/Chart")
+    </div>
+
+    <!-- Grafik Disiplin -->
+    <div class="col-md-6 card p-2">
+           <h4>Jenis Kontrak</h4>
+            @await Html.PartialAsync("Partials/JenisKontrakChart")
+    </div>
+</div>
+
+    <div class="row">
+        <!-- Tile 3: Grafik Area Chart -->
+        <div class="col-md-12 card p-2">
+            <h4>Area</h4>
+            @await Html.PartialAsync("Partials/AreaChart")
+        </div>
+    </div>
+
+        <div class="row">
+        <!-- Tile 3: Grafik Area Chart -->
+        <div class="col-md-12 card p-2">
+             <h4>Resume Status Pekerjaan</h4>
+            @await Html.PartialAsync("Partials/ResumeStatusPekerjaanChart")
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+            <div class="row">
+        <!-- Tile 3: Grafik Area Chart -->
+        <div class="col-md-12 card p-2">
+            <h4>Budget & Biaya Realisasi</h4>
+            @await Html.PartialAsync("Partials/WbsChart")
+        </div>
+    </div>
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Mengambil data total Kode Project
+        fetch('@Url.Action("GetTotalKodeProject", "Home")')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalKodeProject').textContent = data;
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                //alert("Terjadi kesalahan saat memuat data.");
+            });
+
+        // Mengambil data total Status Kosong
+        fetch('@Url.Action("GetTotalStatusKosong", "Home")')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalStatusKosong').textContent = data;
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                //alert("Terjadi kesalahan saat memuat data.");
+            });
+
+
+             // Mengambil data total Status Aman
+        fetch('@Url.Action("GetTotalStatusAman", "Home")')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalStatusAman').textContent = data;
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                //alert("Terjadi kesalahan saat memuat data.");
+            });
+
+    });
+</script>
+
+
+
+

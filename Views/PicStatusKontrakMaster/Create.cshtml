@@ -1,0 +1,23 @@
+@model Plan.Models.PicStatusKontrakMaster
+
+@{
+    ViewData["Title"] = "Pic Status Kontrak";
+
+        ViewData["Title1"] = "Pic Status Kontrak";
+    ViewData["Title2"] = "Create";
+
+}
+
+
+
+<form asp-action="Create">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Pic" class="control-label"></label>
+        <input asp-for="Pic" class="form-control" required/>
+        <span asp-validation-for="Pic" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,72 @@
+@model Plan.Models.Timelineok
+
+@{
+    ViewData["Title"] = "Monitoring Project - Edit";
+}
+
+
+
+<form asp-action="Edit" enctype="multipart/form-data" method="post" id="faseform">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label for="Kode_Project">Kode Project</label>
+        <input type="text" asp-for="Kode_Project" class="form-control" readonly />
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+
+
+<div class="form-group">
+    <label asp-for="Task" class="control-label"></label>
+    <select asp-for="Task" class="form-control" id="Task" asp-items="ViewBag.Task"></select>
+    <span asp-validation-for="Task" class="text-danger"></span>
+</div>
+
+
+
+<div class="form-group">
+    <label asp-for="Pic" class="control-label"></label>
+    <select asp-for="Pic" class="form-control" id="Pic" asp-items="ViewBag.PicStatusKontrak"></select>
+    <span asp-validation-for="Pic" class="text-danger"></span>
+</div>
+
+    <div class="form-group">
+        <label for="Tanggal">Tanggal</label>
+        <input type="date" asp-for="Tanggal" class="form-control" />
+        <span asp-validation-for="Tanggal" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Dokumen">Dokumen (current file: <a href="@Model.Dokumen" target="_blank">View</a>)</label>
+        <input type="file" name="dokumenFile" class="form-control" />
+    </div>
+
+    <div class="form-group">
+    <label asp-for="ResumeStatusPekerjaan" class="control-label"></label>
+    <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan" asp-items="ViewBag.Resume"></select>
+    <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
+</div>
+
+    <button type="button" class="btn btn-primary" id="saveButton">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>

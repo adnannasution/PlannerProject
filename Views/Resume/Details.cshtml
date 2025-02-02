@@ -1,0 +1,50 @@
+@using Microsoft.AspNetCore.Http
+
+@{
+        var disiplin = Context.Request.Query["disiplin"].ToString();
+    ViewData["Title"] = "Detail Nilai Tagihan - " +disiplin;
+}
+
+
+
+<table class="table table-bordered table-striped" id="tabelku">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Jenis Termin</th>
+            <th>Nilai Tagihan</th>
+            <th>No WO Tagihan</th>
+            <th>Periode</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.DetailData)
+        {
+            <tr>
+                <td>@item.Kode_Project</td>
+                <td>@item.JenisTermin</td>
+                <td>@item.Nilai_Tagihan.ToString("N0")</td>
+                <td>@item.No_WO_Tagihan</td>
+                <td>@item.Periode.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<br><br>
+
+<a asp-action="Index" class="btn btn-secondary">Back to Resume</a>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>

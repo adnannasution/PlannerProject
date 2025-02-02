@@ -1,0 +1,121 @@
+@model Plan.Models.FaseExecution
+
+@{
+    ViewData["Title"] = "Edit Fase Execution";
+}
+
+
+
+<form asp-action="Edit" method="post" id="faseform">
+  @Html.AntiForgeryToken()
+     <input asp-for="Id" class="form-control" type="hidden"  />
+
+   <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+    <div class="form-group">
+        <label asp-for="Kode_Project" class="control-label"></label>
+        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly />
+        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Start_Date"></label>
+        <input asp-for="Start_Date" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="End_Date_MPL"></label>
+        <input asp-for="End_Date_MPL" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Amandemen_Waktu"></label>
+        <input asp-for="Amandemen_Waktu" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="End_Date"></label>
+        <input asp-for="End_Date" class="form-control" type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Durasi_Kontrak"></label>
+        <input asp-for="Durasi_Kontrak" class="form-control" type="number" />
+    </div>
+
+
+                </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+
+
+
+    <div class="form-group">
+        <label asp-for="Durasi_Aktual_HK"></label>
+        <input asp-for="Durasi_Aktual_HK" class="form-control" type="number" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Date_LKP"></label>
+        <input asp-for="Date_LKP" class="form-control" type="number" />
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="Progress_Fisik"></label>
+        <input asp-for="Progress_Fisik" class="form-control" type="number" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Status_Performance"></label>
+       <select asp-for="Status_Performance" class="form-control">
+    <option value="GOOD">GOOD</option>
+    <option value="UNDER">UNDER</option>
+    <option value="OVER">OVER</option>
+</select>
+
+    </div>
+    <div class="form-group">
+        <label asp-for="Progress_Finansial"></label>
+        <input asp-for="Progress_Finansial" class="form-control" type="number" />
+    </div>
+    <div class="form-group">
+        <label asp-for="LKP_Time_Limit"></label>
+        <input asp-for="LKP_Time_Limit" class="form-control" type="number" />
+    </div>
+     <button type="button" class="btn btn-primary" id="saveButton">Update</button>
+  
+    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+
+
+
+                </div>
+    </div>
+</div>
+
+
+</form>
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

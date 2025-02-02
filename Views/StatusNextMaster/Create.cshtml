@@ -1,0 +1,19 @@
+@model Plan.Models.StatusNextMaster
+
+@{
+    ViewData["Title"] = "Create Status Next Master";
+}
+
+
+
+<form asp-action="Create">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="StatusNext" class="control-label"></label>
+        <input asp-for="StatusNext" class="form-control" required/>
+        <span asp-validation-for="StatusNext" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

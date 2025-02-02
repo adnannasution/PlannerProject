@@ -1,0 +1,176 @@
+@model Plan.Models.User
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+
+
+<form asp-action="Create" id="terminform" method="post" onsubmit="return validatePasswords()">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Nama"></label>
+        <input asp-for="Nama" class="form-control" />
+        <span asp-validation-for="Nama" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Fungsi"></label>
+        <input asp-for="Fungsi" class="form-control" />
+        <span asp-validation-for="Fungsi" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Jabatan"></label>
+        <input asp-for="Jabatan" class="form-control" />
+        <span asp-validation-for="Jabatan" class="text-danger"></span>
+    </div>
+    @* <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div> *@
+
+    <div class="form-group">
+    <label asp-for="Email"></label>
+    <input asp-for="Email" type="email" id="emailInput" class="form-control" />
+         <span asp-validation-for="Email" class="text-danger"></span>
+    <span id="emailError" class="text-danger" style="display: none;">Email must end with pertamina.com</span>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var emailInput = document.getElementById("emailInput");
+        var emailError = document.getElementById("emailError");
+
+        emailInput.addEventListener("input", function () {
+            var emailValue = emailInput.value;
+            if (emailValue && !emailValue.endsWith("pertamina.com")) {
+                emailError.style.display = "block";
+            } else {
+                emailError.style.display = "none";
+            }
+        });
+
+        // Optionally, prevent form submission if validation fails
+        emailInput.form.addEventListener("submit", function (event) {
+            if (!emailInput.value.endsWith("pertamina.com")) {
+                emailError.style.display = "block";
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+
+
+<div class="form-group">
+    <label asp-for="Pass"></label>
+    <div class="input-group">
+        <input asp-for="Pass" type="password" class="form-control" id="Pass" />
+        <div class="input-group-append">
+            <span class="input-group-text" onclick="togglePassword('Pass')">
+                <i class="fas fa-eye" id="togglePassIcon"></i>
+            </span>
+        </div>
+    </div>
+    <span asp-validation-for="Pass" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="RetypePass"></label>
+    <div class="input-group">
+        <input asp-for="RetypePass" type="password" class="form-control" id="RetypePass" />
+        <div class="input-group-append">
+            <span class="input-group-text" onclick="togglePassword('RetypePass')">
+                <i class="fas fa-eye" id="toggleRetypePassIcon"></i>
+            </span>
+        </div>
+    </div>
+    <span asp-validation-for="RetypePass" class="text-danger"></span>
+</div>
+
+
+    <div class="form-group">
+        <label asp-for="Disiplin" class="control-label"></label>
+        <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin" >
+        <option value="All">All</option>
+        </select>
+        <span asp-validation-for="Disiplin" class="text-danger"></span>
+    </div>
+
+    
+
+ 
+<div class="form-group">
+    <label asp-for="Rule"></label>
+    <select asp-for="Rule" class="form-control">
+        <option value="">-- Pilih Rule --</option>
+        <option value="1">Viewer</option>
+        <option value="2">Planner</option>
+        <option value="3">Budgeting</option>
+        <option value="4">Super admin</option>
+        <option value="5">Asisten</option>
+        <option value="6">Asisten Schedulling</option>
+    </select>
+    <span asp-validation-for="Rule" class="text-danger"></span>
+</div>
+
+<button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("terminform").submit();
+            }
+        });
+    });
+</script>
+
+<script>
+    function validatePasswords() {
+        var pass = document.getElementById('Pass').value;
+        var retypePass = document.getElementById('RetypePass').value;
+        
+        if (pass !== retypePass) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Passwords do not match!',
+            });
+            return false; // Prevent form submission
+        }
+        return true; // Allow form submission
+    }
+</script>
+
+<script>
+    function togglePassword(inputId) {
+        var input = document.getElementById(inputId);
+        var icon = input.nextElementSibling.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>

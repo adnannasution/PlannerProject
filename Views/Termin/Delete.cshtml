@@ -1,0 +1,29 @@
+@model Plan.Models.Termin
+
+@{
+    ViewData["Title"] = "Delete Termin";
+}
+
+<h2>Delete Termin</h2>
+
+<h3>Are you sure you want to delete this item?</h3>
+
+<div>
+    <h4>Termin</h4>
+    <dl class="row">
+        <dt class="col-sm-2">JenisTermin</dt>
+        <dd class="col-sm-10">@Model.JenisTermin</dd>
+        <dt class="col-sm-2">Evaluasi Planner</dt>
+        <dd class="col-sm-10">@Model.Evaluasi_Planner</dd>
+        <dt class="col-sm-2">No WO Tagihan</dt>
+        <dd class="col-sm-10">@Model.No_WO_Tagihan</dd>
+        <dt class="col-sm-2">Prosentase Tagihan</dt>
+        <dd class="col-sm-10">@Model.Prosentase_Tagihan</dd>
+    </dl>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

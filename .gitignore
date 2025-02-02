@@ -1,0 +1,22 @@
+# Ignore build folders
+bin/
+obj/
+
+# Ignore user-specific files
+.vs/
+*.user
+*.suo
+
+# Ignore environment files
+appsettings.Development.json
+
+# Ignore NuGet packages
+.nuget/
+packages/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore front-end dependencies (jika ada)
+node_modules/

@@ -1,0 +1,23 @@
+@model Plan.Models.ResumeStatusKontrakMaster
+
+@{
+    ViewData["Title"] = "Resume Status Kontrak";
+
+        ViewData["Title1"] = "Resume Status Kontrak";
+    ViewData["Title2"] = "Create";
+
+}
+
+
+
+<form asp-action="Create">
+  @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Resume" class="control-label"></label>
+        <input asp-for="Resume" class="form-control" />
+        <span asp-validation-for="Resume" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "Pie Chart Jenis Kontrak";
+}
+
+<!-- Dropdown Tahun dengan ID yang berbeda -->
+<select id="tahunDropdownJenisKontrak" onchange="updateChartJenisKontrak()" class="form-control">
+    <!-- Tahun akan diisi secara otomatis -->
+</select>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Mendapatkan elemen dropdown
+    var tahunDropdownJenisKontrak = document.getElementById("tahunDropdownJenisKontrak");
+
+    // Mendapatkan tahun berjalan
+    var currentYear = new Date().getFullYear();
+
+    // Menentukan tahun yang ingin ditampilkan
+    var startYear = currentYear - 2; // Dua tahun sebelumnya
+    var endYear = currentYear + 2;   // Dua tahun yang akan datang
+
+    // Menambahkan opsi tahun ke dropdown
+    for (var year = startYear; year <= endYear; year++) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        tahunDropdownJenisKontrak.appendChild(option);
+    }
+
+    // Set default tahun berjalan sebagai yang terpilih
+    tahunDropdownJenisKontrak.value = currentYear;
+});
+
+</script>
+
+<!-- Canvas untuk chart dengan ID yang berbeda -->
+<canvas id="jenisKontrakChartCanvas" width="400" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<script>
+    // Global variable to store the current chart instance
+    var jenisKontrakChart = null;
+
+    // Fungsi untuk update chart berdasarkan tahun yang dipilih
+    function updateChartJenisKontrak() {
+        var tahun = document.getElementById('tahunDropdownJenisKontrak').value;
+        fetch('@Url.Action("GetJenisKontrakData", "Home")' + '?tahun=' + tahun)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // Ganti nilai null dengan 'Tidak Diketahui' untuk jenisKontrak
+                    var labels = data.map(d => d.jenisKontrak ? d.jenisKontrak : 'Tidak Diketahui');
+                    var counts = data.map(d => d.count);
+
+                    // Jika chart sudah ada, hapus chart sebelumnya
+                    if (jenisKontrakChart) {
+                        jenisKontrakChart.destroy();
+                    }
+
+                    var ctx = document.getElementById('jenisKontrakChartCanvas').getContext('2d');
+                    jenisKontrakChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Jenis Kontrak',
+                                data: counts,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132)',
+                                    'rgba(54, 162, 235)',
+                                    'rgba(255, 206, 86)',
+                                    'rgba(75, 192, 192)',
+                                    'rgba(153, 102, 255)',
+                                    'rgba(255, 159, 64)',
+                                    'rgba(75, 192, 192)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(75, 192, 192, 1)'
+                                ],
+                                borderWidth: 1,
+                                    barThickness: 30, // Atur ketebalan bar
+                                    maxBarThickness: 30 // Atur ketebalan maksimum bar
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                                     cutout: '70%', // Atur besar lubang di tengah (persentase dari radius
+                            plugins: {
+                                legend: {
+                                    position: 'left',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            var label = context.label || '';
+                                            var value = context.raw || 0;
+                                            return label + ': ' + value;
+                                        }
+                                    }
+                                }
+                            },
+                            onClick: function (evt, item) {
+                                if (item.length > 0) {
+                                    var index = item[0].index; // Mendapatkan indeks bar yang diklik
+                                    var jenisKontrak = labels[index]; // Nama jenis kontrak berdasarkan indeks
+                                    // Redirect ke halaman detail dengan kode jenis kontrak
+                                    window.location.href = '@Url.Action("DetailJenisKontrak", "Home")' + '?jenis=' + encodeURIComponent(jenisKontrak) + '&tahun=' + document.getElementById("tahunDropdownJenisKontrak").value;
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Tampilkan pesan jika data kosong
+                   // alert("Data tidak tersedia");
+                }
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan saat memuat data:", error);
+                //alert("Terjadi kesalahan saat memuat data.");
+            });
+    }
+
+    // Panggil fungsi updateChartJenisKontrak ketika halaman pertama kali dimuat
+    document.addEventListener("DOMContentLoaded", function () {
+        updateChartJenisKontrak();
+    });
+</script>

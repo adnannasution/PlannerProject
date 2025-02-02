@@ -1,0 +1,172 @@
+@model IEnumerable<Plan.Models.User>
+
+@{
+    ViewData["Title"] = "User List";
+}
+
+ 
+<a asp-action="Create" class="btn btn-primary">Create New User</a>
+<br><br>
+<table class="table table-striped mt-3 table-bordered" id="termintable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Function</th>
+            <th>Position</th>
+            <th>Disiplin</th>
+            <th>Email</th>
+            <th>Pass</th>
+            <th>Rule</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Nama</td>
+                <td>@user.Fungsi</td>
+                <td>@user.Jabatan</td>
+                <td>@user.Disiplin</td>
+                <td style="text-transform: none;">@user.Email</td>
+                <td style="text-transform: none;" class="password-column" data-password="@user.RetypePass">***</td>
+         <td>
+    @if (user.Rule == "1")
+    {
+        <span class="badge badge-primary">Viewer</span>
+    }
+    else if (user.Rule == "2")
+    {
+        <span class="badge badge-secondary">Planner</span>
+    }
+    else if (user.Rule == "3")
+    {
+        <span class="badge badge-success">Budgeting</span>
+    }
+    else if (user.Rule == "4")
+    {
+        <span class="badge badge-danger">Super Admin</span>
+    }
+    else if (user.Rule == "5")
+    {
+        <span class="badge badge-warning">Asisten</span>
+    }
+        else if (user.Rule == "6")
+    {
+        <span class="badge badge-info">Asisten Schedulling</span>
+    }
+    else
+    {
+        <span class="badge badge-light">Unknown</span>
+    }
+</td>
+
+                <td>
+                    <button class="btn btn-info btn-sm toggle-password">Show</button>
+
+
+<form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@user.Id" />
+    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+</form> 
+
+<form asp-action="Delete" asp-route-id="@user.Id" method="post" style="display:inline;" class="delete-form">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+</form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    document.querySelectorAll('.toggle-password').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var row = button.closest('tr');
+            var passwordCell = row.querySelector('.password-column');
+
+            if (passwordCell.textContent === '***') {
+                passwordCell.textContent = passwordCell.getAttribute('data-password');
+                button.textContent = 'Hide';
+            } else {
+                passwordCell.textContent = '***';
+                button.textContent = 'Show';
+            }
+        });
+    });
+</script>
+
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#termintable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+
+
+
+
+
+     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
+            }
+        });
+    </script>
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tangkap semua form dengan class 'delete-form'
+            const deleteForms = document.querySelectorAll('.delete-form');
+            
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Hentikan pengiriman formulir langsung
+                    event.preventDefault();
+
+                    // Tampilkan SweetAlert untuk konfirmasi
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You won\'t be able to revert this!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Kirim formulir secara manual jika dikonfirmasi
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

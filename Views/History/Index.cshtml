@@ -1,0 +1,66 @@
+@model IEnumerable<Plan.Models.History>
+@{
+    ViewData["Title"] = "History Data";
+            ViewData["Title1"] = "History";
+    ViewData["Title2"] = "Data";
+}
+ 
+<h2>History Data</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<table class="table table-bordered table-striped" id="historytable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Tahun</th>
+            <th>Bulan</th>
+            <th>Minggu</th>
+            <th>Nominal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Tahun</td>
+                <td>@item.Bulan</td>
+                <td>@item.Minggu</td>
+                <td>@item.Nominal.ToString("N0")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+@section Scripts {
+    <!-- Tambahkan library DataTables -->
+
+
+    <script>
+        $(document).ready(function () {
+            $('#historytable').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true, // Aktifkan Sorting
+                columnDefs: [
+                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
+                ]
+            });
+        });
+    </script>
+}

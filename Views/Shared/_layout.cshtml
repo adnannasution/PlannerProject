@@ -1,0 +1,824 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Planning & Scheduling</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<!-- Add the script for xlsx -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<!-- Or for RTL support -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" />
+
+<!-- Scripts -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
+     <script src="~/js/sweetalert2@11.js"></script>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+ @if (!HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+    {
+        <script>
+            window.location.href = '/Login'; 
+        </script>
+    }
+
+
+
+    <style>
+    /* Ensure the sidebar stays fixed */
+    .main-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh; /* Full viewport height */
+        overflow-y: hidden; /* Prevent scrolling inside the sidebar */
+    }
+
+    /* Adjust the content wrapper to account for the fixed sidebar */
+    .content-wrapper {
+        margin-left: 250px; /* Adjust this to the width of your sidebar */
+    }
+
+    /* Enable scrolling only for the main content */
+    .content {
+        overflow-y: auto;
+        height: calc(100vh - 3.5rem); /* Adjust the height minus the navbar height if any */
+    }
+
+    th {
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+        td {
+        text-transform: uppercase;
+    }
+
+            label {
+        text-transform: uppercase;
+    }
+
+</style>
+
+</head>
+<body class="hold-transition sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link"> <i class="nav-icon fas fa-user"></i>
+        
+@if (User.HasClaim(c => c.Type == "Jabatan"))
+        {
+            <span>@User.Claims.FirstOrDefault(c => c.Type == "Jabatan")?.Value</span>
+        
+        }
+
+
+        @if (User.HasClaim(c => c.Type == "Disiplin"))
+        {
+            <span class="badge badge-secondary">@User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value</span>
+        }
+
+        </a>
+      </li>
+   
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Navbar Search -->
+      <li class="nav-item">
+       <span id="currentDate" class="form-control"></span>
+        <div class="navbar-search-block">
+         
+        </div>
+      </li>
+
+
+            <li class="nav-item">
+       <span  class="form-control border-0">
+        <a href="#" class="btn btn-sm" onclick="confirmLogout()">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </a></span>
+        <div class="navbar-search-block">
+         
+        </div>
+      </li>
+
+
+    
+
+<script>
+  // Display Current Date
+  document.getElementById('currentDate').innerText = new Date().toLocaleDateString();
+
+  // SweetAlert for Logout Confirmation
+  function confirmLogout() {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of the application!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('logout-form').submit();
+      }
+    });
+  }
+</script>
+
+
+
+<script>
+    // Array nama hari dalam bahasa Indonesia
+    const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    // Array nama bulan
+    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+    // Ambil tanggal saat ini
+    const now = new Date();
+    const dayName = days[now.getDay()]; // Nama hari
+    const day = now.getDate();         // Tanggal
+    const month = months[now.getMonth()]; // Nama bulan
+    const year = now.getFullYear();    // Tahun
+
+    // Formatkan string hari dan tanggal
+    const formattedDate = `${dayName}, ${day} ${month} ${year}`;
+
+    // Tampilkan di elemen dengan id "currentDate"
+    document.getElementById('currentDate').textContent = formattedDate;
+</script>
+
+
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+
+
+  <!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4" 
+       style="background: linear-gradient(to bottom, #6a0dad, #1e3a8a, #000000);">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-link">
+      <img src="~/image/logo.jpeg" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light"><b>iPLANNER</b></span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"> @if (User.HasClaim(c => c.Type == "Nama"))
+        {
+            <span>@User.Claims.FirstOrDefault(c => c.Type == "Nama")?.Value</span>
+        }</a>
+        </div>
+      </div>
+
+      <!-- SidebarSearch Form -->
+
+
+      <!-- Sidebar Menu -->
+    <nav class="mt-2">
+  <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <!-- HOME -->
+
+
+@{
+    var disiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+    var dashboardUrl = (disiplin == "All") ? "/Home" : "/Home2";
+}
+
+<li class="nav-item">
+    <a href="@dashboardUrl" class="nav-link">
+        <i class="nav-icon fas fa-home"></i>
+        <p>Dashboard</p>
+    </a>
+</li>
+
+
+
+
+    <!-- MASTER HEADER -->
+
+    @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "6"))
+        {
+        <li class="nav-item">
+      <a href="/Irkap" class="nav-link">
+      <i class="nav-icon fas fa-calculator"></i>
+        <p>No Program IRKAP</p>
+      </a>
+    </li>
+
+
+
+    }
+
+    @if (User.HasClaim("Rule", "4"))
+        {
+
+            
+
+   <li class="nav-item">
+  <a href="#" class="nav-link">
+    <i class="nav-icon fas fa-th"></i>
+    <p>
+      Master Menu
+      <i class="right fas fa-angle-left"></i>
+    </p>
+  </a>
+  <ul class="nav nav-treeview">
+
+
+
+    <li class="nav-item">
+      <a href="/AreaMaster" class="nav-link">
+        <i class="fas fa-map-marker-alt nav-icon"></i>
+        <p>Area Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/DisiplinMaster" class="nav-link">
+        <i class="fas fa-user-tie nav-icon"></i>
+        <p>Disiplin Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/KategoriEquipmentMaster" class="nav-link">
+        <i class="fas fa-tools nav-icon"></i>
+        <p>Kategori Eqp Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/StatusKontrakMaster" class="nav-link">
+        <i class="fas fa-file-contract nav-icon"></i>
+        <p>Status Kontrak Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/DireksiMaster" class="nav-link">
+        <i class="fas fa-sitemap nav-icon"></i>
+        <p>Direksi Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/JenisKontrakMaster" class="nav-link">
+        <i class="fas fa-briefcase nav-icon"></i>
+        <p>Jenis Kontrak Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/KategoriMaintenanceMaster" class="nav-link">
+        <i class="fas fa-wrench nav-icon"></i>
+        <p>Kategori Mtc Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/PlannerMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Planner Master</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/StatusNextMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Status Next Kontrak</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/PicStatusKontrakMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Pic Status Kontrak</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/ResumeStatusKontrakMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Resume Status Kontrak</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/KategoriKontrakMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Kategori Kontrak</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/TaskMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Task Master</p>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a href="/OtorisasiKontrakMaster" class="nav-link">
+        <i class="fas fa-calendar-alt nav-icon"></i>
+        <p>Otorisasi Kontrak</p>
+      </a>
+    </li>
+  </ul>
+</li>
+
+    
+     
+
+  
+
+    }
+
+
+    @* @{
+    var jabatanClaim = User.Claims.FirstOrDefault(c => c.Type == "Jabatan")?.Value;
+    var ruleClaim = User.Claims.FirstOrDefault(c => c.Type == "Rule")?.Value;
+
+    var memoUrl = jabatanClaim != null && 
+                  (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
+                   jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase))
+                  ? "/Memo/Tampil"
+                  : "/Memo";
+} *@
+
+
+@{
+    var jabatanClaim = User.Claims.FirstOrDefault(c => c.Type == "Jabatan")?.Value;
+    var ruleClaim = User.Claims.FirstOrDefault(c => c.Type == "Rule")?.Value;
+
+    var memoUrl = "/Memo"; // Default URL
+
+    if (ruleClaim == "2") 
+    {
+        memoUrl = "/Memo/TampilP";
+    }
+    else if (jabatanClaim != null && 
+             (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
+              jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase)))
+    {
+        memoUrl = "/Memo/Tampil";
+    }
+}
+
+
+
+@if ((ruleClaim == "2") || (ruleClaim == "6") || (ruleClaim == "4") || 
+     (jabatanClaim != null && 
+      (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
+       jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase))))
+{
+    <li class="nav-item">
+<a href="@memoUrl" class="nav-link">
+    <i class="nav-icon fas fa-clipboard"></i>
+    <p>Memorandum
+
+
+    @if (
+     (jabatanClaim != null && 
+      (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
+       jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase))))
+    {
+    <span id="memoBadge" class="badge badge-warning rounded-pill" style="display: none;"></span>
+    }
+    
+    @if (ruleClaim == "2") 
+    {
+     <span id="memo-disiplin-badge" class="badge badge-danger rounded-pill" style="display: none;"></span>
+    }
+    
+    </p>
+</a>
+</li>
+}
+
+
+
+<script>
+    function updateMemoBadge() {
+        $.ajax({
+            url: '@Url.Action("GetJumlahMemoBaru", "Memo")',
+            type: 'GET',
+            success: function (data) {
+                if (data > 0) {
+                    $("#memoBadge").text(data).show();
+                } else {
+                    $("#memoBadge").hide();
+                }
+            }
+        });
+    }
+
+    // Jalankan AJAX setiap 10 detik agar selalu update
+    setInterval(updateMemoBadge, 10000);
+
+    // Jalankan saat halaman pertama kali dimuat
+    $(document).ready(function () {
+        updateMemoBadge();
+    });
+</script>
+
+
+
+<script>
+    function updateMemoDisiplinBadge() {
+        $.ajax({
+            url: '@Url.Action("GetJumlahMemoTanpaFase", "Memo")',
+            type: 'GET',
+            success: function (data) {
+                if (data > 0) {
+                    $("#memo-disiplin-badge").text(data).show();
+                } else {
+                    $("#memo-disiplin-badge").hide();
+                }
+            }
+        });
+    }
+
+    // Jalankan AJAX setiap 10 detik agar selalu update
+    setInterval(updateMemoDisiplinBadge, 10000);
+
+    // Jalankan saat halaman pertama kali dimuat
+    $(document).ready(function () {
+        updateMemoDisiplinBadge();
+    });
+</script>
+
+
+
+
+
+
+
+
+    <!-- TRANSACTION HEADER -->
+
+
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+        {
+
+           
+              
+    <li class="nav-item">
+      <a href="/FasePlanning" class="nav-link">
+        <i class="nav-icon fas fa-plus"></i>
+        <p>Planning Project</p>
+      </a>
+    </li>
+    }
+
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+        {
+
+
+    <li class="nav-item">
+      <a href="/Timelineok" class="nav-link">
+        <i class="nav-icon fas fa-clock"></i>
+        <p>Monitoring Project</p>
+      </a>
+    </li>
+
+
+        <li class="nav-item">
+      <a href="/Tahapan/TahapanAll" class="nav-link">
+      <i class="nav-icon fas fa-stream"></i>
+        <p>Timeline</p>
+      </a>
+    </li>
+
+
+ 
+
+    }
+
+
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+        {
+        <li class="nav-item">
+      <a href="/FaseTender" class="nav-link">
+       <i class="nav-icon fas fa-file-contract"></i>
+        <p>Fase Tender</p>
+      </a>
+    </li>
+}
+
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+        {
+
+        <li class="nav-item">
+      <a href="/FaseExecution" class="nav-link">
+        <i class="nav-icon fas fa-cogs"></i>
+        <p>Fase Execution</p>
+      </a>
+    </li>
+
+    }
+
+
+  @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+        {
+           <li class="nav-item">
+      <a href="/Termin" class="nav-link">
+        <i class="nav-icon fas fa-calendar-check"></i>
+        <p>Termin</p>
+      </a>
+    </li>
+    }
+
+
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+        {
+        <li class="nav-item">
+      <a href="/FaseMonitoring" class="nav-link">
+      <i class="nav-icon fas fa-chart-line"></i>
+        <p>Fase Monitoring</p>
+      </a>
+    </li>
+    }
+
+    
+ 
+
+
+ @if (User.HasClaim("Rule", "3") || User.HasClaim("Rule", "4"))
+        {
+
+<li class="nav-item has-treeview">
+  <a href="#" class="nav-link">
+    <i class="nav-icon fas fa-coins"></i>
+    <p>
+      Finance
+      <i class="right fas fa-angle-left"></i>
+    </p>
+  </a>
+  <ul class="nav nav-treeview">
+    <li class="nav-item">
+      <a href="/BudgetWbsData" class="nav-link">
+        <i class="fas fa-file-invoice-dollar nav-icon"></i>
+        <p>Budget WBS</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/WbsData" class="nav-link">
+        <i class="fas fa-chart-line nav-icon"></i>
+        <p>Biaya Realisasi</p>
+      </a>
+    </li>
+  </ul>
+</li>
+
+
+
+    }
+
+
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+        {
+      <li class="nav-item">
+      <a href="/LongTermServiceAgreement" class="nav-link">
+       <i class="nav-icon fas fa-handshake"></i>
+        <p>LTSA</p>
+      </a>
+    </li>
+    }
+
+
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+        {
+     <li class="nav-item">
+      <a href="/Resume" class="nav-link">
+       <i class="nav-icon fas fa-file-alt"></i>
+        <p>Resume Termin</p>
+      </a>
+    </li>
+    }
+
+ 
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+        {
+
+        <li class="nav-item">
+      <a href="/DAM" class="nav-link">
+        <i class="nav-icon fas fa-calendar-alt"></i>
+        <p>DAM</p>
+      </a>
+    </li>
+
+    }
+
+
+@if (User.HasClaim("Rule", "4"))
+        {
+
+<li class="nav-item has-treeview">
+  <a href="#" class="nav-link">
+    <i class="nav-icon fas fa-users-cog"></i>
+    <p>
+      User Management
+      <i class="right fas fa-angle-left"></i>
+    </p>
+  </a>
+  <ul class="nav nav-treeview">
+    <li class="nav-item">
+      <a href="/User" class="nav-link">
+        <i class="fas fa-user nav-icon"></i>
+        <p>User</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="Login/ChangePassword" class="nav-link">
+        <i class="fas fa-key nav-icon"></i>
+        <p>Change Password</p>
+      </a>
+    </li>
+  </ul>
+</li>
+
+
+    }
+
+    
+@if (!User.HasClaim("Rule", "4"))
+        {
+    <li class="nav-item">
+      <a href="Login/ChangePassword" class="nav-link">
+        <i class="nav-icon fas fa-key"></i>
+        <p>Change Password</p>
+      </a>
+    </li>
+    }
+
+
+
+    
+    
+
+<li class="nav-item">
+
+  <form id="logout-form" action="/Login/Logout" method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+  </form>
+</li>
+
+<script>
+  function confirmLogout() {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of the application!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('logout-form').submit();
+      }
+    });
+  }
+</script>
+
+
+  </ul>
+</nav>
+
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    @* <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-1">
+          <div class="col-sm-6">
+            <h4>@ViewData["Title"]</h4>
+          </div>
+          <div class="col-sm-6">
+          
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section> *@
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- Default box -->
+      <div class="card mt-2">
+<div class="card-header" style="background: linear-gradient(to right, #6a0dad, #1e3a8a, #000000);">
+      
+<span class="text-white" style="font-size: large; text-transform: uppercase;">@ViewData["Title"]</span>
+          <div class="card-tools">
+         
+ <button type="button" class="btn btn-tool" data-card-widget="maximize" title="Maximize">
+        <i class="fas fa-expand"></i> <!-- Icon untuk Maximize -->
+    </button>
+          </div>
+        </div>
+        <div class="card-body">
+         
+         
+   
+
+         @RenderBody()
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+  
+        </div>
+        <!-- /.card-footer-->
+      </div>
+      <!-- /.card -->
+
+
+
+
+
+
+
+
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b>Version</b> 1.0
+    </div>
+    <strong><span>PT. Kilang Pertamina Internasional</span></strong>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+
+
+
+<!-- jQuery -->
+<script src="~/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+    <link href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+
+</body>
+</html>

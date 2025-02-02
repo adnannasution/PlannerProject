@@ -1,0 +1,74 @@
+@model Plan.Models.DAM
+
+@{
+    ViewData["Title"] = "Edit Daily Meeting";
+}
+
+
+
+<form asp-action="Edit" method="post">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Area" class="control-label"></label>
+        <input asp-for="Area" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Minggu" class="control-label"></label>
+        <input asp-for="Minggu" class="form-control" />
+    </div>
+<div class="form-group">
+    <label for="Bulan">Bulan</label>
+    <select asp-for="Bulan" class="form-control" id="Bulan">
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
+        <option value="April">April</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
+        <option value="August">August</option>
+        <option value="September">September</option>
+        <option value="October">October</option>
+        <option value="November">November</option>
+        <option value="December">December</option>
+    </select>
+</div>
+    <div class="form-group">
+        <label asp-for="Tahun" class="control-label"></label>
+        <input asp-for="Tahun" class="form-control" type="number" />
+    </div>
+
+    
+        <div class="form-group">
+        <label asp-for="Tagno" class="control-label"></label>
+        <input asp-for="Tagno" class="form-control"  />
+    </div>
+
+        <div class="form-group">
+        <label asp-for="Problem" class="control-label"></label>
+        <input asp-for="Problem" class="form-control"  />
+    </div>
+
+        <div class="form-group">
+        <label asp-for="Pic" class="control-label"></label>
+        <input asp-for="Pic" class="form-control"  />
+    </div>
+
+        <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <input asp-for="Status" class="form-control"  />
+    </div>
+
+            <div class="form-group">
+        <label asp-for="PsAction" class="control-label"></label>
+        <input asp-for="PsAction" class="form-control"  />
+    </div>
+
+
+
+    <div class="form-group mt-2">
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

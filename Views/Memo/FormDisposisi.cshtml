@@ -1,0 +1,62 @@
+@model Plan.Models.Memo
+@{
+    ViewData["Title"] = "Disposisi Memo";
+}
+
+<form asp-action="Disposisi" method="post" enctype="multipart/form-data">
+
+    @Html.AntiForgeryToken()
+
+      <input asp-for="Id" type="hidden" />
+
+    <div class="form-group">
+        <label asp-for="No_Memo_Rekomendasi" class="control-label"></label>
+        <input asp-for="No_Memo_Rekomendasi" class="form-control" readonly/>
+        <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
+    </div>
+
+        <div class="form-group">
+        <label asp-for="Tanggal_Masuk_Memo" class="control-label"></label>
+        <input asp-for="Tanggal_Masuk_Memo" class="form-control" type="date" readonly/>
+        <span asp-validation-for="Tanggal_Masuk_Memo" class="text-danger"></span>
+    </div>
+
+    @* <div class="form-group">
+        <label asp-for="No_Memo_Kirim_Paket" class="control-label"></label>
+        <input asp-for="No_Memo_Kirim_Paket" class="form-control" readonly/>
+        <span asp-validation-for="No_Memo_Kirim_Paket" class="text-danger"></span>
+    </div> *@
+
+
+        <div class="form-group">
+    <label asp-for="Judul" class="control-label"></label>
+    <textarea asp-for="Judul" class="form-control" required readonly></textarea>
+    <span asp-validation-for="Judul" class="text-danger"></span>
+</div>
+
+
+
+
+
+    <div class="form-group">
+        <label asp-for="Email" class="control-label">Disposisi</label>
+        <select asp-for="Email" class="form-control" asp-items="ViewBag.Users" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+<div class="form-group">
+    <label asp-for="KebutuhanKontrak" class="control-label"></label>
+    <select asp-for="KebutuhanKontrak" class="form-control">
+        <option value="">Pilih</option>
+        <option value="Ya">Ya</option>
+        <option value="Tidak">Tidak</option>
+    </select>
+    <span asp-validation-for="KebutuhanKontrak" class="text-danger"></span>
+</div>
+
+
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>

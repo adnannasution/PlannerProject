@@ -1,0 +1,130 @@
+@model List<Plan.Models.FasePlanning>
+
+@{
+    Layout = null; // Jangan gunakan layout untuk permintaan iframe
+    ViewData["Title"] = "List Project";
+}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+<div>
+
+    <table class="table table-bordered table-striped" id="tabelku">
+        <thead class="thead-light">
+            <tr>
+                <th>Kode Project</th>
+                <th>Pekerjaan</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fase in Model)
+            {
+                <tr>
+                    <td>@fase.Kode_Project</td>
+                    <td>@fase.Pekerjaan</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm timeline-btn" data-id="@fase.Kode_Project">
+                            Timeline
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTables
+        $('#tabelku').DataTable({
+            paging: true, // Enable pagination
+            searching: true, // Enable search bar
+            ordering: true,
+            order:[], // Enable column ordering
+            columnDefs: [
+                { orderable: false, targets: 2 } // Disable ordering on the 'Action' column
+            ]
+        });
+    });
+</script>
+
+
+@* <script>
+    $(document).ready(function () {
+        $('.timeline-btn').on('click', function () {
+            var projectId = $(this).data('id');
+
+            // Send AJAX request to fetch timeline data
+            $.ajax({
+                url: '@Url.Action("Timeline", "Tahapan")', // Your controller action
+                type: 'GET',
+                data: { kodeProject: projectId },
+                success: function (data) {
+                    // Send data to the parent window
+                    window.parent.postMessage({
+                        type: 'SHOW_SWEET_ALERT',
+                        title: 'Timeline',
+                        content: data
+                    }, '*');
+                },
+                error: function () {
+                    // Send error message to the parent window
+                    window.parent.postMessage({
+                        type: 'SHOW_SWEET_ALERT',
+                        title: 'Error',
+                        content: 'Failed to load timeline!'
+                    }, '*');
+                }
+            });
+        });
+    });
+</script> *@
+
+<script>
+$(document).on('click', '.timeline-btn', function () {
+    var projectId = $(this).data('id');
+
+    // Send AJAX request to fetch timeline data
+    $.ajax({
+        url: '@Url.Action("Timeline", "Tahapan")', // Panggil action di controller
+        type: 'GET',
+        data: { kodeProject: projectId },
+        success: function (data) {
+            // Kirim data ke parent window (Home)
+            window.parent.postMessage({
+                type: 'SHOW_SWEET_ALERT',
+                title: 'Timeline',
+                content: data
+            }, '*');
+        },
+        error: function () {
+            // Kirim pesan error ke parent window (Home)
+            window.parent.postMessage({
+                type: 'SHOW_SWEET_ALERT',
+                title: 'Error',
+                content: 'Failed to load timeline!'
+            }, '*');
+        }
+    });
+});
+</script>

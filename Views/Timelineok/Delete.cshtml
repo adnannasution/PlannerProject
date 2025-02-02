@@ -1,0 +1,26 @@
+@model Plan.Models.Timelineok
+
+@{
+    ViewData["Title"] = "Timelineok - Delete";
+}
+
+<h1>Delete Timelineok</h1>
+<p>Are you sure you want to delete this record?</p>
+
+<div>
+    <p><strong>Kode Project:</strong> @Model.Kode_Project</p>
+    <p><strong>Task:</strong> @Model.Task</p>
+    <p><strong>Tanggal:</strong> @Model.Tanggal.ToString("dd/MM/yyyy")</p>
+    <p><strong>Dokumen:</strong> 
+        @if (!string.IsNullOrEmpty(Model.Dokumen))
+        {
+            <a href="@Model.Dokumen" target="_blank">View File</a>
+        }
+    </p>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

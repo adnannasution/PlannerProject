@@ -1,0 +1,94 @@
+@model IEnumerable<Plan.Models.TabelSla>
+
+@{
+       var kodeProject = Context.Request.Query["kodeProject"].ToString();
+    ViewData["Title"] = "SLA Records - " + kodeProject;
+}
+
+
+@{
+    // Ambil claim jabatan
+    var jabatan = User.Claims.FirstOrDefault(c => c.Type == "Jabatan")?.Value ?? string.Empty;
+
+    // Cek apakah jabatan mengandung kata SPV, spv, atau Supervisor (case insensitive)
+    var isSupervisor = jabatan.IndexOf("SPV", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                       jabatan.IndexOf("Supervisor", StringComparison.OrdinalIgnoreCase) >= 0;
+}
+
+<a href="javascript:history.back()" class="btn btn-secondary">Back to List</a>
+
+
+
+<table class="table table-bordered mt-2">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Task</th>
+            <th>Target</th>
+            <th>Status</th>
+             @if (isSupervisor)
+                    {
+            <th>Actions</th>
+            } 
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @{
+            int no = 1; // Variabel untuk nomor urut
+        }
+        @foreach (var sla in Model)
+        {
+
+            var targetDate = sla.Target;
+            var today = DateTime.Now;
+
+            // Menentukan status berdasarkan tanggal target
+            var statusClass = "badge-secondary"; // Default
+            var statusText = "On Time";
+
+            if (targetDate < today)
+            {
+                statusClass = "badge-danger"; // Red for overdue
+                statusText = "Overdue";
+            }
+            else if ((targetDate - today).Days <= 3)
+            {
+                statusClass = "badge-warning"; // Yellow for near deadline
+                statusText = "Approaching Deadline";
+            }
+
+            <tr>
+                <td>@no</td>
+                <td>@sla.Task</td>
+                <td>@sla.Target.ToString("dd/MM/yyyy")</td> <!-- Display the Target date -->
+                <td>
+                    <span class="badge @statusClass">@statusText</span>
+                </td> <!-- Status Badge -->
+
+                    @if (isSupervisor)
+                    {
+                <td>
+                    <a asp-action="EditSla" asp-route-id="@sla.Id" class="btn btn-primary btn-sm">Edit</a>
+                </td> <!-- Edit button -->
+                }
+            </tr>
+
+            no++;
+        }
+    </tbody>
+</table>
+
+<style>
+    .badge-danger {
+        background-color: #dc3545;
+    }
+    .badge-warning {
+        background-color: #ffc107;
+    }
+    .badge-secondary {
+        background-color: #6c757d;
+    }
+</style>
+

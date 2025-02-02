@@ -1,0 +1,24 @@
+@model Plan.Models.AreaMaster
+
+@{
+    ViewData["Title"] = "Edit Area Master";
+
+            ViewData["Title1"] = "Area Master";
+    ViewData["Title2"] = "Edit";
+
+}
+
+
+
+<form asp-action="Edit">
+  @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Area" class="control-label"></label>
+        <input asp-for="Area" class="form-control" />
+        <span asp-validation-for="Area" class="text-danger"></span>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

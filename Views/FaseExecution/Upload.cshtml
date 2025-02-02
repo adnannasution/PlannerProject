@@ -1,0 +1,16 @@
+@model Plan.Models.FileUploadViewModel
+
+@{
+    ViewData["Title"] = "Upload Data Fase Execution";
+}
+
+
+
+<form asp-action="Upload" asp-controller="FaseExecution" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="File">Upload File Excel | <a href="~/sample/FaseExecution_Example.xlsx">download template</a></label>
+        <input asp-for="File" type="file" class="form-control" />
+        <span asp-validation-for="File" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>

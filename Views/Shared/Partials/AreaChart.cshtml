@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Bar Chart Area";
+}
+
+<!-- Dropdown untuk memilih tahun -->
+<select id="areaYearSelect" class="form-control">
+    <!-- Tahun akan diisi secara otomatis -->
+</select>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Mendapatkan elemen dropdown
+    var areaYearSelect = document.getElementById("areaYearSelect");
+
+    // Mendapatkan tahun berjalan
+    var currentYear = new Date().getFullYear();
+
+    // Menentukan tahun yang ingin ditampilkan
+    var startYear = currentYear - 2; // Dua tahun sebelumnya
+    var endYear = currentYear + 2;   // Dua tahun yang akan datang
+
+    // Menambahkan opsi tahun ke dropdown
+    for (var year = startYear; year <= endYear; year++) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        areaYearSelect.appendChild(option);
+    }
+
+    // Set default tahun berjalan sebagai yang terpilih
+    areaYearSelect.value = currentYear;
+});
+
+</script>
+
+<!-- Canvas untuk grafik -->
+<canvas id="areaBarChartCanvas" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function loadData(year) {
+            fetch(`@Url.Action("GetAreaData", "Home")?year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var labels = data.map(d => d.area);
+                        var counts = data.map(d => d.count);
+
+                        var ctx = document.getElementById('areaBarChartCanvas').getContext('2d');
+                        if (window.areaChart) {
+                            window.areaChart.destroy();
+                        }
+                        
+                        window.areaChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Jumlah Area',
+                                    data: counts,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132)',
+                                        'rgba(54, 162, 235)',
+                                        'rgba(255, 206, 86)',
+                                        'rgba(75, 192, 192)',
+                                        'rgba(153, 102, 255)',
+                                        'rgba(255, 159, 64)',
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                    ],
+                                    borderWidth: 1,
+                                    barThickness: 30, // Atur ketebalan bar
+                                    maxBarThickness: 30 // Atur ketebalan maksimum bar
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                var label = context.label || '';
+                                                var value = context.raw || 0;
+                                                return label + ': ' + value;
+                                            }
+                                        }
+                                    }
+                                },
+                                onClick: function (evt, item) {
+                                    if (item.length > 0) {
+                                        var index = item[0].index;
+                                        var area = labels[index];
+                                        window.location.href = '@Url.Action("DetailArea", "Home")' + '?area=' + encodeURIComponent(area) + '&tahun=' + document.getElementById("areaYearSelect").value;
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        //alert("Data tidak tersedia");
+                    }
+                })
+                .catch(error => {
+                    console.error("Terjadi kesalahan saat memuat data:", error);
+                    //alert("Terjadi kesalahan saat memuat data.");
+                });
+        }
+
+        document.getElementById('areaYearSelect').addEventListener('change', function() {
+            const year = this.value;
+            loadData(year);
+        });
+
+        loadData(document.getElementById('areaYearSelect').value);
+    });
+</script>

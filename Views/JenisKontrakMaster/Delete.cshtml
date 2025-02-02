@@ -1,0 +1,24 @@
+@model Plan.Models.JenisKontrakMaster
+
+
+@{
+    ViewData["Title"] = "Jenis kontrak Master";
+
+    ViewData["Title1"] = "Jenis Kontrak Master";
+    ViewData["Title2"] = "Delete";
+
+}
+
+
+<h2>Delete Jenis Kontrak</h2>
+<div>
+    <h4>Are you sure you want to delete this?</h4>
+    <div>
+        <strong>@Model.Jenis</strong>
+    </div>
+    <form asp-action="DeleteConfirmed">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

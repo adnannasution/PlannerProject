@@ -1,0 +1,30 @@
+@model List<SlaFaseViewModel>
+
+<h2>Detail On Progress</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Kode Project</th>
+            <th>Task</th>
+            <th>Target</th>
+            <th>Pekerjaan</th>
+            <th>Disiplin</th>
+            <th>Tahun</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Kode_Project</td>
+                <td>@item.Task</td>
+                <td>@item.Target</td>
+                <td>@item.Pekerjaan</td>
+                <td>@item.Disiplin</td>
+                <td>@item.Tahun</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
