@@ -29,9 +29,10 @@
                         Timeline
                     </a> *@
 
- <button class="btn btn-secondary btn-sm" data-toggle="modal" id="yourButtonSelector" data-id="@fase.Kode_Project">
-    Timeline
-</button>
+                <button class="btn btn-secondary btn-sm timeline-btn" data-id="@fase.Kode_Project"
+                        data-memo="@fase.No_Memo_Rekomendasi">
+                        Timeline
+                    </button>
 
                 </td>
             </tr>
@@ -84,12 +85,13 @@
 <script>
     $('#yourButtonSelector').on('click', function (event) {
         var button = $(event.currentTarget);
-        var projectId = button.data('id');
+        var projectId = $(this).data('id'); // Ambil Kode Project dari tombol yang diklik
+        var noMemo = $(this).data('memo'); // Ambil Kode Project dari tombol yang diklik
 
         $.ajax({
             url: '@Url.Action("Timeline", "Tahapan")',
             type: 'GET',
-            data: { kodeProject: projectId },
+            data: { kodeProject: projectId, noMemo: noMemo  },
             success: function (data) {
                 // Use SweetAlert to display the data
                 Swal.fire({

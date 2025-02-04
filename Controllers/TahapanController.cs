@@ -107,16 +107,92 @@ public async Task<IActionResult> TahapanAll()
     // }
 
 
-public IActionResult Timeline(string kodeProject)
+// public IActionResult Timeline(string kodeProject, string noMemo)
+// {
+//     var model = _context.Tahapan.Where(t => t.Kode_Project == kodeProject || t.No_Memo_Rekomendasi==noMemo).ToList();
+//     return PartialView("_TimelinePartial", model);
+// }
+
+// public IActionResult Timeline(string kodeProject, string noMemo)
+// {
+//     var query = _context.Tahapan.AsQueryable();
+
+//     if (!string.IsNullOrEmpty(kodeProject))
+//     {
+//         query = query.Where(t => t.Kode_Project == kodeProject);
+//     }
+
+//     if (!string.IsNullOrEmpty(noMemo))
+//     {
+//         query = query.Where(t => t.No_Memo_Rekomendasi == noMemo);
+//     }
+
+//     var model = query.ToList();
+//     return PartialView("_TimelinePartial", model);
+// }
+
+
+// public IActionResult Timeline(string kodeProject, string noMemo)
+// {
+//     var query = _context.Tahapan.AsQueryable();
+
+//     if (!string.IsNullOrEmpty(kodeProject))
+//     {
+//         query = query.Where(t => t.Kode_Project == kodeProject);
+//     }
+//     else if (!string.IsNullOrEmpty(noMemo))
+//     {
+//         query = query.Where(t => t.No_Memo_Rekomendasi == noMemo);
+//     }
+
+//     var model = query.ToList();
+//     return PartialView("_TimelinePartial", model);
+// }
+
+
+// public IActionResult Timeline(string kodeProject, string noMemo)
+// {
+//     var query = _context.Tahapan
+//         .Where(t => t.No_Memo_Rekomendasi != null && t.Kode_Project==null || t.No_Memo_Rekomendasi == null && t.Kode_Project!=null) // Menampilkan awal data dengan No_Memo_Rekomendasi yang tidak null
+//         .AsQueryable();
+
+//     if (!string.IsNullOrEmpty(noMemo))
+//     {
+//         query = query.Where(t => t.No_Memo_Rekomendasi == noMemo);
+//     }
+//     else if (!string.IsNullOrEmpty(kodeProject))
+//     {
+//         query = query.Where(t => t.Kode_Project == kodeProject);
+//     }
+
+//     var model = query.OrderBy(t => t.Id).ToList();
+//     return PartialView("_TimelinePartial", model);
+// }
+
+public IActionResult Timeline(string kodeProject, string noMemo)
 {
-    var model = _context.Tahapan.Where(t => t.Kode_Project == kodeProject).ToList();
+    var query = _context.Tahapan.AsQueryable();
+
+    if (!string.IsNullOrEmpty(noMemo))
+    {
+        query = query.Where(t => t.No_Memo_Rekomendasi == noMemo || t.Kode_Project == kodeProject);
+    }
+    else if (!string.IsNullOrEmpty(kodeProject))
+    {
+        query = query.Where(t => t.Kode_Project == kodeProject);
+    }
+
+    var model = query
+        .OrderBy(t => t.Id) // Urutkan berdasarkan ID agar timeline tetap rapi
+        .ToList();
+
     return PartialView("_TimelinePartial", model);
 }
 
 
 
 
-    
+
 }
 
 

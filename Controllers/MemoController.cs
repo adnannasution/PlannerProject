@@ -158,6 +158,26 @@ public IActionResult TampilPAdd()
                 // Save the memo to the database
                 _context.Memo.Add(model);
                 _context.SaveChanges();
+
+
+
+
+                // Create a new Tahapan entity
+        var tahapan = new Tahapan
+        {
+            No_Memo_Rekomendasi = model.No_Memo_Rekomendasi,
+            Tanggal = DateTime.Now.Date, // Current date
+            Waktu = DateTime.Now.TimeOfDay, // Current time
+            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+            Tahap = "Created Memo" // A description of the current step
+        };
+
+        // Simpan entitas Tahapan
+        _context.Add(tahapan);
+        _context.SaveChanges();
+
+
+
     TempData["SuccessMessage"] = "successfully!";
                   ViewBag.Users = new SelectList(_context.User, "Email", "Email");
                       ViewData["Disiplin"] = new SelectList(_context.DisiplinMaster, "Disiplin", "Disiplin");
@@ -193,7 +213,7 @@ if (memo == null) return NotFound();
 var activeEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
 
 ViewBag.Users = new SelectList(
-    _context.User.Where(u => u.Email != activeEmail), // Exclude the active email
+    _context.User.Where(u => u.Email != activeEmail && (u.Rule == "2" || u.Rule == "3" || u.Rule == "5" || u.Rule == "6")), 
     "Email",
     "Email"
 );
@@ -260,47 +280,7 @@ ViewBag.Users = new SelectList(
  
 
 
-//  // Post action to handle form submission for editing memo
-//         [HttpPost]
-//         [ValidateAntiForgeryToken]
-//         public IActionResult Disposisi(int id, Memo model, IFormFile dokumen)
-//         {
-//             if (ModelState.IsValid)
-//             {
-//                 var memo = _context.Memo.FirstOrDefault(m => m.Id == id);
-//                 if (memo == null) return NotFound();
 
-//                 // Handle file upload for updating document
-//                 if (dokumen != null && dokumen.ContentType == "application/pdf")
-//                 {
-//                     string fileName = Guid.NewGuid().ToString() + ".pdf";
-//                     string filePath = Path.Combine(_hostEnvironment.WebRootPath, "uploads", fileName);
-                    
-//                     using (var fileStream = new FileStream(filePath, FileMode.Create))
-//                     {
-//                         dokumen.CopyTo(fileStream);
-//                     }
-
-//                     memo.Dokumen = fileName;
-//                 }
-
-//                 // Update other fields
-//                 memo.No_Memo_Rekomendasi = model.No_Memo_Rekomendasi;
-//                 memo.Tanggal_Masuk_Memo = model.Tanggal_Masuk_Memo;
-//                 memo.No_Memo_Kirim_Paket = model.No_Memo_Kirim_Paket;
-//                 memo.Email = model.Email;
-//                 memo.KebutuhanKontrak = model.KebutuhanKontrak;
-
-//                   ViewBag.Users = new SelectList(_context.User, "Email", "Email");
-
-//                 _context.SaveChanges();
-//                  TempData["SuccessMessage"] = "successfully!";
-//                 return RedirectToAction(nameof(Tampil));
-//             }
-
-//             ViewBag.User = _context.User.ToList();
-//             return View(model);
-//         }
 
 
         
@@ -322,6 +302,24 @@ public IActionResult Disposisi(int id, Memo model)
         ViewBag.Users = new SelectList(_context.User, "Email", "Email");
 
         _context.SaveChanges();
+
+
+
+
+        // Create a new Tahapan entity
+        var tahapan = new Tahapan
+        {
+            No_Memo_Rekomendasi = model.No_Memo_Rekomendasi,
+            Tanggal = DateTime.Now.Date, // Current date
+            Waktu = DateTime.Now.TimeOfDay, // Current time
+            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+            Tahap = "Disposisi Memo" // A description of the current step
+        };
+
+        // Simpan entitas Tahapan
+        _context.Add(tahapan);
+        _context.SaveChanges();
+
         TempData["SuccessMessage"] = "successfully!";
         return RedirectToAction(nameof(Tampil));
     }

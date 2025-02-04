@@ -44,10 +44,23 @@ var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
 
 
     // Filter Memo records by the user's email
+// var memos = _context.Memo
+//                     .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
+//                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+//                     .ToList();
+
+
+var excludedNoMemoRekomendasi = _context.FasePlanning
+                                        .Select(fp => fp.No_Memo_Rekomendasi)
+                                        .ToList();
+
 var memos = _context.Memo
-                    .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
+                    .Where(m => m.Email == userEmail && 
+                                m.KebutuhanKontrak == "Ya" &&
+                                !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
                     .ToList();
+
 
 
     // Assign filtered No_Memo_Rekomendasi data to ViewBag
@@ -166,6 +179,7 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
         var tahapan = new Tahapan
         {
             Kode_Project = fasePlanning.Kode_Project,
+            No_Memo_Rekomendasi = fasePlanning.No_Memo_Rekomendasi,
             Tanggal = DateTime.Now.Date, // Current date
             Waktu = DateTime.Now.TimeOfDay, // Current time
             Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
