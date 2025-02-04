@@ -8,5 +8,6 @@ namespace Plan.Models
         public string Email { get; set; } // Nullable Email field
         public string Tahap { get; set; } // Nullable Tahap field
         public string Kode_Project { get; set; } // Nullable Tahap field
+        public string No_Memo_Rekomendasi { get; set; } // Nullable Tahap field
     }
 }
