@@ -14,7 +14,7 @@
 
 
 
-<table class="table table-bordered mt-3 table-responsive" id="tabelku1">
+<table class="table table-bordered mt-3 table-responsive" id="tabelku12">
     <thead>
         <tr>
             <th>No Memo Rekomendasi</th>
@@ -39,7 +39,7 @@
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
               
                 <td style="text-transform: lowercase;">@memo?.Email</td>
-                <td>
+                @* <td>
                     @if (!string.IsNullOrEmpty(memo.Dokumen))
                     {
                         <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
@@ -48,7 +48,29 @@
                     {
                         <span>No document</span>
                     }
+                </td> *@
+
+                <td>
+
+ @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
+    {
+        
+            @foreach (var dokumen in memo.TabelDokumen)
+            {
+               
+            <a href="@dokumen.Path" target="_blank"><div class="badge badge-success"><small>@dokumen.NamaDokumen</small></div></a>
+               
+            }
+        
+    }
+    else
+    {
+        <span>Tidak ada dokumen</span>
+    }
                 </td>
+
+
+                
                  <td>
     @if (memo.KebutuhanKontrak == "Ya")
     {
@@ -75,31 +97,42 @@
     </tbody>
 </table>
 
+
 <script>
     $(document).ready(function () {
-        $('.timeline-btn').on('click', function () {
+        // Inisialisasi DataTables
+        var table = $('#tabelku12').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            columnDefs: [
+                { orderable: false, targets: 7 } // Kolom 'Actions' tidak diurutkan
+            ]
+        });
+
+        // Event delegation untuk menangani klik tombol Disposisi di semua halaman DataTables
+        $('tbody').on('click', '.timeline-btn', function () {
             var Id = $(this).data('id');
 
-            // Send AJAX request to fetch timeline data
+            // Kirim AJAX request untuk mendapatkan data timeline
             $.ajax({
-                url: '@Url.Action("FormDisposisi", "Memo")', // Your controller action
+                url: '@Url.Action("FormDisposisi", "Memo")',
                 type: 'GET',
                 data: { id: Id },
                 success: function (data) {
-                    // Use SweetAlert2 to display the timeline
+                    // Tampilkan modal SweetAlert
                     Swal.fire({
                         title: false,
-                        html: data, // Inject data into the modal
+                        html: data, 
                         icon: 'info',
-                        showCloseButton: true, // Optional: Show the close button in the top-right corner
-                        showConfirmButton: false, // Remove the "Close" button at the bottom
+                        showCloseButton: true,
+                        showConfirmButton: false,
                         customClass: {
-                            htmlContainer: 'text-start' // Add Tailwind/Bootstrap class for left alignment
+                            htmlContainer: 'text-start' 
                         }
                     });
                 },
                 error: function () {
-                    // Display an error message if the AJAX request fails
                     Swal.fire({
                         title: 'Error',
                         text: 'Failed to load timeline!',
@@ -109,77 +142,38 @@
                 }
             });
         });
+
+        // Tampilkan pesan sukses jika ada TempData["SuccessMessage"]
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                title: 'Success!',
+                icon: 'success',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            </text>
+        }
+
+        // Konfirmasi sebelum menghapus data
+        $(document).on('submit', '.delete-form', function (event) {
+            event.preventDefault();
+            var form = this;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
     });
 </script>
-
-
-
-@section Scripts {
-    <!-- Tambahkan library DataTables -->
-
-
-
-
-    <script>
-        $(document).ready(function () {
-            $('#tabelku2').DataTable({
-                paging: true, // Aktifkan Pagination
-                searching: true, // Aktifkan Filter/Searching
-                ordering: true, // Aktifkan Sorting
-                columnDefs: [
-                    { orderable: false, targets: 2 } // Kolom 'Actions' tidak diurutkan
-                ]
-            });
-        });
-    </script>
-
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Periksa pesan sukses dari TempData
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <text>
-                Swal.fire({
-                    title: 'Success!',
-                    icon: 'success',
-                    timer: 3000, // Durasi dalam milidetik (3 detik)
-                    showConfirmButton: false // Tidak menampilkan tombol OK
-                });
-                </text>
-            }
-        });
-    </script>
-
-
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Tangkap semua form dengan class 'delete-form'
-            const deleteForms = document.querySelectorAll('.delete-form');
-            
-            deleteForms.forEach(form => {
-                form.addEventListener('submit', function (event) {
-                    // Hentikan pengiriman formulir langsung
-                    event.preventDefault();
-
-                    // Tampilkan SweetAlert untuk konfirmasi
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'You won\'t be able to revert this!',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Kirim formulir secara manual jika dikonfirmasi
-                            form.submit();
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-
-}
- 

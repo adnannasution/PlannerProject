@@ -64,6 +64,44 @@
 </script>
 
 
+<script>
+    $(document).ready(function () {
+        $('.timeline-btn').on('click', function () {
+            var Id = $(this).data('id');
+
+            // Send AJAX request to fetch timeline data
+            $.ajax({
+                url: '@Url.Action("FormDisposisi", "Memo")', // Your controller action
+                type: 'GET',
+                data: { id: Id },
+                success: function (data) {
+                    // Use SweetAlert2 to display the timeline
+                    Swal.fire({
+                        title: false,
+                        html: data, // Inject data into the modal
+                        icon: 'info',
+                        showCloseButton: true, // Optional: Show the close button in the top-right corner
+                        showConfirmButton: false, // Remove the "Close" button at the bottom
+                        customClass: {
+                            htmlContainer: 'text-start' // Add Tailwind/Bootstrap class for left alignment
+                        }
+                    });
+                },
+                error: function () {
+                    // Display an error message if the AJAX request fails
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to load timeline!',
+                        icon: 'error',
+                        confirmButtonText: 'Close'
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
 
 
     <script>

@@ -7,16 +7,32 @@
 
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         <form asp-action="Edit">
+
+            <input type="hidden" asp-for="Id">
             <div class="form-group">
-                <label asp-for="NoProgram" class="control-label"></label>
-                <input asp-for="NoProgram" class="form-control" required/>
+                <label asp-for="NoProgram" class="control-label">No Program IRKAP</label>
+                <input asp-for="NoProgram" class="form-control" required />
                 <span asp-validation-for="NoProgram" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Judul" class="control-label">Judul</label>
+                <input asp-for="Judul" class="form-control" required />
+                <span asp-validation-for="Judul" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Disiplin" class="control-label"></label>
+                <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin" required>
+                    <option value="">Pilih</option>
+                </select>
+                <span asp-validation-for="Disiplin" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -27,5 +43,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

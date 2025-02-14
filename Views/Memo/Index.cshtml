@@ -5,7 +5,7 @@
 
 
 
-<table class="table table-bordered mt-3" id="tabelku">
+<table class="table table-bordered mt-3 table-responsive table-striped" id="tabelku">
     <thead>
         <tr>
             <th>No Memo Rekomendasi</th>
@@ -32,7 +32,7 @@
           
                <td style="text-transform: lowercase;">@(string.IsNullOrEmpty(memo?.Email) ? "-" : memo.Email.ToLower())</td>
 
-                <td>
+                @* <td>
                     @if (!string.IsNullOrEmpty(memo.Dokumen))
                     {
                         <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
@@ -41,7 +41,29 @@
                     {
                         <span>No document</span>
                     }
+                </td> *@
+
+
+<td>
+
+ @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
+    {
+        
+            @foreach (var dokumen in memo.TabelDokumen)
+            {
+               
+            <a href="@dokumen.Path" target="_blank"><div class="badge badge-success"><small>@dokumen.NamaDokumen</small></div></a>
+               
+            }
+        
+    }
+    else
+    {
+        <span>Tidak ada dokumen</span>
+    }
                 </td>
+
+
                  <td>
     @if (memo.KebutuhanKontrak == "Ya")
     {
@@ -75,6 +97,7 @@
 </table>
 
 <a href="@Url.Action("Create", "Memo")" class="btn btn-success mt-3">Create New Memo</a>
+<a href="@Url.Action("Import", "Memo")" class="btn btn-info mt-3">Import</a>
 
 
 @section Scripts {

@@ -54,17 +54,32 @@ var excludedNoMemoRekomendasi = _context.FasePlanning
                                         .Select(fp => fp.No_Memo_Rekomendasi)
                                         .ToList();
 
+// var memos = _context.Memo
+//                     .Where(m => m.Email == userEmail && 
+//                                 m.KebutuhanKontrak == "Ya" &&
+//                                 !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
+//                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+//                     .ToList();
+
+
+
 var memos = _context.Memo
                     .Where(m => m.Email == userEmail && 
                                 m.KebutuhanKontrak == "Ya" &&
                                 !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
-                    .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+                    .Select(m => new 
+                    { 
+                        m.Id, 
+                        m.No_Memo_Rekomendasi,
+                        m.Judul,
+                        DisplayText = m.No_Memo_Rekomendasi + " - " + m.Judul
+                    })
                     .ToList();
 
-
-
+// Pass this list to ViewBag for the dropdown
+ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "DisplayText");
     // Assign filtered No_Memo_Rekomendasi data to ViewBag
-    ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
+    //ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
     
       ViewData["Disiplin"] = new SelectList(_context.DisiplinMaster, "Disiplin", "Disiplin");
       ViewData["Kategori_Equipment"] = new SelectList(_context.KategoriEquipmentMaster, "Kategori", "Kategori");
@@ -78,8 +93,42 @@ var memos = _context.Memo
      
       ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori");
 
-      ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
+    //  ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
      
+     // Retrieve the 'Disiplin' claim from the current user
+var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+var filteredPrograms = _context.Irkap
+    .Where(i => i.Disiplin == userDisiplin &&
+                !_context.FasePlanning.Any(fp => EF.Functions.Like(fp.NoProgram, "%" + i.NoProgram + "%")))
+    .Select(i => new 
+    { 
+        i.NoProgram, 
+        i.Judul, 
+        DisplayText = i.NoProgram + " - " + i.Judul 
+    })
+    .ToList();
+
+// Pass the filtered programs to ViewBag for use in the dropdown
+ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
+
+
+// Filter the Irkap table using the Disiplin claim value
+// var filteredPrograms = _context.Irkap
+//                                .Where(i => i.Disiplin == userDisiplin)
+//                                .Select(i => new 
+//                                { 
+//                                    i.NoProgram, 
+//                                    i.Judul, 
+//                                    DisplayText = i.NoProgram + " - " + i.Judul 
+//                                })
+//                                .ToList();
+
+// // Pass the filtered programs to ViewBag for use in the dropdown
+// ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
+
+
+
   
     var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
     

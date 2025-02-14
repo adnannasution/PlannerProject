@@ -52,6 +52,7 @@ namespace Plan.Data
             public DbSet<Memo> Memo { get; set; }
             public DbSet<Tahapan> Tahapan { get; set; }
             public DbSet<Irkap> Irkap { get; set; }
+            public DbSet<TabelDokumen> TabelDokumen { get; set; }
 
 
 

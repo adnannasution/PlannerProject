@@ -12,11 +12,13 @@
     <a asp-action="Index" class="btn btn-primary btn-sm">Back to List</a>
 </p>
 
-<table id="exetable" class="table table-bordered table-striped table-responsive">
+<div id="tableContainer" class="table-responsive">
+
+<table id="exetable" class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Start Date</th>
-            <th>End Date MPL</th>
+            <th style="width:85px;">Start Date</th>
+            <th style="width:85px;">End Date MPL</th>
             <th>Amandemen Waktu</th>
             <th>End Date</th>
             <th>Durasi Kontrak</th>
@@ -66,7 +68,7 @@
     </tbody>
 </table>
 
-
+</div>
 
 
 @section Scripts {

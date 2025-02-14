@@ -9,7 +9,7 @@
 <form asp-action="Edit" method="post" onsubmit="return validatePasswords()">
   @Html.AntiForgeryToken()
 
-   <input asp-for="Id" class="form-control" />
+   <input asp-for="Id" class="form-control"  type="hidden"/>
 
     <div class="form-group">
         <label asp-for="Nama"></label>
@@ -107,12 +107,14 @@
     <label asp-for="Rule"></label>
     <select asp-for="Rule" class="form-control">
         <option value="">-- Pilih Rule --</option>
-        <option value="1">Viewer</option>
+        <option value="1">Viewer (Management)</option>
         <option value="2">Planner</option>
         <option value="3">Budgeting</option>
         <option value="4">Super admin</option>
         <option value="5">Asisten</option>
         <option value="6">Asisten Schedulling</option>
+        <option value="7">SPV</option>
+        
     </select>
     <span asp-validation-for="Rule" class="text-danger"></span>
 </div>

@@ -3,35 +3,38 @@
     ViewData["Title"] = "Edit Memo";
 }
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="terminform">
     @Html.AntiForgeryToken()
-
-      <input asp-for="Id" type="hidden" />
+    
+         <input asp-for="Id" type="hidden" />
 
     <div class="form-group">
         <label asp-for="No_Memo_Rekomendasi" class="control-label"></label>
-        <input asp-for="No_Memo_Rekomendasi" class="form-control" />
+        <input asp-for="No_Memo_Rekomendasi" class="form-control" required/>
         <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Tanggal_Masuk_Memo" class="control-label"></label>
-        <input asp-for="Tanggal_Masuk_Memo" class="form-control" type="date" />
+        <input asp-for="Tanggal_Masuk_Memo" class="form-control" type="date" required/>
         <span asp-validation-for="Tanggal_Masuk_Memo" class="text-danger"></span>
     </div>
 
+
+
     @* <div class="form-group">
         <label asp-for="No_Memo_Kirim_Paket" class="control-label"></label>
-        <input asp-for="No_Memo_Kirim_Paket" class="form-control" />
+        <input asp-for="No_Memo_Kirim_Paket" class="form-control" required/>
         <span asp-validation-for="No_Memo_Kirim_Paket" class="text-danger"></span>
     </div> *@
 
-        <div class="form-group">
-        <label asp-for="Judul" class="control-label"></label>
-        <input asp-for="Judul" class="form-control" />
-        <span asp-validation-for="Judul" class="text-danger"></span>
-    </div>
+
+
+<div class="form-group">
+    <label asp-for="Judul" class="control-label"></label>
+    <textarea asp-for="Judul" class="form-control" required></textarea>
+    <span asp-validation-for="Judul" class="text-danger"></span>
+</div>
 
 <div class="form-group">
     <label asp-for="Disiplin" class="control-label"></label>
@@ -42,25 +45,125 @@
 </div>
 
     @* <div class="form-group">
-        <label asp-for="Email" class="control-label"></label>
-        <select asp-for="Email" class="form-control" asp-items="ViewBag.Users" required>
-            <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div> *@
-
-    @* <div class="form-group">
-        <label asp-for="KebutuhanKontrak" class="control-label"></label>
-        <input asp-for="KebutuhanKontrak" class="form-control" />
-        <span asp-validation-for="KebutuhanKontrak" class="text-danger"></span>
-    </div> *@
-
-    <div class="form-group">
         <label asp-for="Dokumen" class="control-label"></label>
-        <input asp-for="Dokumen" class="form-control" type="file" accept=".pdf" />
+        <input asp-for="Dokumen" class="form-control" type="file" accept=".pdf" id="dokumenInput" required/>
         <span asp-validation-for="Dokumen" class="text-danger"></span>
-    </div>
+       
+    </div> *@
 
-    <button type="submit" class="btn btn-primary">Update</button>
-          <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+      @* <label>Upload Dokumen:</label>
+    <div id="fileInputs">
+        <div class="file-group">
+            <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="col-8" required />
+            <input type="file" name="files" class="form-control" required />
+        </div>
+    </div>
+    <button type="button" onclick="addFileInput()">Tambah File</button> *@
+
+    <label>Upload Dokumen: <span class="badge badge-warning">Abaikan jika tidak diganti</span></label>
+<div id="fileInputs">
+    <div class="file-group">
+        <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="form-control" required />
+        <input type="file" name="files" class="form-control" required />
+    </div>
+</div>
+
+<br>
+<button type="button" onclick="addFileInput()" class="btn btn-info">Tambah File</button>
+
+
+
+<button type="button" class="btn btn-primary" id="saveButton">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+
+
 </form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("terminform").submit();
+            }
+        });
+    });
+</script>
+
+@* <script>
+    function addFileInput() {
+        var fileInputs = document.getElementById("fileInputs");
+        var newDiv = document.createElement("div");
+        newDiv.classList.add("file-group","mt-2");
+
+        var newTextInput = document.createElement("input");
+        newTextInput.type = "text";
+        newTextInput.name = "namaDokumen";
+        newTextInput.placeholder = "Nama Dokumen";
+        newTextInput.required = true;
+
+        var newFileInput = document.createElement("input");
+        newFileInput.type = "file";
+        newFileInput.name = "files";
+        newFileInput.required = true;
+
+        newDiv.appendChild(newTextInput);
+        newDiv.appendChild(newFileInput);
+        fileInputs.appendChild(newDiv);
+    }
+</script> *@
+
+
+<script>
+    function addFileInput() {
+        var fileInputs = document.getElementById("fileInputs");
+        var newDiv = document.createElement("div");
+        newDiv.classList.add("file-group", "mt-2");
+
+        var newTextInput = document.createElement("input");
+        newTextInput.type = "text";
+        newTextInput.name = "namaDokumen";
+        newTextInput.placeholder = "Nama Dokumen";
+        newTextInput.classList.add("form-control");
+        newTextInput.required = true;
+
+        var newFileInput = document.createElement("input");
+        newFileInput.type = "file";
+        newFileInput.name = "files";
+        newFileInput.classList.add("form-control");
+        newFileInput.required = true;
+
+        newDiv.appendChild(newTextInput);
+        newDiv.appendChild(newFileInput);
+        fileInputs.appendChild(newDiv);
+    }
+</script>
+
+<style>
+    .file-group {
+        display: flex;
+        gap: 10px; /* Jarak antara input text dan input file */
+        align-items: center;
+    }
+    .file-group input[type="text"] {
+        flex: 1; /* Agar input teks lebih lebar */
+    }
+    .file-group input[type="file"] {
+        flex: 1; /* Agar input file juga lebih lebar */
+    }
+</style>
+

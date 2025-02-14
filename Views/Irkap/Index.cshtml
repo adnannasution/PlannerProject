@@ -6,13 +6,16 @@
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
+     <a asp-action="Import" class="btn btn-info">Import</a>
 </p>
-<table class="table table-bordered" id="tabelku2">
+<table class="table table-bordered table-striped" id="tabelku2">
     <thead>
         <tr>
           
             <th>No</th>
             <th>No Program</th>
+            <th>Judul</th>
+            <th>Disiplin</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -27,6 +30,8 @@
            <td>@counter</td>
                 
                 <td>@Html.DisplayFor(modelItem => item.NoProgram)</td>
+                <td>@Html.DisplayFor(modelItem => item.Judul)</td>
+                <td>@Html.DisplayFor(modelItem => item.Disiplin)</td>
                 <td>
                     <form asp-action="FormEdit" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()

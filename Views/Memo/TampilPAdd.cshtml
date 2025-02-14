@@ -38,7 +38,7 @@
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
               
         
-                <td>
+                @* <td>
                     @if (!string.IsNullOrEmpty(memo.Dokumen))
                     {
                         <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
@@ -47,7 +47,28 @@
                     {
                         <span>No document</span>
                     }
+                </td> *@
+
+                <td>
+
+ @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
+    {
+        
+            @foreach (var dokumen in memo.TabelDokumen)
+            {
+               
+            <a href="@dokumen.Path" target="_blank"><div class="badge badge-success"><small>@dokumen.NamaDokumen</small></div></a>
+               
+            }
+        
+    }
+    else
+    {
+        <span>Tidak ada dokumen</span>
+    }
                 </td>
+
+                
                  <td>
     @if (memo.KebutuhanKontrak == "Ya")
     {
