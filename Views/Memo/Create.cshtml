@@ -42,12 +42,35 @@
     <span asp-validation-for="Disiplin" class="text-danger"></span>
 </div>
 
-    <div class="form-group">
+    @* <div class="form-group">
         <label asp-for="Dokumen" class="control-label"></label>
         <input asp-for="Dokumen" class="form-control" type="file" accept=".pdf" id="dokumenInput" required/>
         <span asp-validation-for="Dokumen" class="text-danger"></span>
-        <span id="fileError" class="text-danger" style="display: none;">Hanya file PDF yang diperbolehkan!</span>
+       
+    </div> *@
+
+
+
+      @* <label>Upload Dokumen:</label>
+    <div id="fileInputs">
+        <div class="file-group">
+            <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="col-8" required />
+            <input type="file" name="files" class="form-control" required />
+        </div>
     </div>
+    <button type="button" onclick="addFileInput()">Tambah File</button> *@
+
+    <label>Upload Dokumen:</label>
+<div id="fileInputs">
+    <div class="file-group">
+        <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="form-control" required />
+        <input type="file" name="files" class="form-control" required />
+    </div>
+</div>
+
+<br>
+<button type="button" onclick="addFileInput()" class="btn btn-info">Tambah File</button>
+
 
 
 <button type="button" class="btn btn-primary" id="saveButton">Save</button>
@@ -79,27 +102,66 @@
     });
 </script>
 
+@* <script>
+    function addFileInput() {
+        var fileInputs = document.getElementById("fileInputs");
+        var newDiv = document.createElement("div");
+        newDiv.classList.add("file-group","mt-2");
+
+        var newTextInput = document.createElement("input");
+        newTextInput.type = "text";
+        newTextInput.name = "namaDokumen";
+        newTextInput.placeholder = "Nama Dokumen";
+        newTextInput.required = true;
+
+        var newFileInput = document.createElement("input");
+        newFileInput.type = "file";
+        newFileInput.name = "files";
+        newFileInput.required = true;
+
+        newDiv.appendChild(newTextInput);
+        newDiv.appendChild(newFileInput);
+        fileInputs.appendChild(newDiv);
+    }
+</script> *@
+
 
 <script>
-    document.getElementById("dokumenInput").addEventListener("change", function () {
-        const fileInput = this;
-        const saveButton = document.getElementById("saveButton");
-        const fileError = document.getElementById("fileError");
-        const file = fileInput.files[0];
+    function addFileInput() {
+        var fileInputs = document.getElementById("fileInputs");
+        var newDiv = document.createElement("div");
+        newDiv.classList.add("file-group", "mt-2");
 
-        if (file) {
-            const fileType = file.type;
-            if (fileType === "application/pdf") {
-                saveButton.disabled = false; // Enable the Save button
-                fileError.style.display = "none"; // Hide the error message
-            } else {
-                fileError.style.display = "block"; // Show the error message
-                saveButton.disabled = true; // Disable the Save button
-                fileInput.value = ""; // Clear the input
-            }
-        } else {
-            saveButton.disabled = true; // Disable the Save button if no file is selected
-            fileError.style.display = "none"; // Hide the error message
-        }
-    });
+        var newTextInput = document.createElement("input");
+        newTextInput.type = "text";
+        newTextInput.name = "namaDokumen";
+        newTextInput.placeholder = "Nama Dokumen";
+        newTextInput.classList.add("form-control");
+        newTextInput.required = true;
+
+        var newFileInput = document.createElement("input");
+        newFileInput.type = "file";
+        newFileInput.name = "files";
+        newFileInput.classList.add("form-control");
+        newFileInput.required = true;
+
+        newDiv.appendChild(newTextInput);
+        newDiv.appendChild(newFileInput);
+        fileInputs.appendChild(newDiv);
+    }
 </script>
+
+<style>
+    .file-group {
+        display: flex;
+        gap: 10px; /* Jarak antara input text dan input file */
+        align-items: center;
+    }
+    .file-group input[type="text"] {
+        flex: 1; /* Agar input teks lebih lebar */
+    }
+    .file-group input[type="file"] {
+        flex: 1; /* Agar input file juga lebih lebar */
+    }
+</style>
+

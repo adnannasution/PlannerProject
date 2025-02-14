@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Import Data Irkap";
+}
+
+<h2>Import Data dari Excel</h2>
+
+
+
+<form asp-action="Import" asp-controller="Irkap" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Pilih File Excel:</label>
+        <input type="file" name="file" class="form-control" required />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>

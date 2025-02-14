@@ -13,6 +13,10 @@ namespace Plan.Models
         public string KebutuhanKontrak { get; set; } // Nullable string
         public string Judul { get; set; } // Nullable string
         public string Disiplin { get; set; } // Nullable string
+
+
+        public List<TabelDokumen> TabelDokumen { get; set; } = new List<TabelDokumen>();
+
     }
 }
  

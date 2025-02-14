@@ -67,5 +67,6 @@ namespace Plan.Models
         public string NoProgram { get; set; }
         public string MOC { get; set; }
         public string Notifikasi { get; set; }
+        public string No_Work_Order { get; set; }
     }
 }

@@ -91,6 +91,7 @@
         <label><input type="checkbox" data-column="17" onchange="handleCheckboxChange(this, 17)"> Prognosa Tanggal Kirim Paket</label><br>
         <label><input type="checkbox" data-column="18" onchange="handleCheckboxChange(this, 18)"> Notes</label><br>
         <label><input type="checkbox" data-column="19" onchange="handleCheckboxChange(this, 19)"> No Memo Rekomendasi</label><br>
+        <label><input type="checkbox" data-column="20" onchange="handleCheckboxChange(this, 20)"> No Work Order</label><br>
     </div>
 </div>
 
@@ -148,6 +149,7 @@
             <th>Prognosa Tanggal Kirim Paket</th>
             <th>Notes</th>
             <th>No Memo Rekomendasi</th>
+            <th>No Work Order</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -186,6 +188,7 @@
                     <td>@item.Tanggal_Kirim_Paket?.ToString("yyyy-MM-dd")</td>
                     <td>@item.Informasi_Detail</td>
                     <td>@item.No_Memo_Rekomendasi</td>
+                    <td>@item.No_Work_Order</td>
                     <td>
 
                      <form asp-action="Detail" method="post">
@@ -227,7 +230,7 @@
             order: [], // Aktifkan Sorting
             columnDefs: [
            
-                { targets: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], visible: false } // Kolom-kolom yang tersembunyi saat pertama kali
+                { targets: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], visible: false } // Kolom-kolom yang tersembunyi saat pertama kali
             ]
         });
 

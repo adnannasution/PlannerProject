@@ -26,7 +26,7 @@ public class Termin
     public decimal Nilai_Tagihan { get; set; }  
 
     
-
+    //public List<TabelDokumen> TabelDokumen { get; set; } = new List<TabelDokumen>();
 
    // public FaseTender FaseTender { get; set; }
 }

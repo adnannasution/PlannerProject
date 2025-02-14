@@ -7,5 +7,7 @@ namespace Plan.Models
         [Key]
         public int Id { get; set; }
         public string NoProgram { get; set; }
+        public string Judul { get; set; }
+        public string Disiplin { get; set; }
     }
 }

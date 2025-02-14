@@ -386,26 +386,20 @@
     var jabatanClaim = User.Claims.FirstOrDefault(c => c.Type == "Jabatan")?.Value;
     var ruleClaim = User.Claims.FirstOrDefault(c => c.Type == "Rule")?.Value;
 
-    var memoUrl = "/Memo"; // Default URL
+    var memoUrl = "/Memo"; 
 
-    if (ruleClaim == "2") 
+    if (ruleClaim == "2" || ruleClaim == "5" || ruleClaim == "6" ) 
     {
         memoUrl = "/Memo/TampilP";
     }
-    else if (jabatanClaim != null && 
-             (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
-              jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase)))
-    {
+    else if (ruleClaim == "7"){
         memoUrl = "/Memo/Tampil";
     }
 }
 
+ 
 
-
-@if ((ruleClaim == "2") || (ruleClaim == "6") || (ruleClaim == "4") || 
-     (jabatanClaim != null && 
-      (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
-       jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase))))
+@if ((ruleClaim == "2") || (ruleClaim == "6") || (ruleClaim == "4") || (ruleClaim == "5") || (ruleClaim == "7"))
 {
     <li class="nav-item">
 <a href="@memoUrl" class="nav-link">
@@ -413,15 +407,12 @@
     <p>Memorandum
 
 
-    @if (
-     (jabatanClaim != null && 
-      (jabatanClaim.Contains("SPV", StringComparison.OrdinalIgnoreCase) || 
-       jabatanClaim.Contains("Supervisor", StringComparison.OrdinalIgnoreCase))))
+    @if (ruleClaim == "7")
     {
     <span id="memoBadge" class="badge badge-warning rounded-pill" style="display: none;"></span>
     }
     
-    @if (ruleClaim == "2") 
+    @if (ruleClaim == "2" || ruleClaim == "5" || ruleClaim == "6") 
     {
      <span id="memo-disiplin-badge" class="badge badge-warning rounded-pill" style="display: none;"></span>
     }
@@ -493,7 +484,7 @@
     <!-- TRANSACTION HEADER -->
 
 
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
         {
 
            
@@ -506,7 +497,7 @@
     </li>
     }
 
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
         {
 
 
@@ -517,13 +508,13 @@
       </a>
     </li>
 
-
+@* 
         <li class="nav-item">
       <a href="/Tahapan/TahapanAll" class="nav-link">
       <i class="nav-icon fas fa-stream"></i>
         <p>Timeline</p>
       </a>
-    </li>
+    </li> *@
 
 
  
@@ -531,7 +522,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6")|| User.HasClaim("Rule", "7"))
         {
         <li class="nav-item">
       <a href="/FaseTender" class="nav-link">
@@ -541,7 +532,7 @@
     </li>
 }
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6")|| User.HasClaim("Rule", "7"))
         {
 
         <li class="nav-item">
@@ -554,7 +545,7 @@
     }
 
 
-  @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+  @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7"))
         {
            <li class="nav-item">
       <a href="/Termin" class="nav-link">
@@ -565,7 +556,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
         {
         <li class="nav-item">
       <a href="/FaseMonitoring" class="nav-link">
@@ -579,7 +570,7 @@
  
 
 
- @if (User.HasClaim("Rule", "3") || User.HasClaim("Rule", "4"))
+ @if (User.HasClaim("Rule", "3") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "7"))
         {
 
 <li class="nav-item has-treeview">
@@ -611,7 +602,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7"))
         {
       <li class="nav-item">
       <a href="/LongTermServiceAgreement" class="nav-link">
@@ -622,7 +613,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
         {
      <li class="nav-item">
       <a href="/Resume" class="nav-link">
@@ -633,7 +624,7 @@
     }
 
  
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7"))
         {
 
         <li class="nav-item">
