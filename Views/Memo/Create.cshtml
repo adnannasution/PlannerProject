@@ -8,72 +8,77 @@
 
     <div class="form-group">
         <label asp-for="No_Memo_Rekomendasi" class="control-label"></label>
-        <input asp-for="No_Memo_Rekomendasi" class="form-control" required/>
+        <input asp-for="No_Memo_Rekomendasi" class="form-control" required />
         <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label asp-for="Tanggal_Masuk_Memo" class="control-label"></label>
-        <input asp-for="Tanggal_Masuk_Memo" class="form-control" type="date" required/>
+        <input asp-for="Tanggal_Masuk_Memo" class="form-control" type="date" required />
         <span asp-validation-for="Tanggal_Masuk_Memo" class="text-danger"></span>
     </div>
 
 
 
-    @* <div class="form-group">
-        <label asp-for="No_Memo_Kirim_Paket" class="control-label"></label>
-        <input asp-for="No_Memo_Kirim_Paket" class="form-control" required/>
-        <span asp-validation-for="No_Memo_Kirim_Paket" class="text-danger"></span>
-    </div> *@
 
 
 
-<div class="form-group">
-    <label asp-for="Judul" class="control-label"></label>
-    <textarea asp-for="Judul" class="form-control" required></textarea>
-    <span asp-validation-for="Judul" class="text-danger"></span>
-</div>
 
-<div class="form-group">
-    <label asp-for="Disiplin" class="control-label"></label>
-    <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin" required>
-        <option value="">Pilih</option>
-    </select>
-    <span asp-validation-for="Disiplin" class="text-danger"></span>
-</div>
+    <div class="form-group">
+        <label asp-for="Judul" class="control-label"></label>
+        <textarea asp-for="Judul" class="form-control" required></textarea>
+        <span asp-validation-for="Judul" class="text-danger"></span>
+    </div>
 
-    @* <div class="form-group">
-        <label asp-for="Dokumen" class="control-label"></label>
-        <input asp-for="Dokumen" class="form-control" type="file" accept=".pdf" id="dokumenInput" required/>
-        <span asp-validation-for="Dokumen" class="text-danger"></span>
-       
-    </div> *@
+    <div class="form-group">
+        <label asp-for="Disiplin" class="control-label"></label>
+        <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Disiplin" class="text-danger"></span>
+    </div>
 
 
+    <div class="form-group">
+        <label asp-for="Area" class="control-label">Area Proses</label>
+        <select asp-for="Area" class="form-control" id="Area" asp-items="ViewBag.Area" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Disiplin" class="text-danger"></span>
+    </div>
 
-      @* <label>Upload Dokumen:</label>
+
+    <div class="form-group">
+        <label asp-for="Direksi" class="control-label">Maintenance Area</label>
+        <select asp-for="Direksi" class="form-control" id="Direksi" asp-items="ViewBag.Direksi" required>
+            <option value="">Pilih</option>
+        </select>
+        <span asp-validation-for="Disiplin" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label asp-for="Komentar" class="control-label"></label>
+        <textarea asp-for="Komentar" class="form-control" required></textarea>
+        <span asp-validation-for="Komentar" class="text-danger"></span>
+    </div>
+
+
+
+    <label>Upload Dokumen:</label>
     <div id="fileInputs">
         <div class="file-group">
-            <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="col-8" required />
+            <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="form-control" required />
             <input type="file" name="files" class="form-control" required />
         </div>
     </div>
-    <button type="button" onclick="addFileInput()">Tambah File</button> *@
 
-    <label>Upload Dokumen:</label>
-<div id="fileInputs">
-    <div class="file-group">
-        <input type="text" name="namaDokumen" placeholder="Nama Dokumen" class="form-control" required />
-        <input type="file" name="files" class="form-control" required />
-    </div>
-</div>
-
-<br>
-<button type="button" onclick="addFileInput()" class="btn btn-info">Tambah File</button>
+    <br>
+    <button type="button" onclick="addFileInput()" class="btn btn-info">Tambah File</button>
 
 
 
-<button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
 
@@ -102,28 +107,6 @@
     });
 </script>
 
-@* <script>
-    function addFileInput() {
-        var fileInputs = document.getElementById("fileInputs");
-        var newDiv = document.createElement("div");
-        newDiv.classList.add("file-group","mt-2");
-
-        var newTextInput = document.createElement("input");
-        newTextInput.type = "text";
-        newTextInput.name = "namaDokumen";
-        newTextInput.placeholder = "Nama Dokumen";
-        newTextInput.required = true;
-
-        var newFileInput = document.createElement("input");
-        newFileInput.type = "file";
-        newFileInput.name = "files";
-        newFileInput.required = true;
-
-        newDiv.appendChild(newTextInput);
-        newDiv.appendChild(newFileInput);
-        fileInputs.appendChild(newDiv);
-    }
-</script> *@
 
 
 <script>
@@ -154,14 +137,18 @@
 <style>
     .file-group {
         display: flex;
-        gap: 10px; /* Jarak antara input text dan input file */
+        gap: 10px;
+        /* Jarak antara input text dan input file */
         align-items: center;
     }
+
     .file-group input[type="text"] {
-        flex: 1; /* Agar input teks lebih lebar */
+        flex: 1;
+        /* Agar input teks lebih lebar */
     }
+
     .file-group input[type="file"] {
-        flex: 1; /* Agar input file juga lebih lebar */
+        flex: 1;
+        /* Agar input file juga lebih lebar */
     }
 </style>
-

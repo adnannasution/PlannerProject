@@ -68,5 +68,8 @@ namespace Plan.Models
         public string MOC { get; set; }
         public string Notifikasi { get; set; }
         public string No_Work_Order { get; set; }
+        public string No_PR { get; set; }
+        public DateTime? Kirim_Paket_Kontrak { get; set; }
+        public int? Kehandalan { get; set; }
     }
 }

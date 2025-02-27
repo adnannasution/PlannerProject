@@ -129,8 +129,22 @@
 
 
             <div class="form-group">
+                <label asp-for="No_PR" class="control-label"></label>
+                <p class="form-control-static">@Model.No_PR</p>
+                <hr/>
+            </div>
+
+
+            <div class="form-group">
                 <label asp-for="Tanggal_Kirim_Paket" class="control-label">Prognosa Tanggal Kirim Paket</label>
                 <p class="form-control-static">@Model.Tanggal_Kirim_Paket?.ToShortDateString()</p>
+                <hr/>
+            </div>
+
+
+                        <div class="form-group">
+                <label asp-for="Kirim_Paket_Kontrak" class="control-label">Tanggal Kirim Paket Kontrak</label>
+                <p class="form-control-static">@Model.Kirim_Paket_Kontrak?.ToShortDateString()</p>
                 <hr/>
             </div>
 

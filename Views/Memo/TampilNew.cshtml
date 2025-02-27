@@ -19,12 +19,15 @@
             <th>No Memo Rekomendasi</th>
             <th>Judul</th>
              <th>Disiplin</th>
+             <th>Area Proses</th>
+             <th>Maintenance Area</th>
             <th>Tanggal Masuk Memo</th>
            
         
             <th>Disposisi</th>
             <th>Dokumen</th>
             <th>Kebutuhan Kontrak</th>
+            <th>Komentar</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -35,21 +38,14 @@
                 <td>@memo.No_Memo_Rekomendasi</td>
                 <td>@memo.Judul</td>
                 <td>@memo.Disiplin</td>
+                     <td>@memo.Area</td>
+                <td>@memo.Direksi</td>
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
               
                 <td style="text-transform: lowercase;">@memo?.Email</td>
-                @* <td>
-                    @if (!string.IsNullOrEmpty(memo.Dokumen))
-                    {
-                        <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
-                    }
-                    else
-                    {
-                        <span>No document</span>
-                    }
-                </td> *@
 
-                <td>
+
+                @* <td>
 
  @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
     {
@@ -66,27 +62,28 @@
     {
         <span>Tidak ada dokumen</span>
     }
-                </td>
+                </td> *@
+
+
+
+<td>
+<a href="#" data-toggle="modal" data-target="#dokumenModal" onclick="loadDokumen(@memo.Id)">
+    Detail Dokumen
+</a>
+</td>
+
+
+
 
                 
-                 <td>
-    @if (memo.KebutuhanKontrak == "Ya")
-    {
-        <span class="badge badge-success">Ya</span>
-    }
-    else if (memo.KebutuhanKontrak == "Tidak")
-    {
-        <span class="badge badge-danger">Tidak</span>
-    }
-</td>
+<td>@memo.KebutuhanKontrak</td>
+
+ <td>@memo.Komentar</td>
+ 
 
                 <td>
 
-@* <form asp-action="FormDisposisi" method="post" style="display:inline;" class="edit-form">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="id" value="@memo.Id" />
-    <button type="submit" class="btn btn-warning btn-sm">Disposisi</button>
-</form> *@
+
 
                         <button class="btn btn-primary btn-sm timeline-btn" data-id="@memo.Id">
                             Disposisi
@@ -98,6 +95,39 @@
         }
     </tbody>
 </table>
+
+
+
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="dokumenModal" tabindex="-1" role="dialog" aria-labelledby="dokumenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dokumenModalLabel">Detail Dokumen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dokumenContent">
+                <p class="text-center">Memuat dokumen...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadDokumen(id) {
+        $.get('/Memo/GetDokumenList', { id: id }, function (data) {
+            $("#dokumenContent").html(data);
+        });
+    }
+</script>
+
+
+
+
+
 
 
 

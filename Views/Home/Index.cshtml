@@ -26,39 +26,102 @@
 
 <div class="row mb-3 container" style="width: 100%">
     <!-- Card untuk data dashboard -->
-    <div  style="width: 20%;">
+    <div  style="width: 25%;">
         
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="card-title">Jumlah On Progress</h5>
             </div>
             <div class="card-body d-flex align-items-center justify-content-center">
-                <p class="card-text" id="jumlahAman">Loading...</p>
+                @* <p class="card-text" id="jumlahAman">Loading...</p> *@
+                      @* <p class="card-text text-primary" id="jumlahAman" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalAman">
+            Loading...
+            </p> *@
+
+            <a href="javascript:void(0);" id="lihatDataBtn">
+     <span id="jumlahAman">0</span>
+</a>
+
+<script>
+$('#lihatDataBtn').click(function () {
+    var selectedYear = $('#yearDropdown').val(); // Ambil tahun dari dropdown
+    window.location.href = '/Home/AmanData?tahun=' + selectedYear; // Redirect ke halaman baru dengan tahun terpilih
+});
+</script>
+
             </div>
         </div>
-         
+
+
+
     </div>
-    <div class="ml-1" style="width: 20%;">
+    <div class="ml-1" style="width: 25%;">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="card-title">Jumlah Overdue</h5>
             </div>
             <div class="card-body d-flex align-items-center justify-content-center">
-                <p class="card-text" id="jumlahTerlambat">Loading...</p>
+                @* <p class="card-text" id="jumlahTerlambat">Loading...</p> *@
+
+                @* <p class="card-text" id="jumlahTerlambat" style="cursor: pointer; color: red;">Loading...</p> *@
+           
+           <a href="javascript:void(0);" id="lihatDataBtn2">
+     <span id="jumlahTerlambat">0</span>
+</a>
+
+<script>
+$('#lihatDataBtn2').click(function () {
+    var selectedYear = $('#yearDropdown').val(); // Ambil tahun dari dropdown
+    window.location.href = '/Home/TerlambatData?tahun=' + selectedYear; // Redirect ke halaman baru dengan tahun terpilih
+});
+</script>
+
+           
+           
             </div>
         </div>
+
+
+
+
+
     </div>
-    <div class="ml-1" style="width: 20%;">
+
+
+
+
+
+    <div class="ml-1" style="width: 25%;">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="card-title">Jumlah Selesai</h5>
             </div>
             <div class="card-body d-flex align-items-center justify-content-center">
-                <p class="card-text" id="jumlahSelesai">Loading...</p>
+                @* <p class="card-text" id="jumlahSelesai">Loading...</p> *@
+                 @* <p class="card-text" id="jumlahSelesai" style="cursor: pointer; color: green;">Loading...</p> *@
+        
+          <a href="javascript:void(0);" id="lihatDataBtn3">
+     <span id="jumlahSelesai">0</span>
+</a>
+
+<script>
+$('#lihatDataBtn3').click(function () {
+    var selectedYear = $('#yearDropdown').val(); // Ambil tahun dari dropdown
+    window.location.href = '/Home/SelesaiData?tahun=' + selectedYear; // Redirect ke halaman baru dengan tahun terpilih
+});
+</script>        
+        
+        
             </div>
         </div>
+
+
+
     </div>
-    <div class="ml-1" style="width: 20%;">
+
+
+
+    @* <div class="ml-1" style="width: 20%;">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="card-title">Proyek 6 Bulan Terakhir</h5>
@@ -67,8 +130,8 @@
                 <p class="card-text" id="totalProjectLastSixMonths">Loading...</p>
             </div>
         </div>
-    </div>
-    <div class="ml-1" style="width: 18%;">
+    </div> *@
+    <div class="ml-1" style="width: 23%;">
         <div class="card h-100">
             <div class="card-header">
                 <h5 class="card-title">Total Proyek</h5>
@@ -80,7 +143,7 @@
     </div>
 </div>
 
-
+ 
 
 
 <script>
@@ -107,7 +170,7 @@
         updateDashboardData(currentYear);
 
         // Load year options for dropdown
-        for (var year = currentYear; year >= currentYear - 10; year--) {
+        for (var year = currentYear; year >= currentYear - 6; year--) {
             var option = document.createElement('option');
             option.value = year;
             option.textContent = year;

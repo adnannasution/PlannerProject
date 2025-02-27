@@ -18,14 +18,18 @@
         <tr>
             <th>No Memo Rekomendasi</th>
             <th>Judul</th>
-             <th>Disiplin</th>
+            <th>Disiplin</th>
+            <th>Area Proses</th>
+            <th>Maintenance Area</th>
             <th>Tanggal Masuk Memo</th>
-           
-        
-         
+
+
+
             <th>Dokumen</th>
             <th>Kebutuhan Kontrak</th>
-   
+            <th>Komentar</th>
+            <th>Action</th>
+
         </tr>
     </thead>
     <tbody>
@@ -35,22 +39,13 @@
                 <td>@memo.No_Memo_Rekomendasi</td>
                 <td>@memo.Judul</td>
                 <td>@memo.Disiplin</td>
+                <td>@memo.Area</td>
+                <td>@memo.Direksi</td>
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
-              
-@*         
-                <td>
-                    @if (!string.IsNullOrEmpty(memo.Dokumen))
-                    {
-                        <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
-                    }
-                    else
-                    {
-                        <span>No document</span>
-                    }
-                </td> *@
 
 
-<td>
+
+                @* <td>
 
  @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
     {
@@ -67,25 +62,66 @@
     {
         <span>Tidak ada dokumen</span>
     }
+                </td> *@
+
+
+<td>
+<a href="#" data-toggle="modal" data-target="#dokumenModal" onclick="loadDokumen(@memo.Id)">
+    Detail Dokumen
+</a>
+</td>
+
+
+
+                <td>@memo.KebutuhanKontrak</td>
+
+                <td>@memo.Komentar</td>
+                <td>
+                    <a asp-action="Create" asp-controller="FasePlanning" asp-route-idmemo="@memo.No_Memo_Rekomendasi"
+                        class="btn btn-info btn-sm">
+                        Create Project
+                    </a>
                 </td>
 
 
-                 <td>
-    @if (memo.KebutuhanKontrak == "Ya")
-    {
-        <span class="badge badge-success">Ya</span>
-    }
-    else if (memo.KebutuhanKontrak == "Tidak")
-    {
-        <span class="badge badge-danger">Tidak</span>
-    }
-</td>
+
 
 
             </tr>
         }
     </tbody>
 </table>
+
+
+
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="dokumenModal" tabindex="-1" role="dialog" aria-labelledby="dokumenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dokumenModalLabel">Detail Dokumen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dokumenContent">
+                <p class="text-center">Memuat dokumen...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadDokumen(id) {
+        $.get('/Memo/GetDokumenList', { id: id }, function (data) {
+            $("#dokumenContent").html(data);
+        });
+    }
+</script>
+
+
+
 
 <script>
     $(document).ready(function () {
@@ -145,29 +181,29 @@
         });
     </script>
 
-      <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Periksa pesan sukses dari TempData
             @if (TempData["SuccessMessage"] != null)
-            {
-                <text>
-                Swal.fire({
-                    title: 'Success!',
-                    icon: 'success',
-                    timer: 3000, // Durasi dalam milidetik (3 detik)
-                    showConfirmButton: false // Tidak menampilkan tombol OK
-                });
-                </text>
+                {
+                    <text>
+                        Swal.fire({
+                            title: 'Success!',
+                        icon: 'success',
+                        timer: 3000, // Durasi dalam milidetik (3 detik)
+                        showConfirmButton: false // Tidak menampilkan tombol OK
+                        });
+                    </text>
             }
-        });
+            });
     </script>
 
 
-      <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Tangkap semua form dengan class 'delete-form'
             const deleteForms = document.querySelectorAll('.delete-form');
-            
+
             deleteForms.forEach(form => {
                 form.addEventListener('submit', function (event) {
                     // Hentikan pengiriman formulir langsung
@@ -194,4 +230,3 @@
     </script>
 
 }
- 

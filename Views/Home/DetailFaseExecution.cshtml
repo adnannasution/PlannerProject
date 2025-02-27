@@ -1,133 +1,424 @@
-@model IEnumerable<dynamic>
+@model IEnumerable<Plan.Models.FasePlanning>
 
 @{
-    ViewData["Title"] = "Detail Fase Execution";
+    ViewData["Title"] = "List Planning Project";
 }
+
+<!-- Add the script for xlsx -->
+
+
 
 <style>
-.swal2-popup {
-    width: 60% !important; /* Makes the popup width 80% of the screen */
-    max-width: 1300px !important; /* Adjust to a maximum size */
-}
+    #tabelku {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #tabelku thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        /* Warna background header */
+        z-index: 2;
+        /* Supaya tetap di atas */
+        text-align: left;
+        /* Sesuai kebutuhan */
+        border-bottom: 2px solid #dee2e6;
+        /* Garis bawah header */
+    }
+
+    #tabelku tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+        /* Alternatif warna baris */
+    }
+
+    #tabelku tbody tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+
+    .table-container {
+        max-height: 400px;
+        /* Tinggi maksimum tabel dengan scroll */
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        /* Tambahkan border pada container */
+    }
 </style>
 
-<!-- Tabel untuk menampilkan 4 kolom pertama saja -->
-<table class="table table-striped table-responsive" id="tabelku">
-    <thead>
-        <tr>
-            <th>Kode Project</th>
-            <th>Pekerjaan</th>
-            <th>Tanggal SLA/Timeline</th>
-            <th>Start Date</th>
-            <th style="display:none;">End Date MPL</th>
-            <th style="display:none;">Amandemen Waktu</th>
-            <th style="display:none;">End Date</th>
-            <th style="display:none;">Durasi Kontrak</th>
-            <th style="display:none;">Durasi Aktual HK</th>
-            <th style="display:none;">Date LKP</th>
-            <th style="display:none;">Plan Progress Fisik</th>
-            <th style="display:none;">Progress Fisik 0</th>
-            <th style="display:none;">Progress Fisik</th>
-            <th style="display:none;">Status Performance</th>
-            <th style="display:none;">Progress Finansial</th>
-            <th style="display:none;">LKP Time Limit</th>
-            <th style="display:none;">Status Pekerjaan</th>
-            <th style="display:none;">Task</th>
-            <th style="display:none;">PIC</th>
-            <th style="display:none;">Target</th>
-            <th>Detail</th> <!-- Tombol Detail -->
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Kode_Project</td>
-                <td>@item.Pekerjaan</td>
-                <td><b>@item.Tanggal.ToString("dd-MM-yyyy")</b></td>
-                <td>@item.Start_Date.ToString("dd-MM-yyyy")</td>
-                <td style="display:none;">@item.End_Date_MPL.ToString("dd-MM-yyyy")</td>
-                <td style="display:none;">@item.Amandemen_Waktu</td>
-                <td style="display:none;">@item.End_Date.ToString("dd-MM-yyyy")</td>
-                <td style="display:none;">@item.Durasi_Kontrak</td>
-                <td style="display:none;">@item.Durasi_Aktual_HK</td>
-                <td style="display:none;">@item.Date_LKP</td>
-                <td style="display:none;">@item.Plan_Progress_Fisik</td>
-                <td style="display:none;">@item.Progress_Fisik_0</td>
-                <td style="display:none;">@item.Progress_Fisik</td>
-                <td style="display:none;">@item.Status_Performance</td>
-                <td style="display:none;">@item.Progress_Finansial</td>
-                <td style="display:none;">@item.LKP_Time_Limit</td>
-                <td style="display:none;">@item.ResumeStatusPekerjaan</td>
-                <td style="display:none;">@item.Task</td>
-                <td style="display:none;">@item.Pic</td>
-                <td style="display:none;">@item.Target?.ToString("dd-MM-yyyy")</td>
-                <td>
-                    <button class="btn btn-info btn-sm" onclick="showDetail(
-                        '@item.Kode_Project', 
-                        '@item.Pekerjaan',
-                        '@item.Tanggal.ToString("dd-MM-yyyy")',
-                        '@item.Start_Date.ToString("dd-MM-yyyy")',
-                        '@item.End_Date_MPL.ToString("dd-MM-yyyy")',
-                        '@item.Amandemen_Waktu',
-                        '@item.End_Date.ToString("dd-MM-yyyy")',
-                        '@item.Durasi_Kontrak',
-                        '@item.Durasi_Aktual_HK',
-                        '@item.Date_LKP.ToString("dd-MM-yyyy")',
-                        '@item.Plan_Progress_Fisik',
-                        '@item.Progress_Fisik_0',
-                        '@item.Progress_Fisik',
-                        '@item.Status_Performance',
-                        '@item.Progress_Finansial',
-                        '@item.LKP_Time_Limit',
-                        '@item.ResumeStatusPekerjaan',
-                        '@item.Task',
-                        '@item.Pic',
-                        '@item.Target?.ToString("dd-MM-yyyy")'
-                    )">Detail</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
-<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Kembali ke Dashboard</a>
+<style>
+    .hidden-column {
+        display: none;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+</style>
+
+
+
+<div class="d-flex gap-2 mb-1">
+    @* <a asp-action="Create" class="btn btn-primary btn-sm m-1">Create New</a> *@
+    <button id="toggleResponsive" class="btn btn-secondary btn-sm m-1">Freeze Column</button>
+    <button id="exportToExcel" class="btn btn-success btn-sm m-1">
+        <i class="fa fa-file-excel"></i> Export to Excel
+    </button>
+
+
+    <div class="dropdown">
+        <button class="btn btn-secondary btn-sm m-1">Show/Hide Columns</button>
+        <div class="dropdown-content" style="z-index: 999;">
+
+            <label><input type="checkbox" data-column="0" id="checkAll"> Check All</label><br>
+
+
+            <label><input type="checkbox" data-column="1" checked onchange="handleCheckboxChange(this, 1)"> Kode
+                Project</label><br>
+            <label><input type="checkbox" data-column="2" checked onchange="handleCheckboxChange(this, 2)">
+                Planner</label><br>
+                    <label><input type="checkbox" data-column="3" checked onchange="handleCheckboxChange(this, 3)"> No Memo
+                Rekomendasi</label><br>
+                    <label><input type="checkbox" data-column="4" checked onchange="handleCheckboxChange(this, 4)"> Judul
+                Kontrak</label><br>
+                      <label><input type="checkbox" data-column="5" checked onchange="handleCheckboxChange(this, 5)"> Jenis
+                Pengadaan</label><br>
+                            <label><input type="checkbox" data-column="6" checked onchange="handleCheckboxChange(this, 6)">
+                Notifikasi</label><br>
+                      <label><input type="checkbox" data-column="7" checked onchange="handleCheckboxChange(this, 7)"> No Work
+                Order</label><br>
+
+
+          
+          
+            <label><input type="checkbox" data-column="8"  onchange="handleCheckboxChange(this, 8)"> Kode
+                Irkap</label><br>
+        
+            <label><input type="checkbox" data-column="9" onchange="handleCheckboxChange(this, 9)"> Kategori
+                Kontrak</label><br>
+            <label><input type="checkbox" data-column="10" onchange="handleCheckboxChange(this, 10)"> MOC</label><br>
+      
+            <label><input type="checkbox" data-column="11" onchange="handleCheckboxChange(this, 11)"> Tahun</label><br>
+            <label><input type="checkbox" data-column="12" onchange="handleCheckboxChange(this, 12)"> Disiplin</label><br>
+            <label><input type="checkbox" data-column="13" onchange="handleCheckboxChange(this, 13)"> Kategori
+                Equipment</label><br>
+            <label><input type="checkbox" data-column="14" onchange="handleCheckboxChange(this, 14)"> Status
+                Kontrak</label><br>
+            <label><input type="checkbox" data-column="15" onchange="handleCheckboxChange(this, 15)"> Kategori
+                Maintenance</label><br>
+
+            <label><input type="checkbox" data-column="16" onchange="handleCheckboxChange(this, 16)"> Area</label><br>
+            <label><input type="checkbox" data-column="17" onchange="handleCheckboxChange(this, 17)">
+                Direksi</label><br>
+            <label><input type="checkbox" data-column="18" onchange="handleCheckboxChange(this, 18)"> Jenis
+                Kontrak</label><br>
+
+            <label><input type="checkbox" data-column="19" onchange="handleCheckboxChange(this, 19)"> Tanggal
+                NOPR</label><br>
+            <label><input type="checkbox" data-column="20" onchange="handleCheckboxChange(this, 20)"> Prognosa Tanggal
+                Kirim Paket</label><br>
+            <label><input type="checkbox" data-column="21" onchange="handleCheckboxChange(this, 21)"> Notes</label><br>
+  
+
+
+      
+            <label><input type="checkbox" data-column="22" onchange="handleCheckboxChange(this, 22)"> No PR</label><br>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<div id="tableContainer" class="table-responsive">
+
+    <script>
+        document.getElementById('exportToExcel').addEventListener('click', function () {
+            // Prepare your data (You can get the data from a table or other elements)
+            let table = document.getElementById("tabelku"); // Replace with your table ID
+
+            // Create a new workbook and worksheet from the table
+            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet 1" });
+
+            // Export the workbook as an Excel file
+            XLSX.writeFile(wb, 'exported_data.xlsx');
+        });
+    </script>
+
+
+
+
+
+    @{
+        // Get the Disiplin claim from the user's claims
+        var disiplinClaim = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+    }
+
+
+
+
+
+
+    <form asp-action="SubmitKehandalan" method="post" id="kehandalanForm">
+        @Html.AntiForgeryToken()
+
+        <table class="table table-striped table-bordered" id="tabelku">
+            <thead>
+                <tr>
+                    <th></th>
+
+                    <th>Kode Project</th>
+                    <th>Planner</th>
+                     <th>No Memo Rekomendasi</th>
+                     <th>Judul Kontrak</th>
+                     <th>Jenis Pengadaan</th>
+                     <th>Notifikasi</th>
+                     <th>No Work Order</th>
+
+                    
+                    <th>Kode Irkap</th>
+                    
+                    <th>Kategori Kontrak</th>
+                    <th>MOC</th>
+                    
+                    <th>Tahun</th>
+                    <th>Disiplin</th>
+                    <th>Kategori Equipment</th>
+                    <th>Status Kontrak</th>
+                    <th>Kategori Maintenance</th>
+
+                    <th>Area</th>
+                    <th>Direksi</th>
+                    <th>Jenis Kontrak</th>
+                    
+                    <th>Tanggal NOPR</th>
+                    <th>Prognosa Tanggal Kirim Paket</th>
+                    <th>Notes</th>
+                   
+                    
+                    <th>No PR</th>
+              
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    // Mendapatkan disiplin dari kode project
+                    var kodeParts = item.Kode_Project.Split('/');
+                    var disiplinFromKode = kodeParts.Length > 2 ? kodeParts[2] : string.Empty;
+
+                    // Filter berdasarkan klaim disiplin
+                    if (string.IsNullOrEmpty(disiplinClaim) ||
+                    disiplinClaim.Equals("All", StringComparison.OrdinalIgnoreCase) ||
+                    disiplinFromKode.Equals(disiplinClaim, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <tr>
+
+                            <td class="text-center" disabled>
+                            
+                            </td>
+
+                            <td>@item.Kode_Project</td>
+                            <td>@item.Planner</td>
+                             <td>@item.No_Memo_Rekomendasi</td>
+                             <td>@item.Pekerjaan</td>
+                              <td>@item.Jenis_Project</td>
+                               <td>@item.Notifikasi</td>
+                                 <td>@item.No_Work_Order</td>
+                            
+
+
+                            <td>@item.NoProgram</td>
+                            
+                            <td>@item.Kategori_Kontrak</td>
+                            <td>@item.MOC</td>
+                           
+                            <td>@item.Tahun</td>
+                            <td>@item.Disiplin</td>
+                            <td>@item.Kategori_Equipment</td>
+                            <td>@item.Status_kontrak</td>
+                            <td>@item.Kategori_Maintenance</td>
+
+                            <td>@item.Area</td>
+                            <td>@item.Direksi</td>
+                            <td>@item.Jenis_Kontrak</td>
+                           
+                            <td>@item.Tanggal_Update?.ToString("yyyy-MM-dd")</td>
+                            <td>@item.Tanggal_Kirim_Paket?.ToString("yyyy-MM-dd")</td>
+                            <td>@item.Informasi_Detail</td>
+                           
+                          
+                            <td>@item.No_PR</td>
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+       
+    </form>
+
+
+
+</div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Tambahkan library DataTables -->
+
+
     <script>
-        function showDetail(kodeProject, pekerjaan, tanggal, startDate, endDateMPL, amandemen, endDate, durasiKontrak, durasiAktualHK, dateLKP, planProgressFisik, progressFisik0, progressFisik, statusPerformance, progressFinansial, lkpTimeLimit, statusPekerjaan, task, pic, target) {
-            Swal.fire({
-                title: 'Detail Project',
-                html: `
-                <div style="display: flex; justify-content: space-between;">
-                    <div style="flex: 1; margin-right: 10px; text-align: left;">
-                        <p><strong>Kode Project:</strong> ${kodeProject}<hr></p>
-                        <p><strong>Pekerjaan:</strong> ${pekerjaan}<hr></p>
-                        <p><strong>Tanggal SLA/Timeline:</strong> ${tanggal}<hr></p>
-                        <p><strong>Start Date:</strong> ${startDate}<hr></p>
-                        <p><strong>End Date MPL:</strong> ${endDateMPL}<hr></p>
-                        <p><strong>Amandemen Waktu:</strong> ${amandemen}<hr></p>
-                        <p><strong>End Date:</strong> ${endDate}<hr></p>
-                        <p><strong>Durasi Kontrak:</strong> ${durasiKontrak}<hr></p>
-                        <p><strong>Durasi Aktual HK:</strong> ${durasiAktualHK}<hr></p>
-                        <p><strong>Date LKP:</strong> ${dateLKP}<hr></p>
-                    </div>
-                    <div style="flex: 1; margin-left: 10px; text-align: left;">
-                        <p><strong>Plan Progress Fisik:</strong> ${planProgressFisik}<hr></p>
-                        <p><strong>Progress Fisik 0:</strong> ${progressFisik0}<hr></p>
-                        <p><strong>Progress Fisik:</strong> ${progressFisik}<hr></p>
-                        <p><strong>Status Performance:</strong> ${statusPerformance}<hr></p>
-                        <p><strong>Progress Finansial:</strong> ${progressFinansial}<hr></p>
-                        <p><strong>LKP Time Limit:</strong> ${lkpTimeLimit}<hr></p>
-                        <p><strong>Status Pekerjaan:</strong> ${statusPekerjaan}<hr></p>
-                        <p><strong>Task:</strong> ${task}<hr></p>
-                        <p><strong>PIC:</strong> ${pic}<hr></p>
-                        <p><strong>Target:</strong> ${target}<hr></p>
-                    </div>
-                </div>`,
-                confirmButtonText: 'Close'
+        $(document).on('click', '.timeline-btn', function () {
+            var projectId = $(this).data('id'); // Ambil Kode Project dari tombol yang diklik
+            var noMemo = $(this).data('memo'); // Ambil Kode Project dari tombol yang diklik
+
+            // Send AJAX request to fetch timeline data
+            $.ajax({
+                url: '@Url.Action("Timeline", "FasePlanning")', // Panggil action di controller
+                type: 'GET',
+                data: { kodeProject: projectId, noMemo: noMemo },
+                success: function (data) {
+                    // Kirim data ke parent window (Home)
+                    window.parent.postMessage({
+                        type: 'SHOW_SWEET_ALERT',
+                        title: 'Timeline',
+                        content: data
+                    }, '*');
+                },
+                error: function () {
+                    // Kirim pesan error ke parent window (Home)
+                    window.parent.postMessage({
+                        type: 'SHOW_SWEET_ALERT',
+                        title: 'Error',
+                        content: 'Failed to load timeline!'
+                    }, '*');
+                }
             });
-        }
+        });
     </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#tabelku').DataTable({
+                paging: true, // Aktifkan Pagination
+                searching: true, // Aktifkan Filter/Searching
+                ordering: true,
+                order: [], // Aktifkan Sorting
+                columnDefs: [
+
+                    { targets: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,22], visible: false } // Kolom-kolom yang tersembunyi saat pertama kali
+                ]
+            });
+
+            // Function to toggle column visibility
+            function toggleColumn(columnIndex, show) {
+                var column = table.column(columnIndex);
+                column.visible(show);
+            }
+
+            // Handle checkbox change to toggle column visibility
+            function handleCheckboxChange(checkbox, columnIndex) {
+                toggleColumn(columnIndex, checkbox.checked);
+            }
+
+            // Event listeners for checkboxes
+            $('input[type="checkbox"]').on('change', function () {
+                var columnIndex = $(this).data('column');
+                handleCheckboxChange(this, columnIndex);
+            });
+
+
+            // Handle "Check All" functionality
+            $('#checkAll').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('input[type="checkbox"]').not(this).prop('checked', isChecked);
+
+                $('input[type="checkbox"]').each(function () {
+                    var columnIndex = $(this).data('column');
+                    if (columnIndex !== undefined) {
+                        toggleColumn(columnIndex, isChecked);
+                    }
+                });
+            });
+
+
+
+        });
+    </script>
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Periksa pesan sukses dari TempData
+            @if (TempData["SuccessMessage"] != null)
+                {
+                    <text>
+                        Swal.fire({
+                            title: 'Success!',
+                        icon: 'success',
+                        timer: 3000, // Durasi dalam milidetik (3 detik)
+                        showConfirmButton: false // Tidak menampilkan tombol OK
+                        });
+                    </text>
+            }
+            });
+    </script>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".delete-form").forEach(button => {
+            button.addEventListener("click", function () {
+                const url = this.getAttribute("data-url");
+
+                Swal.fire({
+                    title: "Konfirmasi Hapus",
+                    text: "Apakah Anda yakin ingin menghapus data ini?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Ya, Hapus",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url; // Redirect ke URL delete
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+
 }
+
+<script>
+    document.getElementById('toggleResponsive').addEventListener('click', function () {
+        const tableContainer = document.getElementById('tableContainer');
+        tableContainer.classList.toggle('table-responsive');
+
+        // Update text tombol berdasarkan status
+        if (tableContainer.classList.contains('table-responsive')) {
+            this.textContent = 'Disable freeze column';
+        } else {
+            this.textContent = 'Enable freeze column';
+        }
+    });
+</script>

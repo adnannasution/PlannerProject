@@ -1,0 +1,37 @@
+@model List<TabelComponent>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Component</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Valuation Price</th>
+            <th>Total Value</th>
+            <th>Delivery Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var valuationPrice = @item.ValuationPrice;
+            var totalValue = (item.Quantity) * valuationPrice;
+
+
+            <tr>
+                <td>@item.Component</td>
+                <td>@item.Description</td>
+                <td>@item.Quantity</td>
+                <td>@item.Unit</td>
+                <td>@valuationPrice.ToString("C", new System.Globalization.CultureInfo("id-ID"))</td>
+                <td>@totalValue.ToString("C", new System.Globalization.CultureInfo("id-ID"))</td>
+                <td>@item.DeliveryDate.ToString("dd-MM-yyyy")</td>
+                <td>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="@item.Id">Hapus</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

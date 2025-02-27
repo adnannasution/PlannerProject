@@ -1,3 +1,5 @@
+
+
 namespace Plan.Models
 {
 public class TabelDokumen

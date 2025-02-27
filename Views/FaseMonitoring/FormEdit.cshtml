@@ -9,12 +9,74 @@
   @Html.AntiForgeryToken()
 
 
-    <div class="form-group">
-        <label asp-for="Kode_Project" class="control-label"></label>
-        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly />
-        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+<div class="form-group">
+    <label asp-for="Kode_Project" class="control-label"></label>
+    <div class="input-group">
+        <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly/>
+        <div class="input-group-append">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+        </div>
     </div>
+    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+</div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog" aria-labelledby="kodeProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Table -->
+                <table id="kodeProjectTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kode Project</th>
+                            <th>Pekerjaan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTables
+        var projects = @Html.Raw(ViewBag.KodeProjects);
+        
+        // Dynamically populate table rows
+        projects.forEach(function (project) {
+            $('#kodeProjectTable tbody').append(
+                '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
+                '<td>' + project.Kode_Project + '</td>' +
+                '<td>' + project.Pekerjaan + '</td>' +
+                '</tr>'
+            );
+        });
+
+        // Initialize DataTable with search and pagination enabled
+                    var table = $('#kodeProjectTable').DataTable({
+                order: [] // Disable initial ordering
+            });
+
+        // Bind event to select the project code
+        $('#kodeProjectTable').on('click', '.selectable-row', function () {
+            var kodeProject = $(this).data('kode');
+            $('#Kode_Project').val(kodeProject).trigger("change"); // Trigger change
+        });
+    });
+</script>
 
 <div class="form-group">
     <label for="Status_LKP">Status LKP</label>
@@ -42,10 +104,41 @@
 
     <div class="form-group">
         <label for="Count_Days_Progress">Count Days Progress</label>
-        <input asp-for="Count_Days_Progress" type="number" class="form-control" required id="Count_Days_Progress" />
+        <input asp-for="Count_Days_Progress" type="number" class="form-control" required id="Count_Days_Progress" readonly/>
         <span asp-validation-for="Count_Days_Progress" class="text-danger"></span>
     </div>
-    
+
+
+
+
+<script>
+    $(document).ready(function () {
+        // Event saat Kode_Project dipilih
+        $("#Kode_Project").on("change", function () {
+            var kodeProject = $(this).val();
+
+            if (kodeProject) {
+                $.ajax({
+                    url: '@Url.Action("GetStartDate", "FaseMonitoring")', // Sesuaikan dengan controller
+                    type: 'GET',
+                    data: { kodeProject: kodeProject },
+                    success: function (data) {
+                        if (data && data.startDate) {
+                            var startDate = new Date(data.startDate);
+                            var today = new Date();
+                            var diffTime = today - startDate;
+                            var countDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Konversi ke hari
+
+                            $("#Count_Days_Progress").val(countDays);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
     <div class="form-group">
         <label for="Count_Days_Over">Count Days Over</label>
         <input asp-for="Count_Days_Over" type="number" class="form-control" required id="Count_Days_Over" />
@@ -80,16 +173,102 @@
 <div class="form-group">
     <label for="Total_Nilai_Kontrak">Total Nilai Kontrak</label>
     <div id="formatted_Total_Nilai_Kontrak" class="text-primary font-weight-bold"></div>
-    <input asp-for="Total_Nilai_Kontrak" type="number" step="0.01" class="form-control" required id="Total_Nilai_Kontrak" />
+    <input asp-for="Total_Nilai_Kontrak" type="number" step="0.01" class="form-control" required id="Total_Nilai_Kontrak" readonly/>
     <span asp-validation-for="Total_Nilai_Kontrak" class="text-danger"></span>
 </div>
+
+
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+<script>
+$(document).ready(function () {
+    let nilaiPurchaseOrder = 0;
+
+    // Ketika Kode_Project dipilih
+    $("#Kode_Project").change(function () {
+        let kodeProject = $(this).val();
+        if (kodeProject) {
+            $.ajax({
+                url: "/FaseMonitoring/GetPurchaseOrderValue", 
+                type: "GET",
+                data: { kodeProject: kodeProject },
+                success: function (response) {
+                    if (response.nilaiPurchaseOrder !== null) {
+                        nilaiPurchaseOrder = parseFloat(response.nilaiPurchaseOrder);
+                    } else {
+                        nilaiPurchaseOrder = 0;
+                    }
+
+                    // Perbarui Total_Nilai_Kontrak
+                    hitungTotalNilaiKontrak();
+                }
+            });
+        }
+    });
+
+    // Ketika Amandemen_Nilai berubah, hitung ulang total nilai kontrak
+    $("#Amandemen_Nilai").on("input", function () {
+        hitungTotalNilaiKontrak();
+    });
+
+    function hitungTotalNilaiKontrak() {
+        let amandemenNilai = parseFloat($("#Amandemen_Nilai").val()) || 0;
+        let totalNilaiKontrak = nilaiPurchaseOrder + amandemenNilai;
+
+        $("#Total_Nilai_Kontrak").val(totalNilaiKontrak.toFixed(2));
+
+        // Format tampilan angka
+        $("#formatted_Total_Nilai_Kontrak").text(formatRupiah(totalNilaiKontrak));
+        $("#formatted_Amandemen_Nilai").text(formatRupiah(amandemenNilai));
+    }
+
+    function formatRupiah(angka) {
+        return "Rp " + angka.toLocaleString("id-ID");
+    }
+});
+</script>
+
 
 <div class="form-group">
     <label for="Nilai_Tagihan">Nilai Tagihan</label>
     <div id="formatted_Nilai_Tagihan" class="text-primary font-weight-bold"></div>
-    <input asp-for="Nilai_Tagihan" type="number" step="0.01" class="form-control" required id="Nilai_Tagihan" />
+    <input asp-for="Nilai_Tagihan" type="number" step="0.01" class="form-control" required id="Nilai_Tagihan" readonly/>
     <span asp-validation-for="Nilai_Tagihan" class="text-danger"></span>
 </div>
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+<script>
+$(document).ready(function () {
+    $("#Kode_Project").change(function () {
+        let kodeProject = $(this).val();
+        if (kodeProject) {
+            $.ajax({
+                url: "/FaseMonitoring/GetTotalTagihan",
+                type: "GET",
+                data: { kodeProject: kodeProject },
+                success: function (response) {
+                    if (response.totalTagihan !== null) {
+                        let totalTagihan = parseFloat(response.totalTagihan);
+                        $("#Nilai_Tagihan").val(totalTagihan.toFixed(2));
+                        $("#formatted_Nilai_Tagihan").text(formatRupiah(totalTagihan));
+                    }
+                }
+            });
+        }
+    });
+
+    function formatRupiah(angka) {
+        return "Rp " + angka.toLocaleString("id-ID");
+    }
+});
+</script>
+
+
+
+
+
+
+
 
 <script>
     // Fungsi untuk memformat angka dengan pemisah ribuan
@@ -138,7 +317,7 @@
 
 
 
-  <button type="button" class="btn btn-primary" id="saveButton">Update</button>
+  <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
 

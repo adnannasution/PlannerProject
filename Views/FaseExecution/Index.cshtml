@@ -65,6 +65,9 @@
 <div class="dropdown">
     <button class="btn btn-secondary btn-sm m-1">Show/Hide Columns</button>
     <div class="dropdown-content" style="z-index: 999;">
+
+        <label><input type="checkbox" id="checkAll"> Check All</label><br>
+        
         <label><input type="checkbox" data-column="0" checked onchange="handleCheckboxChange(this, 0)"> Kode Project</label><br>
         <label><input type="checkbox" data-column="1" checked onchange="handleCheckboxChange(this, 1)"> Pekerjaan</label><br>
         <label><input type="checkbox" data-column="2" checked onchange="handleCheckboxChange(this, 2)"> Start Date</label><br>
@@ -72,14 +75,14 @@
         <label><input type="checkbox" data-column="4" checked onchange="handleCheckboxChange(this, 4)"> Amandemen Waktu</label><br>
         <label><input type="checkbox" data-column="5" onchange="handleCheckboxChange(this, 5)"> End Date</label><br>
         <label><input type="checkbox" data-column="6" onchange="handleCheckboxChange(this, 6)"> Durasi Kontrak</label><br>
-        <label><input type="checkbox" data-column="7" onchange="handleCheckboxChange(this, 7)"> Durasi Aktual HK</label><br>
-        <label><input type="checkbox" data-column="8" onchange="handleCheckboxChange(this, 8)"> Date LKP</label><br>
-        <label><input type="checkbox" data-column="9" onchange="handleCheckboxChange(this, 9)"> Plan Progress Fisik</label><br>
-        <label><input type="checkbox" data-column="10" onchange="handleCheckboxChange(this, 10)"> Progress Fisik 0</label><br>
-        <label><input type="checkbox" data-column="11" onchange="handleCheckboxChange(this, 11)"> Progress Fisik</label><br>
-        <label><input type="checkbox" data-column="12" onchange="handleCheckboxChange(this, 12)"> Status Performance</label><br>
-        <label><input type="checkbox" data-column="13" onchange="handleCheckboxChange(this, 13)"> Progress Finansial</label><br>
-        <label><input type="checkbox" data-column="14" onchange="handleCheckboxChange(this, 14)"> LKP Time Limit</label><br>
+      
+        <label><input type="checkbox" data-column="7" onchange="handleCheckboxChange(this, 7)"> Date LKP</label><br>
+        <label><input type="checkbox" data-column="8" onchange="handleCheckboxChange(this, 8)"> Plan Progress Fisik</label><br>
+        <label><input type="checkbox" data-column="9" onchange="handleCheckboxChange(this, 9)"> Progress Fisik 0</label><br>
+        <label><input type="checkbox" data-column="10" onchange="handleCheckboxChange(this, 10)"> Progress Fisik</label><br>
+        <label><input type="checkbox" data-column="11" onchange="handleCheckboxChange(this, 11)"> Status Performance</label><br>
+   
+   
        
     </div>
 </div>
@@ -127,14 +130,13 @@
                 <th>Amandemen Waktu</th>
                 <th>End Date</th>
                 <th>Durasi Kontrak</th>
-                <th>Durasi Aktual HK</th>
+          
                 <th>Date LKP</th>
                 <th>Plan Progress Fisik</th>
                 <th>Progress Fisik 0</th>
                 <th>Progress Fisik</th>
                 <th>Status Performance</th>
-                <th>Progress Finansial</th>
-                <th>LKP Time Limit</th>
+            
                 <th>Actions</th>
             </tr>
         </thead>
@@ -152,14 +154,13 @@
                         <td>@item.Amandemen_Waktu</td>
                         <td>@item.End_Date.ToString("yyyy-MM-dd")</td>
                         <td>@item.Durasi_Kontrak</td>
-                        <td>@item.Durasi_Aktual_HK</td>
+                 
                         <td>@item.Date_LKP</td>
                         <td>@item.Plan_Progress_Fisik</td>
                         <td>@item.Progress_Fisik_0</td>
                         <td>@item.Progress_Fisik</td>
                         <td>@item.Status_Performance</td>
-                        <td>@item.Progress_Finansial</td>
-                        <td>@item.LKP_Time_Limit</td>
+                     
                         <td>
                             <a asp-action="Detail" asp-route-kodeproject="@item.Kode_Project" class="btn btn-info btn-sm">Detail</a>
                         </td>
@@ -185,7 +186,7 @@
             order: [],// Aktifkan Sorting
             columnDefs: [
             
-                { targets: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], visible: false } // Kolom-kolom yang tersembunyi
+                { targets: [5, 6, 7, 8, 9, 10, 11], visible: false } // Kolom-kolom yang tersembunyi
             ]
         });
 
@@ -205,6 +206,23 @@
             var columnIndex = $(this).data('column');
             handleCheckboxChange(this, columnIndex);
         });
+
+
+                // Handle "Check All" functionality
+    $('#checkAll').on('change', function() {
+        var isChecked = $(this).prop('checked');
+        $('input[type="checkbox"]').not(this).prop('checked', isChecked);
+
+        $('input[type="checkbox"]').each(function() {
+            var columnIndex = $(this).data('column');
+            if (columnIndex !== undefined) {
+                toggleColumn(columnIndex, isChecked);
+            }
+        });
+    });
+
+
+
     });
 </script>
 

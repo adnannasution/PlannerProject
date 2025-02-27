@@ -4,42 +4,119 @@
     ViewData["Title"] = "Edit Fase Execution";
 }
 
+<!-- Include Select2 CSS -->
+
+
+    <div class="form-group">
+    <label for="Durasi_Masa_Penyelesaian_MPL">Durasi Masa Penyelesaian MPL</label>
+    <input type="number" class="form-control" id="Durasi_Masa_Penyelesaian_MPL" readonly />
+</div>
+
 
 
 <form asp-action="Edit" method="post" id="faseform">
   @Html.AntiForgeryToken()
-     <input asp-for="Id" class="form-control" type="hidden"  />
 
    <div class="container">
     <div class="row">
         <!-- Kolom pertama -->
         <div class="col-md-6">
 
-    <div class="form-group">
-        <label asp-for="Kode_Project" class="control-label"></label>
-        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly />
-        <span asp-validation-for="Kode_Project" class="text-danger"></span>
+
+
+<div class="form-group">
+    <label asp-for="Kode_Project" class="control-label"></label>
+    <div class="input-group">
+        <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly/>
+        <div class="input-group-append">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+        </div>
     </div>
+    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog" aria-labelledby="kodeProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Table -->
+                <table id="kodeProjectTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kode Project</th>
+                            <th>Pekerjaan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTables
+        var projects = @Html.Raw(ViewBag.KodeProjects);
+        
+        // Dynamically populate table rows
+        projects.forEach(function (project) {
+            $('#kodeProjectTable tbody').append(
+                '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
+                '<td>' + project.Kode_Project + '</td>' +
+                '<td>' + project.Pekerjaan + '</td>' +
+                '</tr>'
+            );
+        });
+
+        // Initialize DataTable with search and pagination enabled
+            var table = $('#kodeProjectTable').DataTable({
+                order: [] // Disable initial ordering
+            });
+
+        // Bind event to select the project code
+        $('#kodeProjectTable').on('click', '.selectable-row', function () {
+            var kodeProject = $(this).data('kode');
+            $('#Kode_Project').val(kodeProject).trigger("change"); 
+        });
+    });
+</script>
+
+
+
 
     <div class="form-group">
         <label asp-for="Start_Date"></label>
-        <input asp-for="Start_Date" class="form-control" type="date" />
+        <input asp-for="Start_Date" class="form-control" required type="date"  id="Start_Date" />
     </div>
+
+
     <div class="form-group">
         <label asp-for="End_Date_MPL"></label>
-        <input asp-for="End_Date_MPL" class="form-control" type="date" />
+        <input asp-for="End_Date_MPL" class="form-control" required type="date" id="End_Date_MPL" readonly />
     </div>
     <div class="form-group">
         <label asp-for="Amandemen_Waktu"></label>
-        <input asp-for="Amandemen_Waktu" class="form-control" />
+        <input asp-for="Amandemen_Waktu" class="form-control" id="Amandemen_Waktu" required />
     </div>
     <div class="form-group">
         <label asp-for="End_Date"></label>
-        <input asp-for="End_Date" class="form-control" type="date" />
+        <input asp-for="End_Date" class="form-control" required type="date" />
     </div>
     <div class="form-group">
         <label asp-for="Durasi_Kontrak"></label>
-        <input asp-for="Durasi_Kontrak" class="form-control" type="number" />
+        <input asp-for="Durasi_Kontrak" class="form-control" id="Durasi_Kontrak" readonly required type="number" />
     </div>
 
 
@@ -52,48 +129,74 @@
 
 
     <div class="form-group">
-        <label asp-for="Durasi_Aktual_HK"></label>
-        <input asp-for="Durasi_Aktual_HK" class="form-control" type="number" />
-    </div>
-    <div class="form-group">
         <label asp-for="Date_LKP"></label>
-        <input asp-for="Date_LKP" class="form-control" type="number" />
+        <input asp-for="Date_LKP" class="form-control" required type="date"  />
     </div>
 
 
-    <div class="form-group">
-        <label asp-for="Progress_Fisik"></label>
-        <input asp-for="Progress_Fisik" class="form-control" type="number" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Status_Performance"></label>
-       <select asp-for="Status_Performance" class="form-control">
-    <option value="GOOD">GOOD</option>
-    <option value="UNDER">UNDER</option>
-    <option value="OVER">OVER</option>
-</select>
-
-    </div>
-    <div class="form-group">
-        <label asp-for="Progress_Finansial"></label>
-        <input asp-for="Progress_Finansial" class="form-control" type="number" />
-    </div>
-    <div class="form-group">
-        <label asp-for="LKP_Time_Limit"></label>
-        <input asp-for="LKP_Time_Limit" class="form-control" type="number" />
-    </div>
-     <button type="button" class="btn btn-primary" id="saveButton">Update</button>
-  
-    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
-
-
-
-                </div>
+<div class="form-group">
+    <label asp-for="Progress_Fisik">Progress Fisik %</label>
+    <div class="input-group">
+        <input asp-for="Progress_Fisik" id="Progress_Fisik" class="form-control" required type="number" readonly />
+        <button type="button" id="editProgress" class="btn btn-outline-secondary">
+            <i class="fas fa-edit"></i>
+        </button>
     </div>
 </div>
 
+<script>
+$(document).ready(function () {
+    $("#editProgress").click(function () {
+        var input = $("#Progress_Fisik");
+
+        if (input.prop("readonly")) {
+            input.prop("readonly", false).focus(); // Aktifkan input dan fokus
+            $(this).html('<i class="fas fa-check"></i>'); // Ubah ikon jadi tanda centang
+        } else {
+            input.prop("readonly", true); // Kunci kembali input
+            $(this).html('<i class="fas fa-edit"></i>'); // Kembalikan ikon edit
+        }
+    });
+});
+
+</script>
+    
+
+<script>
+$(document).ready(function () {
+    $("#Kode_Project").change(function () {
+        var kodeProject = $(this).val();
+
+        if (kodeProject) {
+            $.ajax({
+                url: "/FaseExecution/GetLastProgress",
+                type: "GET",
+                data: { kodeProject: kodeProject },
+                success: function (response) {
+                    if (response.success) {
+                        $("#Progress_Fisik").val(response.progressFisik);
+                    } else {
+                        $("#Progress_Fisik").val(0); // Jika tidak ada data, default ke 0
+                    }
+                }
+            });
+        } else {
+            $("#Progress_Fisik").val(""); // Kosongkan jika tidak ada yang dipilih
+        }
+    });
+});
+</script>
+
+
+    <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+        </div>
+    </div>
+</div>
 
 </form>
+
 
 
 <script>
@@ -116,6 +219,77 @@
     });
 </script>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+
+<script>
+document.getElementById('faseform').addEventListener('submit', function (event) {
+    var kodeProject = document.getElementById('Kode_Project').value;
+    
+    // Cek apakah Kode_Project kosong
+    if (!kodeProject) {
+        event.preventDefault(); // Mencegah form disubmit
+        alert('Kode Project wajib diisi!'); // Tampilkan pesan peringatan
+    }
+});
+</script>
+
+@* 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+<script>
+    $(document).ready(function () {
+        // Event ketika Kode_Project dipilih
+        $(document).on("change", "#Kode_Project", function () {
+            var kodeProject = $(this).val();
+
+            if (kodeProject) {
+            
+                $.ajax({
+                    url: '@Url.Action("GetDurasiMPL", "FaseExecution")', // Ganti dengan nama controller yang sesuai
+                    type: 'GET',
+                    data: { kodeProject: kodeProject },
+                    success: function (data) {
+                        if (data) {
+                            $("#Durasi_Masa_Penyelesaian_MPL").val(data.durasiMPL);
+                            hitungEndDateMPL(); // Panggil fungsi untuk update End_Date_MPL
+                        }
+                    }
+                });
+            }
+        });
+
+        // Event ketika Start_Date atau Durasi MPL berubah
+        $("#Start_Date, #Durasi_Masa_Penyelesaian_MPL").on("change", function () {
+            hitungEndDateMPL();
+        });
+
+        function hitungEndDateMPL() {
+            let startDate = new Date($("#Start_Date").val());
+            let duration = parseInt($("#Durasi_Masa_Penyelesaian_MPL").val());
+
+            if (!isNaN(startDate.getTime()) && !isNaN(duration)) {
+                let endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + duration - 1);
+
+                let formattedEndDate = endDate.toISOString().split('T')[0]; // Format ke YYYY-MM-DD
+                $("#End_Date_MPL").val(formattedEndDate);
+            }
+        }
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        function hitungDurasiKontrak() {
+            var durasiMPL = parseInt($("#Durasi_Masa_Penyelesaian_MPL").val()) || 0;
+            var amandemenWaktu = parseInt($("#Amandemen_Waktu").val()) || 0;
+            var durasiKontrak = durasiMPL + amandemenWaktu;
+
+            $("#Durasi_Kontrak").val(durasiKontrak);
+        }
+
+        // Saat Amandemen_Waktu berubah, hitung ulang Durasi_Kontrak
+        $("#Amandemen_Waktu").on("input", function () {
+            hitungDurasiKontrak();
+        });
+    });
+</script>

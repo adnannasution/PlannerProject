@@ -5,9 +5,18 @@
 }
 
 <div class="container">
-  
-    <div class="row">
+
+
         <!-- Kolom pertama -->
+
+
+        @if (Model.PR == null)
+        {
+
+            
+      <div class="container">
+    <div class="row">
+        <!-- Kolom Pertama -->
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="Kode_Project" class="control-label"></label>
@@ -51,7 +60,13 @@
                 <hr />
             </div>
 
-            <div class="form-group">
+           
+        </div>
+
+        <!-- Kolom Kedua -->
+        <div class="col-md-6">
+
+             <div class="form-group">
                 <label asp-for="PR_MT" class="control-label">PR MT</label>
                 <p class="form-control-static">@Model.PR_MT</p>
                 <hr />
@@ -62,28 +77,24 @@
                 <p class="form-control-static">@Model.PR_SR</p>
                 <hr />
             </div>
-        </div>
 
-        <!-- Kolom kedua -->
-        <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="Nomor_SP3MK" class="control-label">Nomor SP3MK</label>
                 <p class="form-control-static">@Model.Nomor_SP3MK</p>
                 <hr />
             </div>
 
-<div class="form-group">
-    <label asp-for="Nilai_Purchasing_Order" class="control-label">Nilai Purchasing Order</label>
-    <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Order)</p>
-    <hr />
-</div>
+            <div class="form-group">
+                <label asp-for="Nilai_Purchasing_Order" class="control-label">Nilai Purchasing Order</label>
+                <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Order)</p>
+                <hr />
+            </div>
 
-<div class="form-group">
-    <label asp-for="Nilai_Purchasing_Request" class="control-label">Nilai Purchasing Request</label>
-    <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Request)</p>
-    <hr />
-</div>
-
+            <div class="form-group">
+                <label asp-for="Nilai_Purchasing_Request" class="control-label">Nilai Purchasing Request</label>
+                <p class="form-control-static">@string.Format("{0:N0}", @Model.Nilai_Purchasing_Request)</p>
+                <hr />
+            </div>
 
             <div class="form-group">
                 <label asp-for="Durasi_Masa_Penyelesaian_MPL" class="control-label">Durasi Masa Penyelesaian MPL</label>
@@ -96,28 +107,138 @@
                 <p class="form-control-static">@Model.Bulan</p>
                 <hr />
             </div>
+        </div>
+    </div>
+</div>
 
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        @if (Model.PR != null)
+        {
+
+
+<div class="container">
+    <div class="row">
+        <!-- Kolom Pertama -->
+        <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="Otorisasi" class="control-label"></label>
-                <p class="form-control-static">@Model.Otorisasi</p>
+                <label asp-for="Kode_Project" class="control-label"></label>
+                <p class="form-control-static">@Model.Kode_Project</p>
                 <hr />
             </div>
 
             <div class="form-group">
-                <label asp-for="Notif" class="control-label">Notif</label>
-                <p class="form-control-static">@Model.Notif</p>
+                <label asp-for="No_Vendor" class="control-label">No Vendor</label>
+                <p class="form-control-static">@Model.No_Vendor</p>
                 <hr />
             </div>
 
             <div class="form-group">
-                <label asp-for="Buyer" class="control-label">Buyer</label>
-                <p class="form-control-static">@Model.Buyer</p>
+                <label asp-for="Pelaksana" class="control-label">Pelaksana</label>
+                <p class="form-control-static">@Model.Pelaksana</p>
+                <hr />
+            </div>
+
+                   <div class="form-group">
+                <label asp-for="PR" class="control-label">PR</label>
+                <p class="form-control-static">@Model.PR</p>
+                <hr />
+            </div>
+
+        </div>
+
+        <!-- Kolom Kedua -->
+        <div class="col-md-6">
+     
+
+            <div class="form-group">
+                <label asp-for="PR_Date" class="control-label">PR Date</label>
+                <p class="form-control-static">@Model.PR_Date</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PO" class="control-label">PO</label>
+                <p class="form-control-static">@Model.PO</p>
+                <hr />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PO_Date" class="control-label">PO Date</label>
+                <p class="form-control-static">@Model.PO_Date</p>
                 <hr />
             </div>
         </div>
     </div>
+</div>
+
+        }
+
+
+
+
+
+
+
+
+
+    @if (Model.PR != null)
+    {
+
+        <div class="additionalFields3" style="display: none;">
+            <div id="componentTableContainer">
+                <!-- Tabel akan dimuat di sini -->
+            </div>
+        </div>
+
+    }
+
+
+
 
     <div class="form-group">
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 </div>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        var kodeProject = $("#kodeProject").text().trim(); // Ambil nilai Kode_Project dari halaman
+        if (kodeProject) {
+            loadComponents(kodeProject); // Panggil fungsi untuk memuat tabel
+            $(".additionalFields3").show(); // Pastikan tabel terlihat
+        }
+    });
+
+    function loadComponents(kodeProject) {
+        $.ajax({
+            url: "/FaseTender/GetComponentsHtml",
+            type: "GET",
+            data: { kodeProject: kodeProject },
+            success: function (response) {
+                $("#componentTableContainer").html(response); // Render tabel langsung dari server
+                $(".additionalFields3").show(); // Pastikan tabel terlihat setelah data dimuat
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading components:", error);
+                alert("Gagal mengambil data komponen.");
+            }
+        });
+    }
+</script>

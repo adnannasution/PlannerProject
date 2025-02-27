@@ -1,0 +1,35 @@
+@model List<TabelDokumen>
+
+
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nama Dokumen</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dokumen in Model)
+            {
+                <tr>
+                    <td>@dokumen.NamaDokumen</td>
+                    <td>
+                        <a href="@dokumen.Path" target="_blank" class="btn btn-primary btn-sm">
+                            Download
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-center">Tidak ada dokumen tersedia</p>
+}
+
+
+

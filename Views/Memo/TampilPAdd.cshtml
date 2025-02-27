@@ -1,4 +1,4 @@
-@model IEnumerable<Plan.Models.Memo>
+@model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Memorandum";
     Layout = null;
@@ -19,12 +19,18 @@
             <th>No Memo Rekomendasi</th>
             <th>Judul</th>
              <th>Disiplin</th>
+             <th>Area Proses</th>
+
+             <th>Maintenance Area</th>
             <th>Tanggal Masuk Memo</th>
            
-        
+         
          
             <th>Dokumen</th>
             <th>Kebutuhan Kontrak</th>
+            <th>Komentar</th>
+            <th>Kode Project</th>
+            <th>Project</th>
    
         </tr>
     </thead>
@@ -35,21 +41,15 @@
                 <td>@memo.No_Memo_Rekomendasi</td>
                 <td>@memo.Judul</td>
                 <td>@memo.Disiplin</td>
+                <td>@memo.Area</td>
+                <td>@memo.Direksi</td>
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
+
               
         
-                @* <td>
-                    @if (!string.IsNullOrEmpty(memo.Dokumen))
-                    {
-                        <a href="@Url.Content("~/uploads/" + memo.Dokumen)" target="_blank">View Document</a>
-                    }
-                    else
-                    {
-                        <span>No document</span>
-                    }
-                </td> *@
 
-                <td>
+
+                @* <td>
 
  @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
     {
@@ -66,18 +66,35 @@
     {
         <span>Tidak ada dokumen</span>
     }
-                </td>
+                </td> *@
+
+
+<td>
+<a href="#" data-toggle="modal" data-target="#dokumenModal" onclick="loadDokumen(@memo.Id)">
+    Detail Dokumen
+</a>
+</td>
+
 
                 
+<td>@memo.KebutuhanKontrak</td>
+
+ <td>@memo.Komentar</td>
+ <td>@memo.Kode_Project</td>
+
                  <td>
-    @if (memo.KebutuhanKontrak == "Ya")
-    {
-        <span class="badge badge-success">Ya</span>
-    }
-    else if (memo.KebutuhanKontrak == "Tidak")
-    {
-        <span class="badge badge-danger">Tidak</span>
-    }
+
+<a asp-action="DetailByMemo" asp-route-idmemo="@memo.No_Memo_Rekomendasi" class="btn btn-info btn-sm">
+  <i class="fas fa-eye" title="LIHAT PROJECT"></i>
+</a>
+
+
+       <a asp-action="FormEdit" asp-controller="FasePlanning" asp-route-id="@memo.IdFase" class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit" title="EDIT PROJECT"></i>
+        </a>
+
+
+
 </td>
 
 
@@ -85,6 +102,92 @@
         }
     </tbody>
 </table>
+
+
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="dokumenModal" tabindex="-1" role="dialog" aria-labelledby="dokumenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dokumenModalLabel">Detail Dokumen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="dokumenContent">
+                <p class="text-center">Memuat dokumen...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadDokumen(id) {
+        $.get('/Memo/GetDokumenList', { id: id }, function (data) {
+            $("#dokumenContent").html(data);
+        });
+    }
+</script>
+
+
+
+<div class="modal fade" id="dokumenModal" tabindex="-1" role="dialog" aria-labelledby="dokumenModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dokumenModalLabel">Daftar Dokumen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Dokumen</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dokumenList">
+                        <!-- Daftar dokumen akan dimuat di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $(".view-docs").click(function () {
+            var dokumenData = $(this).data("dokumen");
+            var dokumenList = JSON.parse(dokumenData);
+            var tableBody = $("#dokumenList");
+            tableBody.empty();
+
+            if (dokumenList.length > 0) {
+                dokumenList.forEach(function (dokumen) {
+                    var row = "<tr>" +
+                        "<td>" + dokumen.NamaDokumen + "</td>" +
+                        "<td><a href='" + dokumen.Path + "' target='_blank' class='btn btn-success btn-sm'>Lihat</a></td>" +
+                        "</tr>";
+                    tableBody.append(row);
+                });
+            } else {
+                tableBody.append("<tr><td colspan='2'>Tidak ada dokumen</td></tr>");
+            }
+        });
+    });
+</script>
+
+
+
+
 
 <script>
     $(document).ready(function () {

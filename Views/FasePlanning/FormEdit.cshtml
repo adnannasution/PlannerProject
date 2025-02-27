@@ -3,16 +3,16 @@
 
 @{
     ViewData["Title"] = "Edit Planning Project";
+     var idMemo = Context.Request.Query["idmemo"];
 }
 
 <!-- Styles -->
 
 
 
-<form asp-action="Edit" method="post" id="editForm">
+<form asp-action="Edit" id="editForm">
   @Html.AntiForgeryToken()
 
-<input type="hidden" asp-for="Id" class="form-control" />
 
   <div class="container">
     <div class="row">
@@ -26,31 +26,52 @@
     </div>
 
 
-    <div class="form-group">
-        <label asp-for="Planner" class="control-label"></label>
-        <select asp-for="Planner" class="form-control" asp-items="ViewBag.Planner" required>
-             <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="Planner" class="text-danger"></span>
-    </div>
+
+<div class="form-group">
+    <label asp-for="Planner" class="control-label"></label>
+    <input type="text" asp-for="Planner" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == "Nama")?.Value" readonly />
+    <span asp-validation-for="Planner" class="text-danger"></span>
+</div>
 
 
-    <div class="form-group">
+
+
+@* <div class="form-group">
     <label asp-for="No_Memo_Rekomendasi" class="control-label">No Memo Rekomendasi</label>
     <select asp-for="No_Memo_Rekomendasi" class="form-control" asp-items="ViewBag.NoMemoRekomendasi" required>
         <option value="">Pilih</option>
     </select>
     <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
+</div> *@
+
+
+<div class="form-group">
+    <label asp-for="No_Memo_Rekomendasi" class="control-label">No Memo Rekomendasi</label>
+    
+    @if (!string.IsNullOrEmpty(idMemo))
+    {
+        <input asp-for="No_Memo_Rekomendasi" class="form-control" value="@idMemo" readonly />
+    }
+    else
+    {
+        <select asp-for="No_Memo_Rekomendasi" class="form-control" asp-items="ViewBag.NoMemoRekomendasi" required>
+            <option value="">Pilih</option>
+        </select>
+    }
+    
+    <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
 </div>
 
 
-     <div class="form-group">
-        <label asp-for="NoProgram" class="control-label">Kode IRKAP</label>
-        <select asp-for="NoProgram" class="form-select" id="multiple-select-field2" multiple  asp-items="ViewBag.NoProgram" required>
-             <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="NoProgram" class="text-danger"></span>
-    </div>
+
+
+<div class="form-group">
+    <label asp-for="NoProgram" class="control-label">Kode IRKAP</label>
+    <select asp-for="NoProgram" class="form-select" id="multiple-select-field2" multiple asp-items="ViewBag.NoProgram" required>
+        <option value="">Pilih</option>
+    </select>
+    <span asp-validation-for="NoProgram" class="text-danger"></span>
+</div>
 
 
 <script>
@@ -91,6 +112,7 @@
         <option value="">Pilih</option>
         <option value="Barang">Barang</option>
         <option value="Jasa">Jasa</option>
+        <option value="Barang & Jasa">Barang & Jasa</option>
     </select>
     <span asp-validation-for="Jenis_Project" class="text-danger"></span>
 </div>
@@ -112,13 +134,51 @@
 
  
 
-    <div class="form-group">
-        <label asp-for="Kategori_Equipment" class="control-label"></label>
-        <select asp-for="Kategori_Equipment" class="form-select" id="multiple-select-field" multiple  asp-items="ViewBag.Kategori_Equipment" required>
-             <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="Kategori_Equipment" class="text-danger"></span>
-    </div>
+
+<div class="form-group">
+    <label asp-for="Kategori_Equipment" class="control-label">
+        Kategori Equipment  
+        <span class="badge badge-warning"><a href="#" id="toggle-lainnya">Lainnya</a></span>
+    </label>
+    <select asp-for="Kategori_Equipment" class="form-select" id="multiple-select-field" multiple asp-items="ViewBag.Kategori_Equipment" required>
+        <option value="">Pilih</option>
+    </select>
+    <span asp-validation-for="Kategori_Equipment" class="text-danger"></span>
+</div>
+
+<!-- Input teks untuk kategori lainnya -->
+<div class="form-group" id="kategori-equipment-lainnya-group" style="display: none;">
+    <label for="input-kategori-equipment" class="control-label">Kategori Equipment Lainnya</label>
+    <input type="text" class="form-control" id="input-kategori-equipment" asp-for="Kategori_Equipment">
+    <span asp-validation-for="Kategori_Equipment" class="text-danger"></span>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toggleLink = document.getElementById("toggle-lainnya");
+        var selectField = document.getElementById("multiple-select-field");
+        var otherFieldGroup = document.getElementById("kategori-equipment-lainnya-group");
+        var otherField = document.getElementById("input-kategori-equipment");
+        var isOtherVisible = false; // Flag untuk cek status
+
+        toggleLink.addEventListener("click", function (event) {
+            event.preventDefault(); // Hindari reload halaman
+            isOtherVisible = !isOtherVisible; // Toggle status
+
+            if (isOtherVisible) {
+                selectField.disabled = true;  // Disable dropdown
+                otherFieldGroup.style.display = "block"; // Tampilkan input
+                otherField.required = true; // Tambah required
+            } else {
+                selectField.disabled = false; // Enable dropdown
+                otherFieldGroup.style.display = "none"; // Sembunyikan input
+                otherField.required = false; // Hapus required
+                otherField.value = ""; // Reset nilai input
+            }
+        });
+    });
+</script>
+
 
 
 <script>
@@ -131,10 +191,69 @@
 </script>
 
 
-<div class="form-group"> <label asp-for="Kategori_Maintenance" class="control-label"></label> <select asp-for="Kategori_Maintenance" class="form-select" id="multiple-select-field3" multiple asp-items="ViewBag.Kategori_Maintenance" required> <option value="">Pilih</option> </select> <span asp-validation-for="Kategori_Maintenance" class="text-danger"></span> </div> 
 
 
-<script> $( '#multiple-select-field3' ).select2( { theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style', placeholder: $( this ).data( 'placeholder' ), closeOnSelect: false, } ); </script>
+
+<div class="form-group">
+    <label asp-for="Kategori_Maintenance" class="control-label">
+        Kategori Maintenance  
+        <span class="badge badge-warning"><a href="#" id="toggle-maintenance-lainnya">Lainnya</a></span>
+    </label>
+    <select asp-for="Kategori_Maintenance" class="form-select form-control" id="multiple-select-field3" multiple asp-items="ViewBag.Kategori_Maintenance" required>
+        <option value="">Pilih</option>
+    </select>
+    <span asp-validation-for="Kategori_Maintenance" class="text-danger"></span>
+</div>
+
+<!-- Input teks untuk kategori lainnya -->
+<div class="form-group" id="kategori-maintenance-lainnya-group" style="display: none;">
+    <label for="input-kategori-maintenance" class="control-label">Kategori Maintenance Lainnya</label>
+    <input type="text" class="form-control" id="input-kategori-maintenance" asp-for="Kategori_Maintenance">
+    <span asp-validation-for="Kategori_Maintenance" class="text-danger"></span>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var toggleLink = document.getElementById("toggle-maintenance-lainnya");
+        var selectField = document.getElementById("multiple-select-field3");
+        var otherFieldGroup = document.getElementById("kategori-maintenance-lainnya-group");
+        var otherField = document.getElementById("input-kategori-maintenance");
+        var isOtherVisible = false; // Flag untuk cek status
+
+        toggleLink.addEventListener("click", function (event) {
+            event.preventDefault(); // Hindari reload halaman
+            isOtherVisible = !isOtherVisible; // Toggle status
+
+            if (isOtherVisible) {
+                selectField.disabled = true;  // Disable dropdown
+                otherFieldGroup.style.display = "block"; // Tampilkan input
+                otherField.required = true; // Tambah required
+            } else {
+                selectField.disabled = false; // Enable dropdown
+                otherFieldGroup.style.display = "none"; // Sembunyikan input
+                otherField.required = false; // Hapus required
+                otherField.value = ""; // Reset nilai input
+            }
+        });
+    });
+</script>
+
+  
+ 
+
+<script>
+    $( '#multiple-select-field3' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+} );
+</script>
+
+
+
+
+
 
 
 
@@ -176,7 +295,6 @@
     <span asp-validation-for="Pekerjaan" class="text-danger"></span>
 </div>
 
-
     <div class="form-group">
         <label asp-for="Area" class="control-label"></label>
         <select asp-for="Area" class="form-control" asp-items="ViewBag.Area" required>
@@ -216,12 +334,24 @@
         <span asp-validation-for="Tanggal_Update" class="text-danger"></span>
     </div>
 
-
-                <div class="form-group">
+            <div class="form-group">
         <label asp-for="No_Work_Order" class="control-label"></label>
         <input asp-for="No_Work_Order" class="form-control" required>
         <span asp-validation-for="No_Work_Order" class="text-danger"></span>
     </div>
+
+
+
+
+
+    <div class="form-group">
+        <label asp-for="No_PR" class="control-label"></label>
+        <input asp-for="No_PR" class="form-control" required>
+        <span asp-validation-for="No_PR" class="text-danger"></span>
+    </div>
+
+
+
 
     <div class="form-group">
         <label asp-for="Tanggal_Kirim_Paket" class="control-label">Prognosa Tanggal Kirim Paket</label>
@@ -242,6 +372,7 @@
 
 
 
+
     <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
@@ -252,11 +383,12 @@
 </form>
 
 
+
 <script>
     document.getElementById("saveButton").addEventListener("click", function () {
         Swal.fire({
             title: 'Are you sure?',
-            text: "Do you want to save the changes?",
+            text: "Pastikan data anda sudah benar",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -265,13 +397,12 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Submit the form
                 document.getElementById("editForm").submit();
             }
         });
     });
 </script>
-
-
 
 
 <script>
@@ -302,4 +433,31 @@
 
 
 
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const noInput = document.getElementById("No");
+            const statusKontrakSelect = document.getElementById("Status_kontrak");
+            const disiplinSelect = document.getElementById("Disiplin");
+            const tahunInput = document.getElementById("Tahun");
+            const kodeProjectInput = document.getElementById("Kode_Project");
 
+            function generateKodeProject() {
+                const no = noInput.value || "";
+                const statusKontrak = statusKontrakSelect.value || "";
+                const disiplin = disiplinSelect.value || "";
+                
+                // Ambil tahun dari Tanggal_Kirim_Paket
+                const tahun = tahunInput.value || "";
+
+                kodeProjectInput.value = `${no}/${statusKontrak}/${disiplin}/${tahun}`;
+            }
+
+            // Tambahkan event listener ke masing-masing input
+            noInput.addEventListener("input", generateKodeProject);
+            statusKontrakSelect.addEventListener("change", generateKodeProject);
+            disiplinSelect.addEventListener("change", generateKodeProject);
+            tahunInput.addEventListener("input", generateKodeProject);
+        });
+    </script>
+}

@@ -8,6 +8,20 @@
 
 <form asp-action="Create" method="post" id="faseform">
   @Html.AntiForgeryToken()
+
+
+<div class="form-group">
+    <label for="JenisBiaya">Jenis Biaya</label>
+    <select asp-for="JenisBiaya" class="form-control" required id="JenisBiaya">
+        <option value="">Pilih Jenis Biaya</option>
+        <option value="Rutin">Rutin</option>
+        <option value="Non Rutin">Non Rutin</option>
+        <option value="OH-PS">OH-PS</option>
+    </select>
+</div>
+
+
+
 <div class="form-group">
     <label for="Bulan">Bulan</label>
     <select asp-for="Bulan" class="form-control" required id="Bulan">
@@ -27,45 +41,158 @@
     </select>
 </div>
 
-    <div class="form-group">
-        <label>Tahun</label>
-        <input asp-for="Tahun" class="form-control" required type="number" />
-    </div>
-    <div class="form-group">
-        <label>Actual WBS RT</label>
-         <div id="ActualWbsRtLabel" class="currency-label text-primary"></div> 
-        <input asp-for="ActualWbsRt" class="form-control" required type="number" step="0.01" id="ActualWbsRt" oninput="formatCurrency(this, 'ActualWbsRtLabel')" />
-    </div>
-    <div class="form-group">
-        <label>% Actual</label>
-        <input asp-for="PercentActual" class="form-control" required type="number" step="0.01" />
-    </div>
-    <div class="form-group">
-        <label>Commitment WBS RT</label>
-         <div id="CommitmentWbsRtLabel" class="currency-label text-primary"></div> 
-        <input asp-for="CommitmentWbsRt" class="form-control" required id="CommitmentWbsRt"  oninput="formatCurrency(this, 'CommitmentWbsRtLabel')" type="number" step="0.01" />
-    </div>
-    <div class="form-group">
-        <label>% Commitment</label>
-        <input asp-for="PercentCommitment" class="form-control" required type="number" step="0.01"  />
-    </div>
-    <div class="form-group">
-        <label>ROP WBS RT</label>
-         <div id="RopWbsRtLabel" class="currency-label text-primary"></div>
-        <input asp-for="RopWbsRt" class="form-control" required oninput="formatCurrency(this, 'RopWbsRtLabel')" type="number" id="RopWbsRt" step="0.01" />
-    </div>
-    <div class="form-group">
-        <label>% ROP</label>
-        <input asp-for="PercentRop" class="form-control" required type="number" step="0.01" />
-    </div>
+<div class="form-group">
+    <label>Tahun</label>
+    <input asp-for="Tahun" class="form-control" required type="number" id="Tahun" />
+</div>
+
+
+<div class="form-group">
+    <label>Actual WBS RT</label>
+    <div id="ActualWbsRtLabel" class="currency-label text-primary"></div> 
+    <input asp-for="ActualWbsRt" class="form-control" required type="number" step="0.01" id="ActualWbsRt" />
+</div>
+
+<div class="form-group">
+    <label>% Actual</label>
+    <input asp-for="PercentActual" class="form-control" required type="number" step="0.01" id="PercentActual" readonly />
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        function updateActualPercentage() {
+            var jenisBiaya = $("#JenisBiaya").val();
+            var tahun = $("#Tahun").val();
+            var actualWbsRt = parseFloat($("#ActualWbsRt").val()) || 0;
+
+            if (jenisBiaya && tahun) {
+                $.ajax({
+                    url: "/WbsData/GetBudgetWbs",
+                    type: "GET",
+                    data: { jenisBiaya: jenisBiaya, tahun: tahun },
+                    success: function (response) {
+                        if (response.budgetWbs) {
+                            var budgetWbs = parseFloat(response.budgetWbs);
+                            var percentActual = (actualWbsRt / budgetWbs) * 100;
+
+                            $("#PercentActual").val(percentActual.toFixed(2)); // Format 2 desimal
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event trigger saat Jenis Biaya atau Tahun berubah
+        $("#JenisBiaya, #Tahun, #ActualWbsRt").on("change keyup", function () {
+            updateActualPercentage();
+        });
+    });
+</script>
+
+
+
+
+<div class="form-group">
+    <label>Commitment WBS RT</label>
+    <div id="CommitmentWbsRtLabel" class="currency-label text-primary"></div> 
+    <input asp-for="CommitmentWbsRt" class="form-control" required id="CommitmentWbsRt" oninput="formatCurrency(this, 'CommitmentWbsRtLabel')" type="number" step="0.01" />
+</div>
+
+<div class="form-group">
+    <label>% Commitment</label>
+    <input asp-for="PercentCommitment" class="form-control" required type="number" step="0.01" id="PercentCommitment" readonly />
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        function updateCommitmentPercentage() {
+            var jenisBiaya = $("#JenisBiaya").val();
+            var tahun = $("#Tahun").val();
+            var commitmentWbsRt = parseFloat($("#CommitmentWbsRt").val()) || 0;
+
+            if (jenisBiaya && tahun) {
+                $.ajax({
+                    url: "/WbsData/GetBudgetWbs",
+                    type: "GET",
+                    data: { jenisBiaya: jenisBiaya, tahun: tahun },
+                    success: function (response) {
+                        if (response.budgetWbs) {
+                            var budgetWbs = parseFloat(response.budgetWbs);
+                            var percentCommitment = (commitmentWbsRt / budgetWbs) * 100;
+
+                            $("#PercentCommitment").val(percentCommitment.toFixed(2)); // Format 2 desimal
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event trigger saat Commitment WBS RT berubah
+        $("#CommitmentWbsRt").on("change keyup", function () {
+            updateCommitmentPercentage();
+        });
+    });
+</script>
+
+
+
+
+
+<div class="form-group">
+    <label>ROP WBS RT</label>
+    <div id="RopWbsRtLabel" class="currency-label text-primary"></div>
+    <input asp-for="RopWbsRt" class="form-control" required id="RopWbsRt" oninput="formatCurrency(this, 'RopWbsRtLabel')" type="number" step="0.01" />
+</div>
+
+<div class="form-group">
+    <label>% ROP</label>
+    <input asp-for="PercentRop" class="form-control" required type="number" step="0.01" id="PercentRop" readonly />
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        function updateRopPercentage() {
+            var jenisBiaya = $("#JenisBiaya").val();
+            var tahun = $("#Tahun").val();
+            var ropWbsRt = parseFloat($("#RopWbsRt").val()) || 0;
+
+            if (jenisBiaya && tahun) {
+                $.ajax({
+                    url: "/WbsData/GetBudgetWbs",
+                    type: "GET",
+                    data: { jenisBiaya: jenisBiaya, tahun: tahun },
+                    success: function (response) {
+                        if (response.budgetWbs) {
+                            var budgetWbs = parseFloat(response.budgetWbs);
+                            var percentRop = (ropWbsRt / budgetWbs) * 100;
+
+                            $("#PercentRop").val(percentRop.toFixed(2)); // Format 2 desimal
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event trigger saat ROP WBS RT berubah
+        $("#RopWbsRt").on("change keyup", function () {
+            updateRopPercentage();
+        });
+    });
+</script>
+
+
+
+
     <div class="form-group">
         <label>% Forecasting</label>
         <input asp-for="PercentForecasting" class="form-control" required type="number" step="0.01" />
     </div>
-    <div class="form-group">
-        <label>Jenis Biaya</label>
-        <input asp-for="JenisBiaya" class="form-control" required />
-    </div>
+
+
+
 
     <div class="form-group">
  <button type="button" class="btn btn-primary" id="saveButton">Save</button>

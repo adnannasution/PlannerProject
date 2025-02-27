@@ -11,7 +11,7 @@
 
 
 
-<div class="timeline" style="padding: 50px;">
+@* <div class="timeline" style="padding: 50px;">
     @foreach (var tahapan in Model)
     {
         <div class="timeline-item" style="padding: 10px;">
@@ -23,28 +23,45 @@
                 <p class="text-muted"><i class="fas fa-calendar-alt"></i> @tahapan.Tanggal?.ToString("dd MMM yyyy")</p>
                 <p class="text-muted"><i class="fas fa-clock"></i> @tahapan.Waktu?.ToString(@"hh\:mm")</p>
                 <p><i class="fas fa-envelope"></i> @tahapan.Email</p>
+                <p><i class="fas fa-star"></i> @tahapan.Status</p>
+            </div>
+        </div>
+    }
+</div> *@
+
+
+<div class="timeline" style="padding: 50px;">
+    @foreach (var tahapan in Model)
+    {
+        // Menentukan warna background berdasarkan status
+        var bgColor = tahapan.Status == "Done" ? "#87CEEB" : "#808080"; // Blue Sky untuk Done, Gray untuk Not yet
+        var textColor = tahapan.Status == "Done" ? "#000" : "#D3D3D3"; // Hitam untuk Done, Light Gray untuk Not yet
+ var iconClass = tahapan.Status == "Done" ? "fas fa-clipboard-check" : "fas fa-hourglass-half"; // Icon berubah sesuai status
+
+ 
+        <div class="timeline-item" style="padding: 10px;">
+            <div class="timeline-icon">
+       <i class="@iconClass"></i>
+            </div>
+            <div class="timeline-content" style="background-color: @bgColor; color: @textColor; padding: 15px; border-radius: 8px;">
+                <h5>@tahapan.Tahap</h5>
+                <p class="text-muted"><i class="fas fa-calendar-alt"></i> @tahapan.Tanggal?.ToString("dd MMM yyyy")</p>
+                <p class="text-muted"><i class="fas fa-clock"></i> @tahapan.Waktu?.ToString(@"hh\:mm")</p>
+                <p><i class="fas fa-envelope"></i> @tahapan.Email</p>
+
+                <!-- Status dalam bentuk badge -->
+                <p>
+                    <span class="badge @(tahapan.Status == "Done" ? "badge-success" : "badge-secondary")">
+                        <i class="fas fa-star"></i> @tahapan.Status
+                    </span>
+                </p>
+                 <p>@tahapan.Keterangan</p>
             </div>
         </div>
     }
 </div>
 
-@* 
-<div class="timeline" style="padding: 50px;">
-    @foreach (var tahapan in Model)
-    {
-        <div class="timeline-item" style="padding: 10px;">
-            <div class="timeline-icon">
-                <i class="fas fa-clipboard-check"></i> <!-- Icon untuk tahapan -->
-            </div>
-            <div class="timeline-content" style="background-color: @GetRandomColor();">
-                <h5>@tahapan.Tahap</h5>
-                <p class="text-muted"><i class="fas fa-calendar-alt"></i> @tahapan.Tanggal?.ToString("dd MMM yyyy")</p>
-                <p class="text-muted"><i class="fas fa-clock"></i> @tahapan.Waktu?.ToString(@"hh\:mm")</p>
-                <p><i class="fas fa-envelope"></i> @tahapan.Email</p>
-            </div>
-        </div>
-    }
-</div> *@
+
 
 <!-- Tambahkan style CSS jika perlu -->
 <style>

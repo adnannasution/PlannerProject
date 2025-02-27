@@ -1,7 +1,7 @@
 @model IEnumerable<dynamic>
 
 @{
-    ViewBag.Title = "WbsData";
+    ViewBag.Title = "Wbs Data";
 }
 
 <p>
@@ -27,7 +27,7 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    @* <tbody>
         @foreach (var group in Model.GroupBy(x => new { x.JenisBiaya, x.Tahun }))
         {
             var totalActualWbsRt = group.Sum(x => (decimal)x.ActualWbsRt); // Explicitly cast to decimal
@@ -47,7 +47,34 @@
                 </td>
             </tr>
         }
-    </tbody>
+    </tbody> *@
+
+
+    <tbody>
+    @foreach (var group in Model.GroupBy(x => new { x.JenisBiaya, x.Tahun }))
+    {
+        var lastEntry = group.LastOrDefault(); // Dapatkan nilai terakhir berdasarkan urutan data
+
+        var totalActualWbsRt = lastEntry?.ActualWbsRt ?? 0;
+        var totalCommitmentWbsRt = lastEntry?.CommitmentWbsRt ?? 0;
+        var totalRopWbsRt = lastEntry?.RopWbsRt ?? 0;
+        var budgetWbs = lastEntry?.BudgetWbs ?? 0;
+
+        <tr data-tahun="@group.Key.Tahun">
+            <td>@group.Key.JenisBiaya</td>
+            <td>@group.Key.Tahun</td>
+            <td>@totalActualWbsRt.ToString("N0")</td>
+            <td>@totalCommitmentWbsRt.ToString("N0")</td>
+            <td>@totalRopWbsRt.ToString("N0")</td>
+            <td>@budgetWbs.ToString("N0")</td>
+            <td>
+                <a asp-action="Details" asp-route-jenisBiaya="@group.Key.JenisBiaya" asp-route-tahun="@group.Key.Tahun" class="btn btn-info btn-sm">Detail</a>
+            </td>
+        </tr>
+    }
+</tbody>
+
+
 </table>
 
 

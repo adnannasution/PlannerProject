@@ -53,6 +53,15 @@ namespace Plan.Data
             public DbSet<Tahapan> Tahapan { get; set; }
             public DbSet<Irkap> Irkap { get; set; }
             public DbSet<TabelDokumen> TabelDokumen { get; set; }
+            public DbSet<HistoryTimelineok> HistoryTimelineok { get; set; }
+            public DbSet<HistoryTermin> HistoryTermin { get; set; }
+            public DbSet<HistoryFaseMonitoring> HistoryFaseMonitoring { get; set; }
+            public DbSet<HistoryFaseExecution> HistoryFaseExecution { get; set; }
+            public DbSet<TabelComponent> TabelComponent { get; set; }
+
+            public DbSet<TabelDokumenTimelineok> TabelDokumenTimelineok { get; set; }
+            public DbSet<TabelDokumenTermin> TabelDokumenTermin { get; set; }
+
 
 
 

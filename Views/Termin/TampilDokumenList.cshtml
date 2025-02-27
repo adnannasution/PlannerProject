@@ -1,0 +1,39 @@
+@model List<Plan.Models.TabelDokumenTermin>
+
+@{
+    ViewBag.Title = "Daftar Dokumen";
+}
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nama Dokumen</th>
+                <th>File</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var file in Model)
+            {
+                <tr>
+                    <td>@file.NamaDokumen</td>
+                    @* <td><a href="@file.Path" download class="btn btn-success btn-sm btn-dokumen">Download</a></td> *@
+                <td>
+                    
+                 <a href="@file.Path" target="_blank"
+                       download 
+                       class="btn btn-success btn-sm btn-dokumen" 
+                   
+                       data-kode="@file.Kode_Project"
+                       data-nama="@file.NamaDokumen">
+                        Download
+                    </a>
+                </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+
+

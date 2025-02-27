@@ -1,0 +1,78 @@
+@model IEnumerable<Plan.Models.HistoryFaseExecution>
+
+@{
+
+
+       var kodeProject = Context.Request.Query["kodeProject"].ToString();
+    ViewData["Title"] = "Historylog - " + kodeProject;
+
+}
+
+
+
+
+<div class="container mt-4">
+    <div class="timeline">
+        @foreach (var item in Model)
+        {
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fas fa-circle"></i>
+                </div>
+                <div class="timeline-content">
+                    <h5>@item.Kode_Project</h5>
+                    <p><strong>Aksi:</strong><span class=" badge badge-primary">@item.Aksi</span></p>
+                    <p><strong>Tanggal:</strong> @(item.Tanggal.ToString("dd MMM yyyy") ?? "Tanggal tidak tersedia")</p>
+                    <p><strong>Waktu:</strong> @(item.Waktu?.ToString(@"hh\:mm\:ss") ?? "Waktu tidak tersedia")</p>
+                    @if(item.NamaDokumen!=null){
+                    <p><strong>Nama Dokumen:</strong> @item.NamaDokumen</p>
+                    }
+                    <p><strong>Email:</strong> @item.Email</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    .timeline-item {
+        display: flex;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 30px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #d4d9e1;
+    }
+    .timeline-icon {
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 15px;
+        top: 0;
+    }
+    .timeline-content {
+        margin-left: 70px;
+        padding-left: 20px;
+        border-left: 2px solid #d4d9e1;
+    }
+    .timeline-content h5 {
+        margin-top: 0;
+        font-weight: bold;
+    }
+</style>

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 
 
@@ -72,71 +73,126 @@ var kodeProjects = _context.FasePlanning
 // Serialize data to be used in JavaScript
 ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 
+
+
+var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+
+var memos = _context.Memo
+    .Where(m => m.Email == userEmail)
+    .Select(m => new 
+    { 
+        m.No_Memo_Rekomendasi
+    })
+    .ToList();
+
+ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
+
+
+var users = _context.User
+    .Where(u => u.Rule == "2")
+    .Select(u => new 
+    { 
+        u.Id, 
+        u.Nama,
+        u.Email
+    })
+    .ToList();
+
+ViewBag.Planner = new SelectList(users, "Nama", "Nama");
+
+
         return View();
     }
+
+
+
+
+[HttpGet]
+public IActionResult GetTanggalMasukMemo(string noMemo)
+{
+    var tanggalMasuk = _context.Memo
+        .Where(m => m.No_Memo_Rekomendasi == noMemo)
+        .Select(m => m.Tanggal_Masuk_Memo)
+        .FirstOrDefault();
+
+        return Json(new { tanggalMasuk = tanggalMasuk.ToString("yyyy-MM-dd") });
+    
+}
+
+
+
+
+[HttpGet]
+public IActionResult GetPlannerByDisiplin(string noMemo)
+{
+    var disiplin = _context.Memo
+        .Where(m => m.No_Memo_Rekomendasi == noMemo)
+        .Select(m => m.Disiplin)
+        .FirstOrDefault();
+
+    if (disiplin == null)
+    {
+        return Json(new { planners = new List<object>() });
+    }
+
+    var planners = _context.User
+        .Where(u => u.Jabatan == "Planner" && u.Disiplin == disiplin)
+        .Select(u => u.Email)  // Ambil Nama Planner saja
+        .ToList();
+
+    return Json(new { planners });
+}
+
+
+
 
      // Create: POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Termin model, IFormFile dokumenFile)
+        public async Task<IActionResult> Create(Termin model)
         {
-            if (ModelState.IsValid)
-            {
-                if (dokumenFile != null && dokumenFile.Length > 0)
-                {
-                    // Generate unique file name
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(dokumenFile.FileName);
-
-                    // Define upload path
-                  string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-
-
-
-                    // Ensure the directory exists
-                    if (!Directory.Exists(uploadPath))
-                    {
-                        Directory.CreateDirectory(uploadPath);
-                    }
-
-                    // Save the file
-                    string filePath = Path.Combine(uploadPath, fileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await dokumenFile.CopyToAsync(fileStream);
-                    }
-
-                    // Save the file path to the model
-                    model.Dokumen = $"/uploads/{fileName}";
-
-                    // Save to database
-    
-                }
-                else
-                {
-                    
-                    ModelState.AddModelError("Dokumen", "Please upload a valid PDF document.");
-                }
-
+          
+               
 
                 _context.Termin.Add(model);
                     await _context.SaveChangesAsync();
 
 
 
-                    // Create a new Tahapan entity
-        var tahapan = new Tahapan
-        {
-            Kode_Project = model.Kode_Project,
-            Tanggal = DateTime.Now.Date, // Current date
-            Waktu = DateTime.Now.TimeOfDay, // Current time
-            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-            Tahap = $"Termin ke {model.JenisTermin}" // A description of the current step
-        };
+        //             // Create a new Tahapan entity
+        // var tahapan = new Tahapan
+        // {
+        //     Kode_Project = model.Kode_Project,
+        //     Tanggal = DateTime.Now.Date, // Current date
+        //     Waktu = DateTime.Now.TimeOfDay, // Current time
+        //     Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+        //     Tahap = $"Termin ke {model.JenisTermin}", // A description of the current step
+        //     Status= "Done" // Set status default
+        
+        // };
 
-        // Simpan entitas Tahapan
-        _context.Add(tahapan);
-        await _context.SaveChangesAsync();
+        // // Simpan entitas Tahapan
+        // _context.Add(tahapan);
+        // await _context.SaveChangesAsync();
+
+
+
+
+        
+var tahapan = await _context.Tahapan
+.FirstOrDefaultAsync(t => t.Kode_Project == model.Kode_Project && t.Tahap == $"Termin ke {model.JenisTermin}");
+
+if (tahapan != null) // Jika sudah ada, lakukan update
+{
+  
+    tahapan.Tanggal = DateTime.Now.Date; // Perbarui tanggal
+    tahapan.Waktu = DateTime.Now.TimeOfDay; // Perbarui waktu
+    tahapan.Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value; // Perbarui email
+    tahapan.Status = "Done"; // Set status default
+    
+    _context.Update(tahapan); // Tandai untuk update
+    await _context.SaveChangesAsync();
+}
 
 
  TempData["SuccessMessage"] = "successfully!";
@@ -183,7 +239,23 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 
 
 
-            }
+            
+
+ 
+
+            var historyTermin  = new HistoryTermin
+            {
+                Kode_Project = model.Kode_Project,
+                Tanggal = DateTime.Now.Date,
+                Waktu = DateTime.Now.TimeOfDay,
+                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                Aksi = "Add data"
+            };
+
+            // Simpan entitas ke database
+            _context.Add(historyTermin);
+           await _context.SaveChangesAsync();
+
 
             //return View(model);
              return RedirectToAction("Index");
@@ -215,7 +287,7 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,JenisTermin,Evaluasi_Planner,No_WO_Tagihan,Prosentase_Tagihan,SA,Periode,Tagihan,Evaluasi_Planner_2,No_WO_Tagihan_2,Prosentase_Tagihan_2")] Termin termin)
+    public async Task<IActionResult> Edit(int id, Termin termin)
    
     {
         if (id != termin.Id)
@@ -241,6 +313,22 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
                     throw;
                 }
             }
+
+
+
+            var historyTermin  = new HistoryTermin
+            {
+                Kode_Project = termin.Kode_Project,
+                Tanggal = DateTime.Now.Date,
+                Waktu = DateTime.Now.TimeOfDay,
+                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                Aksi = "Edit data"
+            };
+
+            // Simpan entitas ke database
+            _context.Add(historyTermin);
+           await _context.SaveChangesAsync();
+
              TempData["SuccessMessage"] = "successfully!";
             return RedirectToAction(nameof(Index));
         }
@@ -272,6 +360,23 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
         var termin = await _context.Termin.FindAsync(id);
         _context.Termin.Remove(termin);
         await _context.SaveChangesAsync();
+
+
+
+                    var historyTermin  = new HistoryTermin
+            {
+                Kode_Project = termin.Kode_Project,
+                Tanggal = DateTime.Now.Date,
+                Waktu = DateTime.Now.TimeOfDay,
+                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                Aksi = "Hapus data"
+            };
+
+            // Simpan entitas ke database
+            _context.Add(historyTermin);
+           await _context.SaveChangesAsync();
+
+
          TempData["SuccessMessage"] = "successfully!";
         return RedirectToAction(nameof(Index));
     }
@@ -284,7 +389,7 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 
 
 
-public IActionResult Detail(string kode_project)
+public async Task<IActionResult> Detail(string kode_project)
 {
     if (string.IsNullOrEmpty(kode_project))
     {
@@ -313,8 +418,170 @@ public IActionResult Detail(string kode_project)
                    Nilai_Purchasing_Order = (decimal?)ft.Nilai_Purchasing_Order // Cast to nullable decimal
                };
 
-    return View(data.ToList());
+
+
+            var historyTermin  = new HistoryTermin
+            {
+                Kode_Project = kode_project,
+                Tanggal = DateTime.Now.Date,
+                Waktu = DateTime.Now.TimeOfDay,
+                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                Aksi = "Lihat Detail"
+            };
+
+            // Simpan entitas ke database
+            _context.Add(historyTermin);
+            await _context.SaveChangesAsync();
+
+
+    return View(await data.ToListAsync());
 }
+
+
+
+ 
+
+
+    [HttpPost]
+    public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, int JenisTermin)
+    {
+        if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
+        {
+            return BadRequest("Semua field harus diisi!");
+        }
+
+        var filePath = Path.Combine("wwwroot/uploads", File.FileName);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            File.CopyTo(stream);
+        }
+
+        var dokumen = new TabelDokumenTermin
+        {
+            Kode_Project = Kode_Project,
+            JenisTermin = JenisTermin,
+            NamaDokumen = NamaDokumen,
+            NamaFile = File.FileName,
+            Path = "/uploads/" + File.FileName
+        };
+
+        _context.TabelDokumenTermin.Add(dokumen);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+[HttpGet]
+public IActionResult GetDokumenList(string kodeProject, int JenisTermin)
+{
+    var dokumenList = _context.TabelDokumenTermin
+        .Where(d => d.Kode_Project == kodeProject && d.JenisTermin == JenisTermin)
+        .Select(d => new 
+        {
+            d.Id,
+            d.NamaDokumen,
+            d.Path
+        })
+        .ToList();
+
+    return Json(dokumenList);
+}
+
+
+    [HttpDelete]
+    public IActionResult DeleteDokumen(int id)
+    {
+        var dokumen = _context.TabelDokumenTermin.Find(id);
+        if (dokumen == null) return NotFound();
+
+        var filePath = Path.Combine("wwwroot/uploads", dokumen.NamaFile);
+        if (System.IO.File.Exists(filePath))
+        {
+            System.IO.File.Delete(filePath);
+        }
+
+        _context.TabelDokumenTermin.Remove(dokumen);
+        _context.SaveChanges();
+
+        return Ok();
+    }
+
+
+[HttpGet]
+public IActionResult GetDokumen(string kodeProject)
+{
+    var dokumenList = _context.TabelDokumenTermin
+        .Where(d => d.Kode_Project == kodeProject)
+        .Select(d => new 
+        {
+            d.NamaDokumen,
+            d.Path
+        })
+        .ToList();
+
+    return Json(dokumenList);
+}
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> RekamAktivitas(string kodeProject, string namaDokumen)
+        {
+            var history = new HistoryTermin
+            {
+                Kode_Project = kodeProject,
+                NamaDokumen = namaDokumen,
+                Aksi = "Lihat Dokumen",
+                Tanggal = DateTime.Now.Date,
+                Waktu = DateTime.Now.TimeOfDay,
+                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value
+            };
+
+            _context.Add(history);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Aktivitas berhasil direkam." });
+        }
+
+
+        
+
+
+
+        public async Task<IActionResult> TampilHistoryTermin(string kodeProject)
+        {
+            var histori = await _context.HistoryTermin
+                .Where(t => t.Kode_Project == kodeProject)
+                .ToListAsync();
+
+            if (histori == null || !histori.Any())
+            {
+                return NotFound("No records found for this project.");
+            }
+
+            // Set Kode_Project in ViewData for display in the view
+            ViewData["KodeProject"] = kodeProject;
+
+            return View(histori);
+
+            //return PartialView("ViewSLA", histori);
+        }
+
+ 
+
+  public ActionResult TampilDokumenList(string kode_project, int JenisTermin)
+    {
+      
+
+        var dokumenList = _context.TabelDokumenTermin
+            .Where(d => d.Kode_Project == kode_project && d.JenisTermin == JenisTermin)
+            .ToList();
+
+        ViewBag.KodeProject = kode_project;
+        ViewBag.JenisTermin = JenisTermin;
+        return PartialView("TampilDokumenList", dokumenList);
+    }
 
  
 }

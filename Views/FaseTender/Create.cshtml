@@ -9,12 +9,12 @@
 
 
 <form asp-action="Create" method="post" id="faseform">
-  @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
 
     <div class="container">
-    <div class="row">
-        <!-- Kolom pertama -->
-        <div class="col-md-6">
+        <div class="row">
+            <!-- Kolom pertama -->
+            <div class="col-md-12">
 
 
 
@@ -22,242 +22,494 @@
 
 
 
-<div class="form-group">
-    <label asp-for="Kode_Project" class="control-label"></label>
-    <div class="input-group">
-        <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly required>
-        <div class="input-group-append">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+                <div class="form-group">
+                    <label asp-for="Kode_Project" class="control-label"></label>
+                    <div class="input-group">
+                        <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#kodeProjectModal">Pilih</button>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+                </div>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog"
+                    aria-labelledby="kodeProjectModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Table -->
+                                <table id="kodeProjectTable" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Kode Project</th>
+                                            <th>Pekerjaan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows will be dynamically loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <script>
+                    $(document).ready(function () {
+                        // Initialize DataTables
+                        var projects = @Html.Raw(ViewBag.KodeProjects);
+
+                        // Dynamically populate table rows
+                        projects.forEach(function (project) {
+                            $('#kodeProjectTable tbody').append(
+                                '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
+                                '<td>' + project.Kode_Project + '</td>' +
+                                '<td>' + project.Pekerjaan + '</td>' +
+                                '</tr>'
+                            );
+                        });
+
+                        // Initialize DataTable with search and pagination enabled
+                        var table = $('#kodeProjectTable').DataTable({
+                            order: [] // Disable initial ordering
+                        });
+
+                        // Bind event to select the project code
+                        $('#kodeProjectTable').on('click', '.selectable-row', function () {
+                            var kodeProject = $(this).data('kode');
+                            $('#Kode_Project').val(kodeProject).trigger("change"); // Trigger change
+                        });
+                    });
+                </script>
+
+
+
+
+       
+
+                <div class="additionalFields2" style="display: none;">
+
+                    <div class="form-group">
+                        <label for="No_Vendor">No Vendor</label>
+                        <input asp-for="No_Vendor" class="form-control">
+                        <span asp-validation-for="No_Vendor" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Pelaksana">Pelaksana</label>
+                        <input asp-for="Pelaksana" class="form-control" />
+                        <span asp-validation-for="Pelaksana" class="text-danger"></span>
+                    </div>
+
+
+
+
+                    <div class="form-group">
+                        <label for="PO_OA">PO OA</label>
+                        <input asp-for="PO_OA" class="form-control" />
+                        <span asp-validation-for="PO_OA" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PO_SR">PO SR</label>
+                        <input asp-for="PO_SR" class="form-control" />
+                        <span asp-validation-for="PO_SR" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PO_RO">PO RO</label>
+                        <input asp-for="PO_RO" class="form-control" />
+                        <span asp-validation-for="PO_RO" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PR_OA">PR OA</label>
+                        <input asp-for="PR_OA" class="form-control" />
+                        <span asp-validation-for="PR_OA" class="text-danger"></span>
+                    </div>
+
+
+
+
+
+
+
+                    <div class="form-group">
+                        <label for="PR_MT">PR MT</label>
+                        <input asp-for="PR_MT" class="form-control" />
+                        <span asp-validation-for="PR_MT" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PR_SR">PR SR</label>
+                        <input asp-for="PR_SR" class="form-control" />
+                        <span asp-validation-for="PR_SR" class="text-danger"></span>
+                    </div>
+
+
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+                            <label for="Nomor_SP3MK">Nomor SP3MK</label>
+                            <input asp-for="Nomor_SP3MK" class="form-control" />
+                            <span asp-validation-for="Nomor_SP3MK" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Nilai_Purchasing_Order">Nilai Purchasing Order</label>
+                            <div id="formatted_Nilai_Purchasing_Order" class="text-primary font-weight-bold"></div>
+                            <input asp-for="Nilai_Purchasing_Order" id="Nilai_Purchasing_Order" class="form-control" />
+                            <span asp-validation-for="Nilai_Purchasing_Order" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Nilai_Purchasing_Request">Nilai Purchasing Request</label>
+                            <div id="formatted_Nilai_Purchasing_Request" class="text-primary font-weight-bold"></div>
+                            <input asp-for="Nilai_Purchasing_Request" id="Nilai_Purchasing_Request"
+                                class="form-control" />
+                            <span asp-validation-for="Nilai_Purchasing_Request" class="text-danger"></span>
+                        </div>
+
+                        <script>
+                            // Fungsi untuk memformat angka dengan pemisah ribuan
+                            function formatCurrency(value) {
+                                if (!value) return ""; // Jika kosong, kembalikan string kosong
+                                return new Intl.NumberFormat('id-ID', {
+                                    style: 'currency',
+                                    currency: 'IDR',
+                                    minimumFractionDigits: 0
+                                }).format(value);
+                            }
+
+                            // Fungsi untuk memperbarui label currency
+                            function updateCurrencyLabel(input, labelId) {
+                                const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+                                const formattedValue = formatCurrency(value); // Format angka
+                                document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+                            }
+
+                            // Daftar input yang akan diformat
+                            const inputs = [
+                                {
+                                    input: document.getElementById("Nilai_Purchasing_Order"),
+                                    labelId: "formatted_Nilai_Purchasing_Order"
+                                },
+                                {
+                                    input: document.getElementById("Nilai_Purchasing_Request"),
+                                    labelId: "formatted_Nilai_Purchasing_Request"
+                                }
+                            ];
+
+                            // Tambahkan event listener untuk memperbarui label
+                            inputs.forEach(({ input, labelId }) => {
+                                input.addEventListener("input", function () {
+                                    updateCurrencyLabel(this, labelId);
+                                });
+
+                                // Perbarui label saat halaman dimuat
+                                updateCurrencyLabel(input, labelId);
+                            });
+                        </script>
+
+
+
+
+                        <div class="form-group">
+                            <label for="Durasi_Masa_Penyelesaian_MPL">Durasi Masa Penyelesaian MPL</label>
+                            <input asp-for="Durasi_Masa_Penyelesaian_MPL" class="form-control" />
+                            <span asp-validation-for="Durasi_Masa_Penyelesaian_MPL" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Bulan">Bulan</label>
+                            <input asp-for="Bulan" class="form-control" />
+                            <span asp-validation-for="Bulan" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+                <!-- Kolom kedua -->
+
+
+
+
+
+                <!-- Container untuk field tambahan -->
+                <div class="additionalFields" style="display: none;">
+
+                    <div class="form-group">
+                        <label for="No_Vendor">No Vendor</label>
+                        <input asp-for="No_Vendor" class="form-control">
+                        <span asp-validation-for="No_Vendor" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Pelaksana">Pelaksana</label>
+                        <input asp-for="Pelaksana" class="form-control" />
+                        <span asp-validation-for="Pelaksana" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>PR</label>
+                        <input type="text" asp-for="PR" class="form-control" id="PR">
+                    </div>
+                    <div class="form-group">
+                        <label>PR Date</label>
+                        <input type="date" asp-for="PR_Date" class="form-control" id="PR_Date">
+                    </div>
+                    <div class="form-group">
+                        <label>PO</label>
+                        <input type="text" asp-for="PO" class="form-control" id="PO">
+                    </div>
+                    <div class="form-group">
+                        <label>PO Date</label>
+                        <input type="date" asp-for="PO_Date" class="form-control" id="PO_Date">
+                    </div>
+
+
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#componentModal">
+                            Tambah Komponen
+                        </button>
+            
+                </div>
+
+
+
+
+                <div class="form-group">
+
+                    <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+                </div>
+            </div>
         </div>
+
     </div>
-    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+
+</form>
+
+
+
+
+   <div class="additionalFields3" style="display: none;">
+<div id="componentTableContainer">
+    <!-- Tabel akan dimuat di sini -->
 </div>
+   </div>
 
 
-<!-- Modal -->
-<div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog" aria-labelledby="kodeProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+    // Event saat Kode_Project dipilih
+    $("#Kode_Project").on("change", function () {
+        var kodeProject = $(this).val();
+
+        if (kodeProject) {
+            $.ajax({
+                url: '/FaseTender/GetProjectData',
+                type: 'GET',
+                data: { kodeProject: kodeProject },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("✅ Response dari server:", data);
+
+                    if (data.jenisProject === 'Barang' || data.jenisKontrak === 'Material N') {
+                       // alert("Jenis Project: " + data.jenisProject);
+                       // alert("Jenis kontrak: " + data.jenisKontrak);
+                        $(".additionalFields").show();
+                        $(".additionalFields3").show();
+                        $(".additionalFields2").hide();
+                    } else {
+                        //alert("❌ Gagal: Data tidak ditemukan.");
+                        $(".additionalFields").hide();
+                        $(".additionalFields3").hide();
+                        $(".additionalFields2").show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("❌ AJAX Error:", error);
+                    alert("❌ Gagal: Terjadi kesalahan saat mengambil data.");
+                }
+            });
+        }
+    });
+});
+
+</script>
+
+
+
+<div class="modal fade" id="componentModal" tabindex="-1" aria-labelledby="componentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                <h5 class="modal-title" id="componentModalLabel">Tambah Komponen</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Table -->
-                <table id="kodeProjectTable" class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Kode Project</th>
-                            <th>Pekerjaan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be dynamically loaded here -->
-                    </tbody>
-                </table>
+                <form id="componentForm">
+                    <input type="hidden" id="Kode_Project_Modal" name="Kode_Project">
+                    <div class="mb-3">
+                        <label for="Component" class="form-label">Component</label>
+                        <input type="text" class="form-control" id="Component" name="Component">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="Description" name="Description">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="Quantity" name="Quantity">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Unit" class="form-label">Satuan</label>
+                        <input type="text" class="form-control" id="Unit" name="Unit">
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="ValuationPrice" class="form-label">Valuation Price: <span id="formattedPrice">Rp
+                                0</span></label>
+                        <input type="number" class="form-control" id="ValuationPrice" name="ValuationPrice">
+                    </div>
+
+                    <script>
+                        document.getElementById("ValuationPrice").addEventListener("input", function () {
+                            let value = this.value;
+                            let formattedValue = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(value || 0);
+                            document.getElementById("formattedPrice").innerText = formattedValue;
+                        });
+                    </script>
+
+
+                    <div class="mb-3">
+                        <label for="DeliveryDate" class="form-label">Delivery Date</label>
+                        <input type="date" class="form-control" id="DeliveryDate" name="DeliveryDate">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 
+
+
+
+
+
+
+
+
+
 <script>
-    $(document).ready(function () {
-        // Initialize DataTables
-        var projects = @Html.Raw(ViewBag.KodeProjects);
-        
-        // Dynamically populate table rows
-        projects.forEach(function (project) {
-            $('#kodeProjectTable tbody').append(
-                '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
-                '<td>' + project.Kode_Project + '</td>' +
-                '<td>' + project.Pekerjaan + '</td>' +
-                '</tr>'
-            );
-        });
+$(document).ready(function () {
+   
 
-        // Initialize DataTable with search and pagination enabled
-                   var table = $('#kodeProjectTable').DataTable({
-                order: [] // Disable initial ordering
-            });
 
-        // Bind event to select the project code
-        $('#kodeProjectTable').on('click', '.selectable-row', function () {
-            var kodeProject = $(this).data('kode');
-            $('#Kode_Project').val(kodeProject);
+
+    // Ketika modal dibuka, isi kode project otomatis
+    $("#componentModal").on("show.bs.modal", function () {
+        $("#Kode_Project_Modal").val($("#Kode_Project").val());
+    });
+
+    // Tangani submit form dengan AJAX
+    $("#componentForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/FaseTender/CreateComponent",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                Kode_Project: $("#Kode_Project_Modal").val(),
+                Component: $("#Component").val(),
+                Description: $("#Description").val(),
+                Quantity: $("#Quantity").val(),
+                Unit: $("#Unit").val(),
+                ValuationPrice: $("#ValuationPrice").val(),
+                DeliveryDate: $("#DeliveryDate").val()
+            }),
+            success: function () {
+                loadComponents($("#Kode_Project").val()); // Perbarui tabel
+         
+            }
         });
     });
-</script>
+
+    // Tangani Hapus Data dengan AJAX
+    $(document).on("click", ".delete-btn", function () {
+        let id = $(this).data("id");
+        $.ajax({
+            url: "/FaseTender/DeleteComponent/" + id,
+            type: "DELETE",
+            success: function () {
+                loadComponents($("#Kode_Project").val()); // Perbarui tabel
+            }
+        });
+    });
+
+    // Panggil saat halaman dimuat
+    loadComponents($("#Kode_Project").val());
+});
 
 
 
 
-    <div class="form-group">
-        <label for="No_Vendor">No Vendor</label>
-        <input asp-for="No_Vendor" class="form-control" required>
-        <span asp-validation-for="No_Vendor" class="text-danger"></span>
-    </div>
 
-    <div class="form-group">
-        <label for="Pelaksana">Pelaksana</label>
-        <input asp-for="Pelaksana" class="form-control" required />
-        <span asp-validation-for="Pelaksana" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PO_OA">PO OA</label>
-        <input asp-for="PO_OA" class="form-control" required />
-        <span asp-validation-for="PO_OA" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PO_SR">PO SR</label>
-        <input asp-for="PO_SR" class="form-control" required />
-        <span asp-validation-for="PO_SR" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PO_RO">PO RO</label>
-        <input asp-for="PO_RO" class="form-control" required />
-        <span asp-validation-for="PO_RO" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PR_OA">PR OA</label>
-        <input asp-for="PR_OA" class="form-control" required />
-        <span asp-validation-for="PR_OA" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PR_MT">PR MT</label>
-        <input asp-for="PR_MT" class="form-control" required />
-        <span asp-validation-for="PR_MT" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="PR_SR">PR SR</label>
-        <input asp-for="PR_SR" class="form-control" required />
-        <span asp-validation-for="PR_SR" class="text-danger"></span>
-    </div>
-
-
-
-            </div>
-
-        <!-- Kolom kedua -->
-        <div class="col-md-6">
-
-
-
-    <div class="form-group">
-        <label for="Nomor_SP3MK">Nomor SP3MK</label>
-        <input asp-for="Nomor_SP3MK" class="form-control" required />
-        <span asp-validation-for="Nomor_SP3MK" class="text-danger"></span>
-    </div>
-
-<div class="form-group">
-    <label for="Nilai_Purchasing_Order">Nilai Purchasing Order</label>
-    <div id="formatted_Nilai_Purchasing_Order" class="text-primary font-weight-bold"></div>
-    <input asp-for="Nilai_Purchasing_Order" id="Nilai_Purchasing_Order" class="form-control" required />
-    <span asp-validation-for="Nilai_Purchasing_Order" class="text-danger"></span>
-</div>
-
-<div class="form-group">
-    <label for="Nilai_Purchasing_Request">Nilai Purchasing Request</label>
-    <div id="formatted_Nilai_Purchasing_Request" class="text-primary font-weight-bold"></div>
-    <input asp-for="Nilai_Purchasing_Request" id="Nilai_Purchasing_Request" class="form-control" required />
-    <span asp-validation-for="Nilai_Purchasing_Request" class="text-danger"></span>
-</div>
-
-<script>
-    // Fungsi untuk memformat angka dengan pemisah ribuan
-    function formatCurrency(value) {
-        if (!value) return ""; // Jika kosong, kembalikan string kosong
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(value);
-    }
-
-    // Fungsi untuk memperbarui label currency
-    function updateCurrencyLabel(input, labelId) {
-        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
-        const formattedValue = formatCurrency(value); // Format angka
-        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
-    }
-
-    // Daftar input yang akan diformat
-    const inputs = [
-        {
-            input: document.getElementById("Nilai_Purchasing_Order"),
-            labelId: "formatted_Nilai_Purchasing_Order"
+function loadComponents(kodeProject) {
+    $.ajax({
+        url: "/FaseTender/GetComponentsHtml",
+        type: "GET",
+        data: { kodeProject: kodeProject },
+        success: function (response) {
+            $("#componentTableContainer").html(response); // Render tabel langsung dari server
         },
-        {
-            input: document.getElementById("Nilai_Purchasing_Request"),
-            labelId: "formatted_Nilai_Purchasing_Request"
+        error: function (xhr, status, error) {
+            console.error("Error loading components:", error);
+            alert("Gagal mengambil data komponen.");
         }
-    ];
-
-    // Tambahkan event listener untuk memperbarui label
-    inputs.forEach(({ input, labelId }) => {
-        input.addEventListener("input", function () {
-            updateCurrencyLabel(this, labelId);
-        });
-
-        // Perbarui label saat halaman dimuat
-        updateCurrencyLabel(input, labelId);
     });
+}
+
+
+
 </script>
 
 
 
 
-    <div class="form-group">
-        <label for="Durasi_Masa_Penyelesaian_MPL">Durasi Masa Penyelesaian MPL</label>
-        <input asp-for="Durasi_Masa_Penyelesaian_MPL" class="form-control" required />
-        <span asp-validation-for="Durasi_Masa_Penyelesaian_MPL" class="text-danger"></span>
-    </div>
 
-    <div class="form-group">
-        <label for="Bulan">Bulan</label>
-        <input asp-for="Bulan" class="form-control" required />
-        <span asp-validation-for="Bulan" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Otorisasi" class="control-label"></label>
-        <select asp-for="Otorisasi" class="form-control" required id="Otorisasi" asp-items="ViewBag.Otorisasi">
-            <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="Otorisasi" class="text-danger"></span>
-    </div>
-
-        <div class="form-group">
-        <label for="Notif">Notif</label>
-        <input asp-for="Notif" class="form-control" required />
-        <span asp-validation-for="Notif" class="text-danger"></span>
-    </div>
-
-
-        <div class="form-group">
-        <label for="Buyer">Buyer</label>
-        <input asp-for="Buyer" class="form-control" required />
-        <span asp-validation-for="Buyer" class="text-danger"></span>
-    </div>
-
-
-    <div class="form-group">
-        <button type="button" class="btn btn-primary" id="saveButton">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-
-        </div>
-    </div>
-</div>
-
-</form>
 
 
 

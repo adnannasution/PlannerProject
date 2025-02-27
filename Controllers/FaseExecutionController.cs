@@ -87,6 +87,24 @@ public IActionResult Detail(string kodeProject)
         return NotFound();
     }
 
+ 
+    
+    var historyFaseExecution = new HistoryFaseExecution
+    {
+        Kode_Project = kodeProject, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "lihat Detail" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseExecution);
+    _context.SaveChangesAsync(); 
+
+    
+
     ViewBag.KodeProject = kodeProject; // Untuk menampilkan nama kode project di view
     return View(projectDetails);
 }
@@ -128,18 +146,21 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
                 _context.Add(faseExecution);
                 await _context.SaveChangesAsync();
 
-        var tahapan = new Tahapan
-        {
-             Kode_Project = faseExecution.Kode_Project,
-            Tanggal = DateTime.Now.Date, // Current date
-            Waktu = DateTime.Now.TimeOfDay, // Current time
-            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-            Tahap = "Created Fase Execution" // A description of the current step
-        };
 
-        // Simpan entitas Tahapan
-        _context.Add(tahapan);
-        await _context.SaveChangesAsync();
+
+    var historyFaseExecution = new HistoryFaseExecution
+    {
+        Kode_Project = faseExecution.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Tambah data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseExecution);
+    await _context.SaveChangesAsync(); 
 
                  TempData["SuccessMessage"] = "successfully!";
                 return RedirectToAction(nameof(Index));
@@ -207,6 +228,23 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
                         throw;
                     }
                 }
+
+                
+    var historyFaseExecution = new HistoryFaseExecution
+    {
+        Kode_Project = faseExecution.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Edit data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseExecution);
+    await _context.SaveChangesAsync(); 
+
+
                  TempData["SuccessMessage"] = "successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -244,6 +282,26 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
             var faseExecution = await _context.FaseExecution.FindAsync(id);
             _context.FaseExecution.Remove(faseExecution);
             await _context.SaveChangesAsync();
+
+
+
+            
+    var historyFaseExecution = new HistoryFaseExecution
+    {
+        Kode_Project = faseExecution.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Hapus data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseExecution);
+    await _context.SaveChangesAsync(); 
+
+
+
              TempData["SuccessMessage"] = "successfully!";
             return RedirectToAction(nameof(Index));
         }
@@ -300,7 +358,7 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
     End_Date = DateTime.TryParse(worksheet.Cells[row, 5]?.Value?.ToString(), out var endDate) ? endDate : default,
     Durasi_Kontrak = int.TryParse(worksheet.Cells[row, 6]?.Value?.ToString(), out var durasiKontrak) ? durasiKontrak : 0,
     Durasi_Aktual_HK = int.TryParse(worksheet.Cells[row, 7]?.Value?.ToString(), out var durasiAktualHK) ? durasiAktualHK : 0,
-Date_LKP = int.TryParse(worksheet.Cells[row, 8]?.Value?.ToString(), out var dateLKP) ? dateLKP : 0,
+//Date_LKP = int.TryParse(worksheet.Cells[row, 8]?.Value?.ToString(), out var dateLKP) ? dateLKP : 0,
     Plan_Progress_Fisik = decimal.TryParse(worksheet.Cells[row, 9]?.Value?.ToString(), out var planProgressFisik) ? planProgressFisik : 0,
     Progress_Fisik_0 = decimal.TryParse(worksheet.Cells[row, 10]?.Value?.ToString(), out var progressFisik0) ? progressFisik0 : 0,
     Progress_Fisik = decimal.TryParse(worksheet.Cells[row, 11]?.Value?.ToString(), out var progressFisik) ? progressFisik : 0,
@@ -321,6 +379,64 @@ Date_LKP = int.TryParse(worksheet.Cells[row, 8]?.Value?.ToString(), out var date
         }
 
 
+
+[HttpGet]
+public IActionResult GetDurasiMPL(string kodeProject)
+{
+    var faseTender = _context.FaseTender
+        .Where(ft => ft.Kode_Project == kodeProject)
+        .Select(ft => new
+        {
+            durasiMPL = ft.Durasi_Masa_Penyelesaian_MPL ?? 0 // Jika null, set default ke 0
+        })
+        .FirstOrDefault();
+
+    if (faseTender == null)
+    {
+        return NotFound();
+    }
+
+    return Json(faseTender);
+}
+
+
+[HttpGet]
+public IActionResult GetLastProgress(string kodeProject)
+{
+    if (string.IsNullOrEmpty(kodeProject))
+    {
+        return Json(new { success = false, message = "Kode Project tidak valid" });
+    }
+
+    // Ambil Progress_Fisik terakhir berdasarkan Kode_Project
+    var lastProgress = _context.FaseExecution
+        .Where(f => f.Kode_Project == kodeProject)
+        .OrderByDescending(f => f.Id) // Mengurutkan berdasarkan ID terbaru
+        .Select(f => f.Progress_Fisik)
+        .FirstOrDefault();
+
+    return Json(new { success = true, progressFisik = lastProgress });
+}
+
+
+public async Task<IActionResult> TampilHistoryFaseExecution(string kodeProject)
+        {
+            var histori = await _context.HistoryFaseExecution
+                .Where(t => t.Kode_Project == kodeProject)
+                .ToListAsync();
+
+            if (histori == null || !histori.Any())
+            {
+                return NotFound("No records found for this project.");
+            }
+
+            // Set Kode_Project in ViewData for display in the view
+            ViewData["KodeProject"] = kodeProject;
+
+            return View(histori);
+
+            //return PartialView("ViewSLA", histori);
+        }
 
 
 
