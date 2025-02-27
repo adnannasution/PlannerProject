@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using System.Dynamic;
 
 
 namespace Plan.Controllers
@@ -22,15 +23,28 @@ namespace Plan.Controllers
       _context = context;
     }
 
-public async Task<IActionResult> Index()
-{
-    var fasePlanning = await _context.FasePlanning
-                                     .OrderByDescending(fp => fp.Id) // Urutkan berdasarkan Id descending
-                                     .ToListAsync();
-    return View(fasePlanning);
-}
+    public async Task<IActionResult> Index()
+    {
+      var fasePlanning = await _context.FasePlanning
+                                       .OrderByDescending(fp => fp.Id) // Urutkan berdasarkan Id descending
+                                       .ToListAsync();
+      return View(fasePlanning);
+    }
 
 
+// public async Task<IActionResult> Index()
+// {
+//     var fasePlanning = await (from fp in _context.FasePlanning
+//                               join m in _context.Memo on fp.No_Memo_Rekomendasi equals m.No_Memo_Rekomendasi
+//                               orderby fp.Id descending
+//                               select new 
+//                               {
+//                                   fp,
+//                                   m
+//                               }).ToListAsync();
+
+//     return View(fasePlanning);
+// }
 
 
 
@@ -39,48 +53,48 @@ public async Task<IActionResult> Index()
     {
 
       // Get the email of the currently logged-in user from claims
-    // Get the email of the currently logged-in user from claims
-var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+      // Get the email of the currently logged-in user from claims
+      var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
 
 
-    // Filter Memo records by the user's email
-// var memos = _context.Memo
-//                     .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
-//                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
-//                     .ToList();
+      // Filter Memo records by the user's email
+      // var memos = _context.Memo
+      //                     .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
+      //                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+      //                     .ToList();
 
 
-var excludedNoMemoRekomendasi = _context.FasePlanning
-                                        .Select(fp => fp.No_Memo_Rekomendasi)
-                                        .ToList();
+      var excludedNoMemoRekomendasi = _context.FasePlanning
+                                              .Select(fp => fp.No_Memo_Rekomendasi)
+                                              .ToList();
 
-// var memos = _context.Memo
-//                     .Where(m => m.Email == userEmail && 
-//                                 m.KebutuhanKontrak == "Ya" &&
-//                                 !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
-//                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
-//                     .ToList();
+      // var memos = _context.Memo
+      //                     .Where(m => m.Email == userEmail && 
+      //                                 m.KebutuhanKontrak == "Ya" &&
+      //                                 !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
+      //                     .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+      //                     .ToList();
 
 
 
-var memos = _context.Memo
-                    .Where(m => m.Email == userEmail && 
-                                m.KebutuhanKontrak == "Ya" &&
-                                !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
-                    .Select(m => new 
-                    { 
-                        m.Id, 
-                        m.No_Memo_Rekomendasi,
-                        m.Judul,
-                        DisplayText = m.No_Memo_Rekomendasi + " - " + m.Judul
-                    })
-                    .ToList();
+      var memos = _context.Memo
+                          .Where(m => m.Email == userEmail &&
+                                      m.KebutuhanKontrak == "Ya" &&
+                                      !excludedNoMemoRekomendasi.Contains(m.No_Memo_Rekomendasi))
+                          .Select(m => new
+                          {
+                            m.Id,
+                            m.No_Memo_Rekomendasi,
+                            m.Judul,
+                            DisplayText = m.No_Memo_Rekomendasi + " - " + m.Judul
+                          })
+                          .ToList();
 
-// Pass this list to ViewBag for the dropdown
-ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "DisplayText");
-    // Assign filtered No_Memo_Rekomendasi data to ViewBag
-    //ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
-    
+      // Pass this list to ViewBag for the dropdown
+      ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "DisplayText");
+      // Assign filtered No_Memo_Rekomendasi data to ViewBag
+      //ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
+
       ViewData["Disiplin"] = new SelectList(_context.DisiplinMaster, "Disiplin", "Disiplin");
       ViewData["Kategori_Equipment"] = new SelectList(_context.KategoriEquipmentMaster, "Kategori", "Kategori");
       ViewData["Kategori_Maintenance"] = new SelectList(_context.KategoriMaintenanceMaster, "Kategori", "Kategori");
@@ -90,96 +104,96 @@ ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "Displa
       ViewData["Jenis_Kontrak"] = new SelectList(_context.JenisKontrakMaster, "Jenis", "Jenis");
       ViewData["Planner"] = new SelectList(_context.PlannerMaster, "Planner", "Planner");
       ViewData["Status_Next_Contract"] = new SelectList(_context.StatusNextMaster, "StatusNext", "StatusNext");
-     
+
       ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori");
 
-    //  ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
-     
-     // Retrieve the 'Disiplin' claim from the current user
-var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+      //  ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
 
-var filteredPrograms = _context.Irkap
-    .Where(i => i.Disiplin == userDisiplin &&
-                !_context.FasePlanning.Any(fp => EF.Functions.Like(fp.NoProgram, "%" + i.NoProgram + "%")))
-    .Select(i => new 
-    { 
-        i.NoProgram, 
-        i.Judul, 
-        DisplayText = i.NoProgram + " - " + i.Judul 
-    })
-    .ToList();
+      // Retrieve the 'Disiplin' claim from the current user
+      var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
 
-// Pass the filtered programs to ViewBag for use in the dropdown
-ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
+      var filteredPrograms = _context.Irkap
+          .Where(i => i.Disiplin == userDisiplin &&
+                      !_context.FasePlanning.Any(fp => EF.Functions.Like(fp.NoProgram, "%" + i.NoProgram + "%")))
+          .Select(i => new
+          {
+            i.NoProgram,
+            i.Judul,
+            DisplayText = i.NoProgram + " - " + i.Judul
+          })
+          .ToList();
 
-
-// Filter the Irkap table using the Disiplin claim value
-// var filteredPrograms = _context.Irkap
-//                                .Where(i => i.Disiplin == userDisiplin)
-//                                .Select(i => new 
-//                                { 
-//                                    i.NoProgram, 
-//                                    i.Judul, 
-//                                    DisplayText = i.NoProgram + " - " + i.Judul 
-//                                })
-//                                .ToList();
-
-// // Pass the filtered programs to ViewBag for use in the dropdown
-// ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
+      // Pass the filtered programs to ViewBag for use in the dropdown
+      ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
 
 
+      // Filter the Irkap table using the Disiplin claim value
+      // var filteredPrograms = _context.Irkap
+      //                                .Where(i => i.Disiplin == userDisiplin)
+      //                                .Select(i => new 
+      //                                { 
+      //                                    i.NoProgram, 
+      //                                    i.Judul, 
+      //                                    DisplayText = i.NoProgram + " - " + i.Judul 
+      //                                })
+      //                                .ToList();
 
-  
-    var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
-    
+      // // Pass the filtered programs to ViewBag for use in the dropdown
+      // ViewBag.NoProgram = new SelectList(filteredPrograms, "NoProgram", "DisplayText");
 
-    int nextNumber = lastNumber + 1;
-    ViewBag.NextNumber = nextNumber;
+
+
+
+      var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
+
+
+      int nextNumber = lastNumber + 1;
+      ViewBag.NextNumber = nextNumber;
 
 
       return View();
     }
 
-   
 
 
 
 
 
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kategori_Equipment, string[] NoProgram, string[] Kategori_Maintenance)
 
-{
-    if (ModelState.IsValid)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kategori_Equipment, string[] NoProgram, string[] Kategori_Maintenance)
+
     {
+      if (ModelState.IsValid)
+      {
         // Ambil nilai Tanggal_Kirim_Paket dari entitas FasePlanning yang sedang dibuat
         var tanggalKirimPaket = fasePlanning.Tanggal_Kirim_Paket;
 
         if (tanggalKirimPaket == null)
         {
-            ModelState.AddModelError("Tanggal_Kirim_Paket", "Tanggal Kirim Paket belum diinput.");
-            return View(fasePlanning);
+          ModelState.AddModelError("Tanggal_Kirim_Paket", "Tanggal Kirim Paket belum diinput.");
+          return View(fasePlanning);
         }
 
-         // Jika Kategori_Equipment dipilih, gabungkan nilai yang dipilih menjadi satu string yang dipisahkan koma
+        // Jika Kategori_Equipment dipilih, gabungkan nilai yang dipilih menjadi satu string yang dipisahkan koma
         if (Kategori_Equipment != null && Kategori_Equipment.Length > 0)
         {
-            fasePlanning.Kategori_Equipment = string.Join(", ", Kategori_Equipment);
+          fasePlanning.Kategori_Equipment = string.Join(", ", Kategori_Equipment);
         }
 
         if (Kategori_Maintenance != null && Kategori_Maintenance.Length > 0)
         {
-            fasePlanning.Kategori_Maintenance = string.Join(", ", Kategori_Maintenance);
+          fasePlanning.Kategori_Maintenance = string.Join(", ", Kategori_Maintenance);
         }
-        
 
-         if (NoProgram != null && NoProgram.Length > 0)
+
+        if (NoProgram != null && NoProgram.Length > 0)
         {
-            fasePlanning.NoProgram = string.Join(", ", NoProgram);
+          fasePlanning.NoProgram = string.Join(", ", NoProgram);
         }
-        
+
 
         // Ambil semua task dari TaskMaster, diurutkan berdasarkan ID
         var tasks = _context.TaskMaster
@@ -187,7 +201,7 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
             .ToList();
 
         // Inisialisasi tanggal awal
-        DateTime? previousTarget = tanggalKirimPaket;
+       DateTime? previousTarget = DateTime.Now;
 
         // Buat daftar untuk menyimpan data TabelSla
         var tabelSlaList = new List<TabelSla>();
@@ -195,21 +209,22 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
         // Update kolom Target secara berurutan dan persiapkan data untuk TabelSla
         foreach (var task in tasks)
         {
-            if (previousTarget != null)
-            {
-                // Hitung Target berdasarkan SLA
-                task.Target = previousTarget.Value.AddDays(task.Sla);
-                previousTarget = task.Target;
-            }
+          if (previousTarget != null)
+          {
+            // Hitung Target berdasarkan SLA
+            task.Target = previousTarget.Value.AddDays(task.Sla);
+            previousTarget = task.Target;
+          }
 
-            // Tambahkan data ke tabelSlaList
-            tabelSlaList.Add(new TabelSla
-            {
-                Task = task.Task,
-                Sla = task.Sla,
-                Target = task.Target,
-                Kode_Project = fasePlanning.Kode_Project // Tambahkan Kode_Project dari FasePlanning
-            });
+          // Tambahkan data ke tabelSlaList
+          tabelSlaList.Add(new TabelSla
+          {
+            Task = task.Task,
+            Sla = task.Sla,
+            Target = task.Target,
+            Kode_Project = fasePlanning.Kode_Project // Tambahkan Kode_Project dari FasePlanning
+          });
+
         }
 
         // Simpan data ke tabel TabelSla
@@ -224,15 +239,16 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
 
 
 
-// Create a new Tahapan entity
+        // Create a new Tahapan entity
         var tahapan = new Tahapan
         {
-            Kode_Project = fasePlanning.Kode_Project,
-            No_Memo_Rekomendasi = fasePlanning.No_Memo_Rekomendasi,
-            Tanggal = DateTime.Now.Date, // Current date
-            Waktu = DateTime.Now.TimeOfDay, // Current time
-            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-            Tahap = "Created Planning Project" // A description of the current step
+          Kode_Project = fasePlanning.Kode_Project,
+          No_Memo_Rekomendasi = fasePlanning.No_Memo_Rekomendasi,
+          Tanggal = DateTime.Now.Date, // Current date
+          Waktu = DateTime.Now.TimeOfDay, // Current time
+          Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+          Tahap = "Created Planning Project", // A description of the current step
+          Status = "Done" // Set status default
         };
 
         // Simpan entitas Tahapan
@@ -241,14 +257,69 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
 
 
 
-         TempData["SuccessMessage"] = "successfully!";
+        // Daftar tahapan yang akan diinput otomatis
+var daftarTahapan = new List<string>
+{
+    "JOBPLAN - Menyusun GTC dan RAB",
+    "JOBPLAN - Comment Besteck ke Engineer/User",
+    "JOBPLAN - Sourcing",
+    "JOBPLAN - Membuat OE",
+    "JOBPLAN - Membuat analisa TKDN & Analisa RAM",
+    "JOBPLAN - Membuat ijin persetujuan / prinsip",
+    "JOBPLAN - Jobplan (Ext), mengajukan release dan print PR",
+    "JOBPLAN - Menyiapkan memo pengantar DP3 Paket",
+    "JOBPLAN - Kirim Paket Kontrak",
+    "TENDER - Pre Bid Meeting",
+    "JOBPLAN - Revisi GTC & RAB pasca prebid",
+    "TENDER - Approval HPS OE",
+    "TENDER - Open Bid",
+    "JOBPLAN - Gagal Tender",
+    "TENDER - Penunjukan Pemenang",
+    "TENDER - SPB",
+    "TENDER - Terbit PO",
+    "EKSEKUSI - KOM",
+    "RUNNING KONTRAK - Day One",
+    "SELESAI - Selesai"
+};
+
+// Menambahkan tahapan termin 1 - 36 secara otomatis
+for (int i = 1; i <= 36; i++)
+{
+    daftarTahapan.Add($"Termin ke {i}");
+}
+
+
+// Loop untuk memasukkan semua tahapan
+foreach (var tahap in daftarTahapan)
+{
+    var tahapan2 = new Tahapan
+    {
+        Kode_Project = fasePlanning.Kode_Project,
+        No_Memo_Rekomendasi = null, // Kosong
+        Tanggal = null, // Kosong
+        Waktu = null, // Kosong
+        Email = null, // Kosong
+        Tahap = tahap, // Set nilai dari daftar tahapan
+        Status = "Not yet" // Set status default
+    };
+
+    _context.Add(tahapan2);
+}
+
+// Simpan semua entri ke database sekaligus
+await _context.SaveChangesAsync();
+
+
+
+
+        TempData["SuccessMessage"] = "successfully!";
         return RedirectToAction(nameof(Index));
-    }
+      }
 
 
 
 
-          ViewData["Disiplin"] = new SelectList(_context.DisiplinMaster, "Disiplin", "Disiplin");
+      ViewData["Disiplin"] = new SelectList(_context.DisiplinMaster, "Disiplin", "Disiplin");
       ViewData["Kategori_Equipment"] = new SelectList(_context.KategoriEquipmentMaster, "Kategori", "Kategori");
       ViewData["Kategori_Maintenance"] = new SelectList(_context.KategoriMaintenanceMaster, "Kategori", "Kategori");
       ViewData["Area"] = new SelectList(_context.AreaMaster, "Area", "Area");
@@ -257,24 +328,24 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
       ViewData["Jenis_Kontrak"] = new SelectList(_context.JenisKontrakMaster, "Jenis", "Jenis");
       ViewData["Planner"] = new SelectList(_context.PlannerMaster, "Planner", "Planner");
       ViewData["Status_Next_Contract"] = new SelectList(_context.StatusNextMaster, "StatusNext", "StatusNext");
-     
+
       ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori");
 
-            ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
-     
-  
-    var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
-    
-
-    int nextNumber = lastNumber + 1;
-    ViewBag.NextNumber = nextNumber;
-
-    return View(fasePlanning);
-}
+      ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
+
+
+      int nextNumber = lastNumber + 1;
+      ViewBag.NextNumber = nextNumber;
+
+      return View(fasePlanning);
+    }
+
+
+    [HttpGet]
+
     public async Task<IActionResult> FormEdit(int? id)
     {
       if (id == null)
@@ -288,21 +359,21 @@ public async Task<IActionResult> Create(FasePlanning fasePlanning, string[] Kate
         return NotFound();
       }
 
-var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
-          // Filter Memo records by the user's email
-var memos = _context.Memo
-                    .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
-                    .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
-                    .ToList();
+      var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+      // Filter Memo records by the user's email
+      var memos = _context.Memo
+                          .Where(m => m.Email == userEmail && m.KebutuhanKontrak == "Ya")
+                          .Select(m => new { m.Id, m.No_Memo_Rekomendasi })
+                          .ToList();
 
 
-    // Assign filtered No_Memo_Rekomendasi data to ViewBag
-    ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
-
- 
+      // Assign filtered No_Memo_Rekomendasi data to ViewBag
+      ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
 
 
-      
+
+
+
 
 
       // Populate dropdowns
@@ -316,55 +387,54 @@ var memos = _context.Memo
       ViewData["Planner"] = new SelectList(_context.PlannerMaster, "Planner", "Planner", fasePlanning.Planner);
       ViewData["Status_Next_Contract"] = new SelectList(_context.StatusNextMaster, "StatusNext", "StatusNext", fasePlanning.Status_Next_Contract);
 
-            ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori", fasePlanning.Kategori_Kontrak);
+      ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori", fasePlanning.Kategori_Kontrak);
 
-                  ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
-   
+      ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
+
 
       return View(fasePlanning);
     }
 
 
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Kategori_Equipment, string[] NoProgram, string[] Kategori_Maintenance)
-{
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Kategori_Equipment, string[] NoProgram, string[] Kategori_Maintenance)
+    {
 
 
 
-         // Jika Kategori_Equipment dipilih, gabungkan nilai yang dipilih menjadi satu string yang dipisahkan koma
-        if (Kategori_Equipment != null && Kategori_Equipment.Length > 0)
-        {
-            fasePlanning.Kategori_Equipment = string.Join(", ", Kategori_Equipment);
-        }
+      // Jika Kategori_Equipment dipilih, gabungkan nilai yang dipilih menjadi satu string yang dipisahkan koma
+      if (Kategori_Equipment != null && Kategori_Equipment.Length > 0)
+      {
+        fasePlanning.Kategori_Equipment = string.Join(", ", Kategori_Equipment);
+      }
 
-        if (Kategori_Maintenance != null && Kategori_Maintenance.Length > 0)
-        {
-            fasePlanning.Kategori_Maintenance = string.Join(", ", Kategori_Maintenance);
-        }
-        
-
-         if (NoProgram != null && NoProgram.Length > 0)
-        {
-            fasePlanning.NoProgram = string.Join(", ", NoProgram);
-        }
-        
-
-            _context.Update(fasePlanning);
-            await _context.SaveChangesAsync();
-    
-        
-        TempData["SuccessMessage"] = "successfully!";
-        return RedirectToAction(nameof(Index)); // Redirect to Index if successful
-
-}
+      if (Kategori_Maintenance != null && Kategori_Maintenance.Length > 0)
+      {
+        fasePlanning.Kategori_Maintenance = string.Join(", ", Kategori_Maintenance);
+      }
 
 
+      if (NoProgram != null && NoProgram.Length > 0)
+      {
+        fasePlanning.NoProgram = string.Join(", ", NoProgram);
+      }
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+      _context.Update(fasePlanning);
+      await _context.SaveChangesAsync();
+
+
+      TempData["SuccessMessage"] = "successfully!";
+      return RedirectToAction(nameof(Index)); // Redirect to Index if successful
+
+    }
+
+
+
+
+    [HttpGet]
     public async Task<IActionResult> Detail(int? id)
     {
       if (id == null)
@@ -389,13 +459,41 @@ public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Katego
       ViewData["Planner"] = new SelectList(_context.PlannerMaster, "Planner", "Planner", fasePlanning.Planner);
       ViewData["Status_Next_Contract"] = new SelectList(_context.StatusNextMaster, "StatusNext", "StatusNext", fasePlanning.Status_Next_Contract);
 
-            ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori", fasePlanning.Kategori_Kontrak);
+      ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori", fasePlanning.Kategori_Kontrak);
 
-                  ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
-   
+      ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
+
 
       return View(fasePlanning);
     }
+
+
+
+
+
+
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+
+    public async Task<IActionResult> DetailByMemo(string idmemo)
+    {
+
+
+      var fasePlanning = await _context.FasePlanning
+          .Where(f => f.No_Memo_Rekomendasi == idmemo) // Ganti 'KolomStringId' dengan nama kolom yang sesuai
+          .FirstOrDefaultAsync();
+
+      if (fasePlanning == null)
+      {
+        ViewBag.Message = "Data tidak ditemukan.";
+      }
+
+      return View(fasePlanning);
+    }
+
 
 
 
@@ -416,14 +514,14 @@ public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Katego
       return View(fasePlanning);
     }
 
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
+    [HttpGet, ActionName("Delete")]
+
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
       var fasePlanning = await _context.FasePlanning.FindAsync(id);
       _context.FasePlanning.Remove(fasePlanning);
       await _context.SaveChangesAsync();
-       TempData["SuccessMessage"] = "successfully!";
+      TempData["SuccessMessage"] = "successfully!";
       return RedirectToAction(nameof(Index));
     }
 
@@ -473,33 +571,33 @@ public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Katego
                 continue;
               }
 
-             
-             var fasePlanning = new FasePlanning
-{
-    No = int.TryParse(worksheet.Cells[row, 1]?.Value?.ToString(), out var no) ? no : 0,
-    Kode_Project = worksheet.Cells[row, 2]?.Value?.ToString(),
-    Jenis_Project = worksheet.Cells[row, 3]?.Value?.ToString(),
-    Tipe_Project = worksheet.Cells[row, 4]?.Value?.ToString(),
-    Tahun = int.TryParse(worksheet.Cells[row, 5]?.Value?.ToString(), out var tahun) ? tahun : 0,
-    Disiplin = worksheet.Cells[row, 6]?.Value?.ToString(),
-    Pekerjaan = worksheet.Cells[row, 7]?.Value?.ToString(),
-    Kategori_Equipment = worksheet.Cells[row, 8]?.Value?.ToString(),
-    Kategori_Maintenance = worksheet.Cells[row, 9]?.Value?.ToString(),
-    Area = worksheet.Cells[row, 10]?.Value?.ToString(),
-    Direksi = worksheet.Cells[row, 11]?.Value?.ToString(),
-    Status_kontrak = worksheet.Cells[row, 12]?.Value?.ToString(),
-    Kategori_Kontrak = worksheet.Cells[row, 13]?.Value?.ToString(),
-    Jenis_Kontrak = worksheet.Cells[row, 14]?.Value?.ToString(),
-    Planner = worksheet.Cells[row, 15]?.Value?.ToString(),
-    No_Memo_Rekomendasi = worksheet.Cells[row, 16]?.Value?.ToString(),
-    Tanggal_Masuk_Memo = DateTime.TryParse(worksheet.Cells[row, 17]?.Value?.ToString(), out var masukMemo) ? masukMemo : null,
-    No_Memo_Kirim_Paket = worksheet.Cells[row, 18]?.Value?.ToString(),
-    Tanggal_Kirim_Paket = DateTime.TryParse(worksheet.Cells[row, 19]?.Value?.ToString(), out var kirimPaket) ? kirimPaket : null,
-    Status_Next_Contract = worksheet.Cells[row, 20]?.Value?.ToString(),
-    Informasi_Detail = worksheet.Cells[row, 21]?.Value?.ToString(),
-    Nomor_PR_Kontrak_Baru = worksheet.Cells[row, 22]?.Value?.ToString(),
-    Tanggal_Update = DateTime.TryParse(worksheet.Cells[row, 23]?.Value?.ToString(), out var updateTanggal) ? updateTanggal : null,
-};
+
+              var fasePlanning = new FasePlanning
+              {
+                No = int.TryParse(worksheet.Cells[row, 1]?.Value?.ToString(), out var no) ? no : 0,
+                Kode_Project = worksheet.Cells[row, 2]?.Value?.ToString(),
+                Jenis_Project = worksheet.Cells[row, 3]?.Value?.ToString(),
+                Tipe_Project = worksheet.Cells[row, 4]?.Value?.ToString(),
+                Tahun = int.TryParse(worksheet.Cells[row, 5]?.Value?.ToString(), out var tahun) ? tahun : 0,
+                Disiplin = worksheet.Cells[row, 6]?.Value?.ToString(),
+                Pekerjaan = worksheet.Cells[row, 7]?.Value?.ToString(),
+                Kategori_Equipment = worksheet.Cells[row, 8]?.Value?.ToString(),
+                Kategori_Maintenance = worksheet.Cells[row, 9]?.Value?.ToString(),
+                Area = worksheet.Cells[row, 10]?.Value?.ToString(),
+                Direksi = worksheet.Cells[row, 11]?.Value?.ToString(),
+                Status_kontrak = worksheet.Cells[row, 12]?.Value?.ToString(),
+                Kategori_Kontrak = worksheet.Cells[row, 13]?.Value?.ToString(),
+                Jenis_Kontrak = worksheet.Cells[row, 14]?.Value?.ToString(),
+                Planner = worksheet.Cells[row, 15]?.Value?.ToString(),
+                No_Memo_Rekomendasi = worksheet.Cells[row, 16]?.Value?.ToString(),
+                Tanggal_Masuk_Memo = DateTime.TryParse(worksheet.Cells[row, 17]?.Value?.ToString(), out var masukMemo) ? masukMemo : null,
+                No_Memo_Kirim_Paket = worksheet.Cells[row, 18]?.Value?.ToString(),
+                Tanggal_Kirim_Paket = DateTime.TryParse(worksheet.Cells[row, 19]?.Value?.ToString(), out var kirimPaket) ? kirimPaket : null,
+                Status_Next_Contract = worksheet.Cells[row, 20]?.Value?.ToString(),
+                Informasi_Detail = worksheet.Cells[row, 21]?.Value?.ToString(),
+                Nomor_PR_Kontrak_Baru = worksheet.Cells[row, 22]?.Value?.ToString(),
+                Tanggal_Update = DateTime.TryParse(worksheet.Cells[row, 23]?.Value?.ToString(), out var updateTanggal) ? updateTanggal : null,
+              };
 
 
               fasePlannings.Add(fasePlanning);
@@ -521,6 +619,78 @@ public async Task<IActionResult> Edit(FasePlanning fasePlanning, string[] Katego
         return View(model);
       }
     }
+
+ 
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SubmitKehandalan(List<int> kehandalanIds)
+    {
+      if (kehandalanIds != null && kehandalanIds.Any())
+      {
+        var fasePlannings = _context.FasePlanning.Where(f => kehandalanIds.Contains(f.Id)).ToList();
+        foreach (var fase in fasePlannings)
+        {
+          fase.Kehandalan = 1; // Menandai sebagai diceklis
+        }
+        _context.SaveChanges();
+      }
+
+      return RedirectToAction("Index"); // Redirect kembali ke halaman utama
+    }
+
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SubmitBukanKehandalan(List<int> kehandalanIds)
+    {
+      if (kehandalanIds != null && kehandalanIds.Any())
+      {
+        var fasePlannings = _context.FasePlanning.Where(f => kehandalanIds.Contains(f.Id)).ToList();
+        foreach (var fase in fasePlannings)
+        {
+          fase.Kehandalan = 0; // Menandai sebagai diceklis
+        }
+        _context.SaveChanges();
+      }
+
+      return RedirectToAction("TampilKehandalan"); // Redirect kembali ke halaman utama
+    }
+
+
+
+
+    public IActionResult TampilKehandalan()
+    {
+      var kehandalanData = _context.FasePlanning.Where(p => p.Kehandalan == 1).ToList();
+      return View(kehandalanData);
+    }
+
+
+
+
+public IActionResult Timeline(string kodeProject, string noMemo)
+{
+    var query = _context.Tahapan.AsQueryable();
+
+    if (!string.IsNullOrEmpty(noMemo))
+    {
+        query = query.Where(t => t.No_Memo_Rekomendasi == noMemo || t.Kode_Project == kodeProject);
+    }
+    else if (!string.IsNullOrEmpty(kodeProject))
+    {
+        query = query.Where(t => t.Kode_Project == kodeProject);
+    }
+
+    var model = query
+        .OrderBy(t => t.Id) // Urutkan berdasarkan ID agar timeline tetap rapi
+        .ToList();
+
+    return PartialView("_TimelinePartial", model);
+}
 
 
   }

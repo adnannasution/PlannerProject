@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Plan.Data;
 using Plan.Models;
 using Microsoft.AspNetCore.Authorization;
-
+ 
 namespace Plan.Controllers
 {
      [Authorize]
@@ -74,7 +74,7 @@ public IActionResult Details(string jenisBiaya, int tahun)
         // POST: WbsData/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Bulan,Tahun,ActualWbsRt,PercentActual,CommitmentWbsRt,PercentCommitment,RopWbsRt,PercentRop,PercentForecasting,JenisBiaya")] WbsData wbsData)
+        public async Task<IActionResult> Create(WbsData wbsData)
         {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ public IActionResult Details(string jenisBiaya, int tahun)
         // POST: WbsData/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Bulan,Tahun,ActualWbsRt,PercentActual,CommitmentWbsRt,PercentCommitment,RopWbsRt,PercentRop,PercentForecasting,JenisBiaya")] WbsData wbsData)
+        public async Task<IActionResult> Edit(int id, WbsData wbsData)
         {
             if (id != wbsData.Id)
             {
@@ -171,5 +171,20 @@ public IActionResult Details(string jenisBiaya, int tahun)
         {
             return _context.WbsData.Any(e => e.Id == id);
         }
+
+
+        [HttpGet]
+public IActionResult GetBudgetWbs(string jenisBiaya, int tahun)
+{
+    var budgetWbs = _context.BudgetWbsData
+                    .Where(b => b.JenisBiaya == jenisBiaya && b.Tahun == tahun)
+                    .Select(b => b.BudgetWbs)
+                    .FirstOrDefault();
+
+    return Json(new { budgetWbs });
+}
+
+
+
     }
 }

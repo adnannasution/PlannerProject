@@ -1,0 +1,432 @@
+@model Plan.Models.FaseTender
+
+@{
+    ViewData["Title"] = "Create Fase Tender";
+}
+
+
+
+
+
+<form asp-action="Create" method="post" id="faseform">
+  @Html.AntiForgeryToken()
+
+    <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+
+
+
+
+
+
+<div class="form-group">
+    <label asp-for="Kode_Project" class="control-label"></label>
+    <div class="input-group">
+        <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly required>
+        <div class="input-group-append">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+        </div>
+    </div>
+    <span asp-validation-for="Kode_Project" class="text-danger"></span>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="kodeProjectModal" tabindex="-1" role="dialog" aria-labelledby="kodeProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kodeProjectModalLabel">Pilih Kode Project</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Table -->
+                <table id="kodeProjectTable" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kode Project</th>
+                            <th>Pekerjaan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+<script>
+    $(document).ready(function () {
+        // Initialize DataTables
+        var projects = @Html.Raw(ViewBag.KodeProjects);
+        
+        // Dynamically populate table rows
+        projects.forEach(function (project) {
+            $('#kodeProjectTable tbody').append(
+                '<tr class="selectable-row" data-kode="' + project.Kode_Project + '" data-pekerjaan="' + project.Pekerjaan + '" data-bs-dismiss="modal">' +
+                '<td>' + project.Kode_Project + '</td>' +
+                '<td>' + project.Pekerjaan + '</td>' +
+                '</tr>'
+            );
+        });
+
+        // Initialize DataTable with search and pagination enabled
+                   var table = $('#kodeProjectTable').DataTable({
+                order: [] // Disable initial ordering
+            });
+
+        // Bind event to select the project code
+        $('#kodeProjectTable').on('click', '.selectable-row', function () {
+            var kodeProject = $(this).data('kode');
+            $('#Kode_Project').val(kodeProject);
+        });
+    });
+</script>
+
+
+
+
+
+
+
+    <div class="form-group">
+        <label for="No_Vendor">No Vendor</label>
+        <input asp-for="No_Vendor" class="form-control" required>
+        <span asp-validation-for="No_Vendor" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Pelaksana">Pelaksana</label>
+        <input asp-for="Pelaksana" class="form-control" required />
+        <span asp-validation-for="Pelaksana" class="text-danger"></span>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <label>PR</label>
+        <input type="text" asp-for="PR" class="form-control" id="PR">
+    </div>
+    <div class="form-group">
+        <label>PR Date</label>
+        <input type="date" asp-for="PR_Date" class="form-control" id="PR_Date">
+    </div>
+    <div class="form-group">
+        <label>PO</label>
+        <input type="text" asp-for="PO" class="form-control" id="PO">
+    </div>
+    <div class="form-group">
+        <label>PO Date</label>
+        <input type="date" asp-for="PR_Date" class="form-control" id="PO_Date">
+    </div>
+
+
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#componentModal">
+    Tambah Komponen
+</button>
+
+
+
+<div class="modal fade" id="componentModal" tabindex="-1" aria-labelledby="componentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="componentModalLabel">Tambah Komponen</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="componentForm">
+                    <input type="hidden" id="Kode_Project_Modal" name="Kode_Project">
+                    <div class="mb-3">
+                        <label for="Component" class="form-label">Component</label>
+                        <input type="text" class="form-control" id="Component" name="Component" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="Description" name="Description" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="Quantity" name="Quantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Unit" class="form-label">Unit</label>
+                        <input type="text" class="form-control" id="Unit" name="Unit" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ValuationPrice" class="form-label">Valuation Price</label>
+                        <input type="number" class="form-control" id="ValuationPrice" name="ValuationPrice" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="DeliveryDate" class="form-label">Delivery Date</label>
+                        <input type="date" class="form-control" id="DeliveryDate" name="DeliveryDate" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<table id="componentTable" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Component</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Valuation Price</th>
+            <th>Delivery Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Data akan diisi oleh AJAX -->
+    </tbody>
+</table>
+
+
+
+
+ </div>
+
+
+
+
+<script>
+
+  $(document).ready(function () {
+    // Ketika modal dibuka, isi kode project otomatis
+    $("#componentModal").on("show.bs.modal", function () {
+        var kodeProject = $("#Kode_Project").val(); // Ambil dari input utama
+        $("#Kode_Project_Modal").val(kodeProject); // Masukkan ke modal form
+    });
+
+    // Tangani submit form dengan AJAX
+    $("#componentForm").submit(function (e) {
+        e.preventDefault(); // Mencegah reload halaman
+
+        var formData = {
+            Kode_Project: $("#Kode_Project_Modal").val(),
+            Component: $("#Component").val(),
+            Description: $("#Description").val(),
+            Quantity: $("#Quantity").val(),
+            Unit: $("#Unit").val(),
+            ValuationPrice: $("#ValuationPrice").val(),
+            DeliveryDate: $("#DeliveryDate").val()
+        };
+
+        $.ajax({
+            url: "/FaseTender/CreateComponent",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function (response) {
+                // Tambahkan data baru ke tabel utama
+                $("#componentTable tbody").append(`
+                    <tr data-id="${response.Id}">
+                        <td>${response.Component}</td>
+                        <td>${response.Description}</td>
+                        <td>${response.Quantity}</td>
+                        <td>${response.Unit}</td>
+                        <td>${response.ValuationPrice}</td>
+                        <td>${response.DeliveryDate}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${response.Id}">Hapus</button>
+                        </td>
+                    </tr>
+                `);
+                
+                // Tutup modal setelah sukses
+                $("#componentModal").modal("hide");
+                $("#componentForm")[0].reset(); // Reset form
+            }
+        });
+    });
+
+    // Tangani Hapus Data dengan AJAX
+    $(document).on("click", ".delete-btn", function () {
+        var id = $(this).data("id");
+        var row = $(this).closest("tr");
+
+        $.ajax({
+            url: "/FaseTender/DeleteComponent/" + id,
+            type: "DELETE",
+            success: function () {
+                row.remove(); // Hapus baris dari tabel
+            }
+        });
+    });
+});
+
+
+function loadComponents(kodeProject) {
+    $.ajax({
+        url: "/FaseTender/GetComponents",
+        type: "GET",
+        data: { kodeProject: kodeProject },
+        success: function (response) {
+            $("#componentTable tbody").empty(); // Kosongkan tabel sebelum diisi ulang
+            response.forEach(function (item) {
+                $("#componentTable tbody").append(`
+                    <tr data-id="${item.Id}">
+                        <td>${item.Component}</td>
+                        <td>${item.Description}</td>
+                        <td>${item.Quantity}</td>
+                        <td>${item.Unit}</td>
+                        <td>${item.ValuationPrice}</td>
+                        <td>${item.DeliveryDate}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${item.Id}">Hapus</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+    });
+}
+
+// Panggil saat halaman dimuat
+$(document).ready(function () {
+    var kodeProject = $("#Kode_Project").val(); // Ambil dari input utama
+    loadComponents(kodeProject);
+});
+
+
+
+</script>
+
+
+
+ 
+
+<script>
+    $(document).ready(function () {
+        $("#Kode_Project").change(function () {
+            var kodeProject = $(this).val();
+            
+            if (kodeProject) {
+                $.ajax({
+                    url: '/FaseTender/GetProjectData', // Gantilah dengan endpoint yang sesuai
+                    type: 'GET',
+                    data: { kodeProject: kodeProject },
+                    success: function (response) {
+                        if (response) {
+                            if (response.jenisKontrak === "Material N" || response.jenisProject === "Barang") {
+                                $("#additionalFields").show();
+                            } else {
+                                $("#additionalFields").hide();
+                            }
+                        }
+                    }
+                });
+            } else {
+                $("#additionalFields").hide();
+            }
+        });
+    });
+</script>
+
+
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+
+
+<script>
+    // Fungsi untuk memformat angka dengan pemisah ribuan
+    function formatCurrency(value) {
+        if (!value) return ""; // Jika kosong, kembalikan string kosong
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }
+
+    // Fungsi untuk memperbarui label currency
+    function updateCurrencyLabel(input, labelId) {
+        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
+        const formattedValue = formatCurrency(value); // Format angka
+        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
+    }
+
+    // Daftar input yang akan diformat
+    const inputs = [
+        {
+            input: document.getElementById("Nilai_Purchasing_Order"),
+            labelId: "formatted_Nilai_Purchasing_Order"
+        },
+        {
+            input: document.getElementById("Nilai_Purchasing_Request"),
+            labelId: "formatted_Nilai_Purchasing_Request"
+        }
+    ];
+
+    // Tambahkan event listener untuk memperbarui label
+    inputs.forEach(({ input, labelId }) => {
+        input.addEventListener("input", function () {
+            updateCurrencyLabel(this, labelId);
+        });
+
+        // Perbarui label saat halaman dimuat
+        updateCurrencyLabel(input, labelId);
+    });
+</script>
+
+
+
+
+
+
+    <div class="form-group">
+        <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+        </div>
+    </div>
+</div>
+
+</form>
+
+
+
+<script>
+    document.getElementById("saveButton").addEventListener("click", function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Pastikan data anda sudah benar",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form
+                document.getElementById("faseform").submit();
+            }
+        });
+    });
+</script>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

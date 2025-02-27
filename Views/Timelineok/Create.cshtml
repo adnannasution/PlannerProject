@@ -113,15 +113,6 @@
 
 
     <div class="form-group">
-        <label for="Dokumen">Dokumen</label>
-        <input type="file" name="dokumenFile" class="form-control" accept=".pdf" id="dokumenInput" />
-        <span asp-validation-for="Dokumen" class="text-danger"></span>
-         <span id="fileError" class="text-danger" style="display: none;">Hanya file PDF yang diperbolehkan!</span>
-    </div>
-
-
-
-    <div class="form-group">
         <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
         <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan"
             asp-items="ViewBag.Resume" required>
@@ -131,14 +122,223 @@
     </div>
 
 
+<div class="form-group">
+    <label for="Tanggal">Keterangan</label>
+    <textarea asp-for="Keterangan" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Keterangan" class="text-danger"></span>
+</div>
+
 
     <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+    Upload Dokumen
+</button>
 
 
 
 </form>
+
+
+<div>    <!-- Tabel Daftar Dokumen -->
+    <h4 class="mt-4">Daftar Dokumen</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                
+                <th>Nama Dokumen</th>
+                <th>File</th>
+         
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="fileList">
+            <!-- Data akan dimuat dengan AJAX -->
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Tangkap elemen dropdown Task dan input hidden Task2
+        var taskDropdown = document.getElementById("Task");
+        var taskHiddenInput = document.getElementById("Task2");
+
+        // Saat dropdown berubah, ubah nilai input hidden
+        taskDropdown.addEventListener("change", function () {
+            taskHiddenInput.value = this.value; 
+        });
+    });
+</script>
+
+<!-- Tombol untuk menampilkan modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Input Kode Project -->
+         
+                    <input type="hidden" class="form-control" id="Kode_Project" readonly required />
+
+                    <input type="hidden" class="form-control" id="Task2" readonly required />
+             
+
+
+                <!-- Form Upload -->
+                <div class="mt-3">
+                    <div class="mb-3">
+                        <label for="NamaDokumen" class="form-label">Nama Dokumen</label>
+                        <input type="text" class="form-control" id="NamaDokumen" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="FileUpload" class="form-label">Pilih Dokumen</label>
+                        <input type="file" class="form-control" id="FileUpload" required>
+                    </div>
+
+                    <button id="btnUpload" class="btn btn-primary">Upload</button>
+
+                    <!-- Progress Bar -->
+                    <div class="progress mt-3" style="height: 20px; display: none;">
+                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS (Pastikan sudah terhubung dengan Bootstrap 5) -->
+
+
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+
+<script>
+    $(document).ready(function () {
+        loadFiles(); // Load data saat halaman dibuka
+
+        // Upload Dokumen dengan AJAX
+        $("#btnUpload").click(function () {
+            var formData = new FormData();
+            var kodeProject = $("#Kode_Project").val();
+            var Task = $("#Task2").val();
+            var namaDokumen = $("#NamaDokumen").val();
+            var file = $("#FileUpload")[0].files[0];
+
+            if (!kodeProject || !namaDokumen || !file) {
+                alert("Kode Project, Nama Dokumen, dan File harus diisi!");
+                return;
+            }
+
+            formData.append("Kode_Project", kodeProject);
+            formData.append("Task", Task);
+            formData.append("NamaDokumen", namaDokumen);
+            formData.append("File", file);
+
+            $(".progress").show();
+            $("#progressBar").css("width", "0%").text("0%");
+
+            $.ajax({
+                url: "/Timelineok/UploadDokumen",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (e) {
+                        if (e.lengthComputable) {
+                            var percentComplete = (e.loaded / e.total) * 100;
+                            $("#progressBar").css("width", percentComplete + "%").text(Math.round(percentComplete) + "%");
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function () {
+                    alert("Upload berhasil!");
+                    $(".progress").hide();
+                    $("#NamaDokumen").val("");
+                    $("#FileUpload").val("");
+                    loadFiles();
+                },
+                error: function () {
+                    alert("Gagal upload!");
+                    $(".progress").hide();
+                }
+            });
+        });
+
+
+
+// Load Daftar Dokumen berdasarkan Kode_Project
+function loadFiles() {
+    var kodeProject = $("#Kode_Project").val(); // Ambil nilai Kode_Project dari input text
+    var Task = $("#Task").val(); // Ambil nilai Kode_Project dari input text
+
+    if (kodeProject) {
+        $.ajax({
+            url: "/Timelineok/GetDokumenList",
+            type: "GET",
+            data: { kodeProject: kodeProject, Task: Task }, // Kirim kodeProject ke server
+            success: function (data) {
+                $("#fileList").empty();
+                if (data.length > 0) {
+                    $.each(data, function (index, file) {
+                        $("#fileList").append(`
+                            <tr>
+                                <td>${file.namaDokumen}</td>
+                                <td><a href="${file.path}" download class="btn btn-success btn-sm">Download</a></td>
+                                <td><button class="btn btn-danger btn-sm" onclick="deleteFile(${file.id})">Hapus</button></td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $("#fileList").append(`<tr><td colspan="3" class="text-center">Tidak ada dokumen</td></tr>`);
+                }
+            }
+        });
+    }
+}
+
+// Panggil saat halaman dimuat atau saat Kode_Project berubah
+$(document).ready(function () {
+    loadFiles();
+
+    $("#Kode_Project").on("change", function () {
+        loadFiles(); // Muat ulang dokumen setiap kali Kode_Project berubah
+    });
+});
+
+
+
+        // Hapus Dokumen
+        window.deleteFile = function (id) {
+            if (!confirm("Yakin ingin menghapus file ini?")) return;
+            $.ajax({
+                url: "/Timelineok/DeleteDokumen/" + id,
+                type: "DELETE",
+                success: function () {
+                    alert("File berhasil dihapus!");
+                    loadFiles();
+                },
+                error: function () {
+                    alert("Gagal menghapus file!");
+                }
+            });
+        };
+    });
+</script>
+
 
 
 
@@ -159,30 +359,5 @@
                 document.getElementById("terminform").submit();
             }
         });
-    });
-</script>
-
-
-<script>
-    document.getElementById("dokumenInput").addEventListener("change", function () {
-        const fileInput = this;
-        const saveButton = document.getElementById("saveButton");
-        const fileError = document.getElementById("fileError");
-        const file = fileInput.files[0];
-
-        if (file) {
-            const fileType = file.type;
-            if (fileType === "application/pdf") {
-                saveButton.disabled = false; // Enable the Save button
-                fileError.style.display = "none"; // Hide the error message
-            } else {
-                fileError.style.display = "block"; // Show the error message
-                saveButton.disabled = true; // Disable the Save button
-                fileInput.value = ""; // Clear the input
-            }
-        } else {
-            saveButton.disabled = true; // Disable the Save button if no file is selected
-            fileError.style.display = "none"; // Hide the error message
-        }
     });
 </script>

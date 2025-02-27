@@ -1,0 +1,164 @@
+@model Plan.Models.FasePlanning
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Detail Planning Project";
+}
+
+<div class="container">
+  
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Kode_Project" class="control-label"></label>
+            <p class="form-control-static">@Model.Kode_Project</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Planner" class="control-label"></label>
+                <p class="form-control-static">@Model.Planner</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="No_Memo_Rekomendasi" class="control-label">No Memo Rekomendasi</label>
+                <p class="form-control-static">@Model.No_Memo_Rekomendasi</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NoProgram" class="control-label">Kode IRKAP</label>
+                <p class="form-control-static">@Model.NoProgram</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Kategori_Kontrak" class="control-label"></label>
+                <p class="form-control-static">@Model.Kategori_Kontrak</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MOC" class="control-label"></label>
+                <p class="form-control-static">@Model.MOC</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Jenis_Project" class="control-label">Jenis Pengadaan</label>
+                <p class="form-control-static">@Model.Jenis_Project</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Tahun" class="control-label">Tahun Pembuatan Kontrak</label>
+                <p class="form-control-static">@Model.Tahun</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Disiplin" class="control-label"></label>
+                <p class="form-control-static">@Model.Disiplin</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Kategori_Equipment" class="control-label"></label>
+                <p class="form-control-static">@Model.Kategori_Equipment</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Kategori_Maintenance" class="control-label"></label>
+                <p class="form-control-static">@Model.Kategori_Maintenance</p>
+                <hr/>
+            </div>
+        </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Status_kontrak" class="control-label"></label>
+                <p class="form-control-static">@Model.Status_kontrak</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Pekerjaan" class="control-label">Judul Kontrak</label>
+                <p class="form-control-static">@Model.Pekerjaan</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Area" class="control-label"></label>
+                <p class="form-control-static">@Model.Area</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Direksi" class="control-label"></label>
+                <p class="form-control-static">@Model.Direksi</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Jenis_Kontrak" class="control-label"></label>
+                <p class="form-control-static">@Model.Jenis_Kontrak</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Notifikasi" class="control-label"></label>
+                <p class="form-control-static">@Model.Notifikasi</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Tanggal_Update" class="control-label">Tanggal NOPR</label>
+                <p class="form-control-static">@Model.Tanggal_Update?.ToShortDateString()</p>
+                <hr/>
+            </div>
+
+            
+
+                       <div class="form-group">
+                <label asp-for="No_Work_Order" class="control-label"></label>
+                <p class="form-control-static">@Model.No_Work_Order</p>
+                <hr/>
+            </div>
+
+                     <div class="form-group">
+                <label asp-for="No_PR" class="control-label"></label>
+                <p class="form-control-static">@Model.No_PR</p>
+                <hr/>
+            </div>
+            
+
+
+            <div class="form-group">
+                <label asp-for="Tanggal_Kirim_Paket" class="control-label">Prognosa Tanggal Kirim Paket</label>
+                <p class="form-control-static">@Model.Tanggal_Kirim_Paket?.ToShortDateString()</p>
+                <hr/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Kirim_Paket_Kontrak" class="control-label">Tanggal Kirim Paket Kontrak</label>
+                <p class="form-control-static">@Model.Kirim_Paket_Kontrak?.ToShortDateString()</p>
+                <hr/>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Informasi_Detail" class="control-label">Notes</label>
+                <p class="form-control-static">@Model.Informasi_Detail</p>
+                <hr/>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

@@ -25,7 +25,7 @@
             <th>No</th>
             <th>Task</th>
             <th>Target</th>
-            <th>Status</th>
+            <th>Reminder</th>
              @if (isSupervisor)
                     {
             <th>Actions</th>
@@ -46,12 +46,12 @@
 
             // Menentukan status berdasarkan tanggal target
             var statusClass = "badge-secondary"; // Default
-            var statusText = "On Time";
+            var statusText = "On Track";
 
             if (targetDate < today)
             {
-                statusClass = "badge-danger"; // Red for overdue
-                statusText = "Overdue";
+                statusClass = "badge-success"; // Red for overdue
+                statusText = "Completed";
             }
             else if ((targetDate - today).Days <= 3)
             {

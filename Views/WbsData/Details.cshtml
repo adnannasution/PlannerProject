@@ -47,12 +47,12 @@
 <form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
     @Html.AntiForgeryToken()
     <input type="hidden" name="id" value="@item.Id" />
-    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
 </form> 
  
 <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
     @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
 </form>
                 </td>
             </tr>

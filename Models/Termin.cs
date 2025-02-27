@@ -24,6 +24,10 @@ public class Termin
     public decimal Nilai_Plan { get; set; }
 
     public decimal Nilai_Tagihan { get; set; }  
+    public DateTime TanggalTermin { get; set; }  
+    public string No_Memo_Rekomendasi { get; set; }  
+    public DateTime Tanggal_Masuk_Memo { get; set; }  
+    public string Keterangan { get; set; }  
 
     
     //public List<TabelDokumen> TabelDokumen { get; set; } = new List<TabelDokumen>();

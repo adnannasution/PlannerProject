@@ -1,0 +1,157 @@
+@* @model List<Plan.Models.Tahapan> *@
+
+@model IEnumerable<Plan.Models.Tahapan>
+
+
+@{
+    ViewData["Title"] = "Timeline untuk Kode Project " + Model.FirstOrDefault()?.Kode_Project;
+}
+
+
+
+
+
+@* <div class="timeline" style="padding: 50px;">
+    @foreach (var tahapan in Model)
+    {
+        <div class="timeline-item" style="padding: 10px;">
+            <div class="timeline-icon">
+                <i class="fas fa-clipboard-check"></i> <!-- Icon untuk tahapan -->
+            </div>
+            <div class="timeline-content" style="background-color: @GetRandomColor();">
+                <h5>@tahapan.Tahap</h5>
+                <p class="text-muted"><i class="fas fa-calendar-alt"></i> @tahapan.Tanggal?.ToString("dd MMM yyyy")</p>
+                <p class="text-muted"><i class="fas fa-clock"></i> @tahapan.Waktu?.ToString(@"hh\:mm")</p>
+                <p><i class="fas fa-envelope"></i> @tahapan.Email</p>
+                <p><i class="fas fa-star"></i> @tahapan.Status</p>
+            </div>
+        </div>
+    }
+</div> *@
+
+
+<div class="timeline" style="padding: 50px;">
+    @foreach (var tahapan in Model)
+    {
+        // Menentukan warna background berdasarkan status
+        var bgColor = tahapan.Status == "Done" ? "#87CEEB" : "#808080"; // Blue Sky untuk Done, Gray untuk Not yet
+        var textColor = tahapan.Status == "Done" ? "#000" : "#D3D3D3"; // Hitam untuk Done, Light Gray untuk Not yet
+
+        <div class="timeline-item" style="padding: 10px;">
+            <div class="timeline-icon">
+                <i class="fas fa-clipboard-check"></i> <!-- Icon untuk tahapan -->
+            </div>
+            <div class="timeline-content" style="background-color: @bgColor; color: @textColor; padding: 15px; border-radius: 8px;">
+                <h5>@tahapan.Tahap</h5>
+                <p class="text-muted"><i class="fas fa-calendar-alt"></i> @tahapan.Tanggal?.ToString("dd MMM yyyy")</p>
+                <p class="text-muted"><i class="fas fa-clock"></i> @tahapan.Waktu?.ToString(@"hh\:mm")</p>
+                <p><i class="fas fa-envelope"></i> @tahapan.Email</p>
+
+                <!-- Status dalam bentuk badge -->
+                <p>
+                    <span class="badge @(tahapan.Status == "Done" ? "badge-success" : "badge-secondary")">
+                        <i class="fas fa-star"></i> @tahapan.Status
+                    </span>
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<!-- Tambahkan style CSS jika perlu -->
+<style>
+    .timeline {
+        position: relative;
+        padding: 10px 0;  /* Padding lebih kecil */
+        list-style: none;
+    }
+    .timeline-item {
+        display: flex;
+        position: relative;
+        margin-bottom: -5px; /* Margin lebih kecil */
+    }
+    .timeline-item::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background-color: #ddd;
+    }
+    .timeline-icon {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 20px;  /* Ukuran lebih kecil */
+        height: 20px;  /* Ukuran lebih kecil */
+        background-color: #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;  /* Ukuran font lebih kecil */
+    }
+    .timeline-content {
+        padding: 10px 20px;  /* Padding lebih kecil */
+        margin-left: 50%;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 50%;
+        font-size: 14px;  /* Ukuran font lebih kecil */
+    }
+    .timeline-content h5 {
+        margin-bottom: 5px;
+        font-size: 16px;  /* Ukuran font lebih kecil */
+        font-weight: 600;
+    }
+    .timeline-content p {
+        margin: 3px 0;  /* Margin lebih kecil */
+    }
+    .timeline-item:nth-child(odd) .timeline-content {
+        margin-left: 0;
+        margin-right: 50%;
+    }
+    .timeline-item:nth-child(odd) .timeline-icon {
+        left: auto;
+        right: 50%;
+    }
+
+    /* Soft colors for background */
+    .timeline-content:nth-child(1) {
+        background-color: #e3f2fd;  /* Soft blue */
+    }
+    .timeline-content:nth-child(2) {
+        background-color: #f3e5f5;  /* Soft purple */
+    }
+    .timeline-content:nth-child(3) {
+        background-color: #c8e6c9;  /* Soft green */
+    }
+    .timeline-content:nth-child(4) {
+        background-color: #fff9c4;  /* Soft yellow */
+    }
+    .timeline-content:nth-child(5) {
+        background-color: #ffecb3;  /* Soft orange */
+    }
+</style>
+
+@functions {
+    // Fungsi untuk mendapatkan warna secara acak
+    public string GetRandomColor()
+    {
+        var colors = new string[]
+        {
+            "#e3f2fd", // Soft blue
+            "#f3e5f5", // Soft purple
+            "#c8e6c9", // Soft green
+            "#fff9c4", // Soft yellow
+            "#ffecb3", // Soft orange
+        };
+        var random = new Random();
+        return colors[random.Next(colors.Length)];
+    }
+}

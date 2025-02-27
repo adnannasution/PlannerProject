@@ -23,6 +23,7 @@ namespace Plan.Models
         public string ResumeStatusPekerjaan { get; set; }
 
           public string Status { get; set; }
+          public string Keterangan { get; set; }
 
     }
 }

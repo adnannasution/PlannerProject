@@ -16,6 +16,7 @@
             <th>Resume</th>
             <th>Dokumen</th>
             <th>Status</th>
+            <th>Remarks</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -29,26 +30,53 @@
                 <td>@item.Pic</td>
                 <td>@item.Tanggal.ToString("dd/MM/yyyy")</td>
                   <td>@item.ResumeStatusPekerjaan</td>
+                 
 
 
 
 
-                <td>
+                @* <td>
                     @if (!string.IsNullOrEmpty(item.Dokumen))
                     {
                         <a href="@item.Dokumen" target="_blank">View File</a>
                     }
-                </td>
+
+                    
+                </td> *@
+
+
+                @* <td>
+    @if (!string.IsNullOrEmpty(item.Dokumen))
+    {
+        var email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value ?? "unknown@example.com";
+
+        <a href="@item.Dokumen"
+           data-id="@item.Id"
+           data-kode="@item.Kode_Project"
+           data-nama="@item.Dokumen"
+           data-email="@email" target="_blank" class="btn-dokumen">
+            View File
+        </a>
+    }
+</td> *@
+
+<td>
+<a href="/Timelineok/TampilDokumenList?kode_project=@item.Kode_Project&task=@item.Task" 
+   data-bs-toggle="modal" data-bs-target="#modalDokumen">
+    Lihat Dokumen
+</a>
+</td>
+
+
+
+
 
             <td>
-    @if (item.Status == "On Progress")
+    @if (item.Status == "Ontime")
     {
-        <span class="badge bg-primary">On Progress</span>
+        <span class="badge bg-primary">On time</span>
     }
-    else if (item.Status == "Warning")
-    {
-        <span class="badge bg-warning">Warning</span>
-    }
+
     else if (item.Status == "Overdue")
     {
         <span class="badge bg-danger">Overdue</span>
@@ -56,18 +84,18 @@
 </td>
 
 
-
+ <td>@item.Keterangan</td>
                 
                   <td>
 <form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
     @Html.AntiForgeryToken()
     <input type="hidden" name="id" value="@item.Id" />
-    <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
 </form>
 
 <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" class="delete-form">
     @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
 </form>
                 </td>
             </tr>
@@ -76,63 +104,85 @@
 </table>
 
 
+
+
+
+
+
+
 <a asp-action="ViewSla" asp-route-kodeProject="@Model.FirstOrDefault()?.Kode_Project" class="btn btn-info">
     Lihat SLA
 </a>
 
+<a asp-action="TampilHistoryTimelineok" asp-route-kodeProject="@Model.FirstOrDefault()?.Kode_Project" class="btn btn-info">
+    Activity Log
+</a>
+
 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 
-                        @* <button class="btn btn-secondary btn-sm timeline-btn" data-id="@Model.FirstOrDefault()?.Kode_Project">
-                            Lihat sla
-                        </button> *@
+@* 
+@{
+ var email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value ?? "unknown@example.com";
+} *@
 
 
 
-<style>
-    /* Tambahkan gaya kustom untuk lebar SweetAlert */
-    .swal-wide {
-        max-width: 80% !important; /* Atur lebar modal */
-        width: auto !important;
-    }
-</style>
+
+
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalDokumen" tabindex="-1" aria-labelledby="modalDokumenLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDokumenLabel">Daftar Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Halaman TampilDokumenList akan dimuat di sini -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
-    $(document).ready(function () {
-        $('.timeline-btn').on('click', function () {
-            var kodeProject = $(this).data('id');
-
-            // Send AJAX request to fetch timeline data
-            $.ajax({
-                url: '@Url.Action("ViewSla", "Timelineok")', // Your controller action
-                type: 'GET',
-                data: { kodeProject: kodeProject },
-                success: function (data) {
-                    // Use SweetAlert2 to display the timeline
-                    Swal.fire({
-                        title: false,
-                        html: data, // Inject data into the modal
-                        icon: false,
-                        showCloseButton: true, // Optional: Show the close button in the top-right corner
-                        showConfirmButton: false, // Remove the "Close" button at the bottom
-                        customClass: {
-                            popup: 'swal-wide', // Tambahkan kelas CSS untuk memperbesar modal
-                            htmlContainer: 'text-start' // Tetapkan agar teks rata kiri
-                        }
-                    });
-                },
-                error: function () {
-                    // Display an error message if the AJAX request fails
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Failed to load timeline!',
-                        icon: 'error',
-                        confirmButtonText: 'Close'
-                    });
-                }
-            });
-        });
+document.addEventListener("DOMContentLoaded", function () {
+    var modalDokumen = document.getElementById("modalDokumen");
+    
+    modalDokumen.addEventListener("show.bs.modal", function (event) {
+        var button = event.relatedTarget;
+        var url = button.getAttribute("href"); // Ambil URL dari tombol
+        
+        // Muat halaman ke dalam modal
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("modalContent").innerHTML = html;
+            })
+            .catch(error => console.error("Error loading page:", error));
     });
+});
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -207,4 +257,46 @@
             });
         });
     </script>
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("click", function (event) {
+        // Pastikan elemen yang diklik memiliki class "btn-dokumen"
+        if (event.target.classList.contains("btn-dokumen")) {
+            event.preventDefault(); // Mencegah download langsung
+
+            //alert("tampil"); // Pastikan ini muncul saat diklik
+
+            var kodeProject = event.target.getAttribute("data-kode");
+            var namaDokumen = event.target.getAttribute("data-nama");
+            var fileUrl = event.target.getAttribute("href");
+
+            // Kirim data ke server dengan Fetch API
+            fetch("/Timelineok/RekamAktivitas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: "kodeProject=" + encodeURIComponent(kodeProject) + 
+                      "&namaDokumen=" + encodeURIComponent(namaDokumen)
+            })
+            .then(response => response.json())
+            .then(data => {
+                //alert(data.message); // Notifikasi sukses dari server
+                 window.open(fileUrl, "_blank");  // Download file setelah sukses
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Gagal menyimpan aktivitas.");
+            });
+        }
+    });
+});
+</script>
+
+
+
 }

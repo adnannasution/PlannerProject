@@ -83,18 +83,24 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
                 _context.Add(faseTender);
                 await _context.SaveChangesAsync();
 
-        var tahapan = new Tahapan
-        {
-             Kode_Project = faseTender.Kode_Project,
-            Tanggal = DateTime.Now.Date, // Current date
-            Waktu = DateTime.Now.TimeOfDay, // Current time
-            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-            Tahap = "Created Fase Tender" // A description of the current step
-        };
+        // var tahapan = new Tahapan
+        // {
+        //      Kode_Project = faseTender.Kode_Project,
+        //     Tanggal = DateTime.Now.Date, // Current date
+        //     Waktu = DateTime.Now.TimeOfDay, // Current time
+        //     Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+        //     Tahap = "Created Fase Tender" // A description of the current step
+        // };
 
-        // Simpan entitas Tahapan
-        _context.Add(tahapan);
-        await _context.SaveChangesAsync();
+        // // Simpan entitas Tahapan
+        // _context.Add(tahapan);
+        // await _context.SaveChangesAsync();
+
+
+
+
+
+
 
                  TempData["SuccessMessage"] = "successfully!";
                 return RedirectToAction(nameof(Index));
@@ -289,6 +295,101 @@ public async Task<IActionResult> Upload(FileUploadViewModel model)
 
     return RedirectToAction(nameof(Index));
 }
+
+
+
+[HttpGet]
+public IActionResult GetProjectData(string kodeProject)
+{
+
+        if (string.IsNullOrEmpty(kodeProject))
+    {
+        Console.WriteLine("Kode Project tidak diterima!");
+        return Json(new { error = "Kode Project tidak boleh kosong." });
+    }
+
+    Console.WriteLine($"Kode Project yang diterima: {kodeProject}");
+
+    var project = _context.FasePlanning
+                          .Where(fp => fp.Kode_Project == kodeProject)
+                          .Select(fp => new 
+                          { 
+                              JenisKontrak = fp.Jenis_Kontrak, 
+                              JenisProject = fp.Jenis_Project 
+                          })
+                          .FirstOrDefault();
+
+    if (project != null)
+    {
+        return Json(project);
+    }
+    return Json(null);
+}
+
+
+[HttpPost]
+public IActionResult CreateComponent([FromBody] TabelComponent model)
+{
+    if (model == null) return BadRequest("Data tidak valid.");
+
+    _context.TabelComponent.Add(model);
+    _context.SaveChanges();
+
+    return Json(model); // Kembalikan data yang baru dimasukkan
+}
+
+
+
+
+
+[HttpDelete]
+public IActionResult DeleteComponent(int id)
+{
+    var component = _context.TabelComponent.Find(id);
+    if (component == null) return NotFound();
+
+    _context.TabelComponent.Remove(component);
+    _context.SaveChanges();
+
+    return Ok();
+}
+
+
+
+
+
+[HttpGet]
+public IActionResult GetComponents(string kodeProject)
+{
+    var components = _context.TabelComponent
+        .Where(c => c.Kode_Project == kodeProject)
+        .Select(c => new
+        {
+            c.Id,
+            c.Component,
+            c.Description,
+            c.Quantity,
+            c.Unit,
+            c.ValuationPrice,
+            c.DeliveryDate
+        })
+        .ToList();
+
+    Console.WriteLine(JsonConvert.SerializeObject(components)); // Debug di server
+    return Json(components);
+}
+
+
+[HttpGet]
+public IActionResult GetComponentsHtml(string kodeProject)
+{
+    var components = _context.TabelComponent
+        .Where(c => c.Kode_Project == kodeProject)
+        .ToList();
+
+    return PartialView("TampilComponent", components);
+}
+
 
 
     }

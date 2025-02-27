@@ -81,7 +81,7 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 // POST: FaseMonitoring/Create
 [HttpPost]
 [ValidateAntiForgeryToken]
-public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Status_Volume, Count_Days_Progress, Count_Days_Over, Status_Durasi, Status_Kontrak, Amandemen_Nilai, Total_Nilai_Kontrak, Nilai_Tagihan")] FaseMonitoring faseMonitoring)
+public async Task<IActionResult> Create(FaseMonitoring faseMonitoring)
 {
     if (ModelState.IsValid)
     {
@@ -92,17 +92,35 @@ public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Sta
             await _context.SaveChangesAsync();
 
             // Create and save Tahapan
-            var tahapan = new Tahapan
-            {
-                Kode_Project = faseMonitoring.Kode_Project,
-                Tanggal = DateTime.Now.Date,
-                Waktu = DateTime.Now.TimeOfDay,
-                Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-                Tahap = "Created Fase Monitoring"
-            };
+            // var tahapan = new Tahapan
+            // {
+            //     Kode_Project = faseMonitoring.Kode_Project,
+            //     Tanggal = DateTime.Now.Date,
+            //     Waktu = DateTime.Now.TimeOfDay,
+            //     Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+            //     Tahap = "Created Fase Monitoring"
+            // };
 
-            _context.Add(tahapan);
-            await _context.SaveChangesAsync();
+            // _context.Add(tahapan);
+            // await _context.SaveChangesAsync();
+
+
+
+
+            
+        var historyFaseMonitoring = new HistoryFaseMonitoring
+    {
+        Kode_Project = faseMonitoring.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Tambah data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseMonitoring);
+    await _context.SaveChangesAsync(); 
 
             TempData["SuccessMessage"] = "Successfully created FaseMonitoring and logged Tahapan!";
             return RedirectToAction(nameof(Index));
@@ -169,13 +187,30 @@ public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Sta
             ViewData["Status_Volume"] = new SelectList(new[] { "ACTIVE", "NONACTIVE" });
             ViewData["Status_Durasi"] = new SelectList(new[] { "IN PROGRESS", "WARNING" });
 
+
+    var historyFaseMonitoring = new HistoryFaseMonitoring
+    {
+        Kode_Project = faseMonitoring.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Lihat data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseMonitoring);
+    await _context.SaveChangesAsync(); 
+
+
+
             return View(faseMonitoring);
         }
 
         // POST: FaseMonitoring/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Kode_Project, Status_LKP,Status_Volume,Count_Days_Progress,Count_Days_Over,Status_Durasi,Status_Kontrak,Amandemen_Nilai,Total_Nilai_Kontrak,Nilai_Tagihan")] FaseMonitoring faseMonitoring)
+        public async Task<IActionResult> Edit(int id, FaseMonitoring faseMonitoring)
         {
             if (id != faseMonitoring.Id)
             {
@@ -200,6 +235,23 @@ public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Sta
                         throw;
                     }
                 }
+
+
+    var historyFaseMonitoring = new HistoryFaseMonitoring
+    {
+        Kode_Project = faseMonitoring.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Edit data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseMonitoring);
+    await _context.SaveChangesAsync(); 
+
+
                  TempData["SuccessMessage"] = "successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -238,6 +290,24 @@ public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Sta
             var faseMonitoring = await _context.FaseMonitoring.FindAsync(id);
             _context.FaseMonitoring.Remove(faseMonitoring);
             await _context.SaveChangesAsync();
+
+
+
+    var historyFaseMonitoring = new HistoryFaseMonitoring
+    {
+        Kode_Project = faseMonitoring.Kode_Project, 
+        Tanggal = DateTime.Now.Date, 
+        Waktu = DateTime.Now.TimeOfDay, 
+        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, 
+        Aksi = "Hapus data" 
+    };
+
+
+    // Simpan entitas ke database
+    _context.Add(historyFaseMonitoring);
+    await _context.SaveChangesAsync(); 
+
+
              TempData["SuccessMessage"] = "successfully!";
             return RedirectToAction(nameof(Index));
         }
@@ -302,6 +372,70 @@ public async Task<IActionResult> Create([Bind("Id, Kode_Project, Status_LKP, Sta
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+
+[HttpGet]
+public IActionResult GetStartDate(string kodeProject)
+{
+    var startDate = _context.FaseExecution
+                    .Where(f => f.Kode_Project == kodeProject)
+                    .Select(f => f.Start_Date)
+                    .FirstOrDefault();
+
+    if (startDate.HasValue) // Cek apakah startDate tidak null
+    {
+        return Json(new { startDate = startDate.Value.ToString("yyyy-MM-dd") });
+    }
+
+    return Json(new { startDate = "" }); // Return string kosong jika tidak ditemukan
+}
+
+ 
+
+
+[HttpGet]
+public IActionResult GetPurchaseOrderValue(string kodeProject)
+{
+    var purchaseOrderValue = _context.FaseTender
+                    .Where(f => f.Kode_Project == kodeProject)
+                    .Select(f => f.Nilai_Purchasing_Order)
+                    .FirstOrDefault();
+
+    return Json(new { nilaiPurchaseOrder = purchaseOrderValue });
+}
+
+
+[HttpGet]
+public IActionResult GetTotalTagihan(string kodeProject)
+{
+    var totalTagihan = _context.Termin
+        .Where(t => t.Kode_Project == kodeProject)
+        .Sum(t => (decimal?)t.Nilai_Tagihan) ?? 0; // Jika null, set default 0
+
+    return Json(new { totalTagihan = totalTagihan });
+}
+
+
+
+       public async Task<IActionResult> TampilHistoryFaseMonitoring(string kodeProject)
+        {
+            var histori = await _context.HistoryFaseMonitoring
+                .Where(t => t.Kode_Project == kodeProject)
+                .ToListAsync();
+
+            if (histori == null || !histori.Any())
+            {
+                return NotFound("No records found for this project.");
+            }
+
+            // Set Kode_Project in ViewData for display in the view
+            ViewData["KodeProject"] = kodeProject;
+
+            return View(histori);
+
+            //return PartialView("ViewSLA", histori);
         }
 
 

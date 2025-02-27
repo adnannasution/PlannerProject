@@ -67,6 +67,9 @@
 <div class="dropdown">
     <button class="btn btn-secondary btn-sm m-1">Show/Hide Columns</button>
     <div class="dropdown-content" style="z-index: 999;">
+
+        <label><input type="checkbox" id="checkAll"> Check All</label><br>
+
         <label><input type="checkbox" data-column="0" checked onchange="handleCheckboxChange(this, 0)"> Kode Project</label><br>
         <label><input type="checkbox" data-column="1" checked onchange="handleCheckboxChange(this, 1)"> Pekerjaan</label><br>
         <label><input type="checkbox" data-column="2" checked onchange="handleCheckboxChange(this, 2)"> Status LKP</label><br>
@@ -133,6 +136,20 @@
             var columnIndex = $(this).data('column');
             handleCheckboxChange(this, columnIndex);
         });
+
+                        // Handle "Check All" functionality
+    $('#checkAll').on('change', function() {
+        var isChecked = $(this).prop('checked');
+        $('input[type="checkbox"]').not(this).prop('checked', isChecked);
+
+        $('input[type="checkbox"]').each(function() {
+            var columnIndex = $(this).data('column');
+            if (columnIndex !== undefined) {
+                toggleColumn(columnIndex, isChecked);
+            }
+        });
+    });
+    
     });
 </script>
 
@@ -180,19 +197,19 @@
                           <form asp-action="Detail" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.Monitoring.Id" />
-                                <button type="submit" class="btn btn-primary btn-sm">Detail</button>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></button>
                             </form>  
     
     
                             <form asp-action="FormEdit" method="post" style="display:inline;" class="edit-form">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.Monitoring.Id" />
-                                <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+                                <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
                             </form>
 
                             <form asp-action="Delete" asp-route-id="@item.Monitoring.Id" method="post" style="display:inline;" class="delete-form">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>

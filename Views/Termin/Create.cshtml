@@ -6,7 +6,7 @@
 
 
 
-<form asp-action="Create" id="terminform" enctype="multipart/form-data" method="post">
+<form asp-action="Create" id="terminform"  method="post">
   @Html.AntiForgeryToken()
 
 <div class="form-group">
@@ -79,15 +79,91 @@
 </script>
 
     <div class="form-group">
-        <label asp-for="JenisTermin" class="control-label"></label>
-        <input asp-for="JenisTermin" class="form-control" required />
+        <label asp-for="JenisTermin" class="control-label">Termin Ke</label>
+        <input asp-for="JenisTermin" id="JenisTermin" class="form-control" required />
         <span asp-validation-for="JenisTermin" class="text-danger"></span>
     </div>
-    <div class="form-group">
+
+
+
+
+<div class="form-group">
+    <label for="No_Memo_Rekomendasi">No Memo</label>
+    <select id="No_Memo_Rekomendasi" asp-for="No_Memo_Rekomendasi" class="form-control" asp-items="ViewBag.NoMemoRekomendasi">
+        <option value="">Pilih Memo</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="Tanggal_Masuk_Memo">Tanggal Masuk Memo</label>
+    <input id="Tanggal_Masuk_Memo" asp-for="Tanggal_Masuk_Memo" type="date" class="form-control" readonly />
+</div>
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+<script>
+    $(document).ready(function () {
+        $("#No_Memo_Rekomendasi").change(function () {
+            var noMemo = $(this).val();
+            if (noMemo) {
+                $.get("/Termin/GetTanggalMasukMemo", { noMemo: noMemo }, function (data) {
+                    $("#Tanggal_Masuk_Memo").val(data.tanggalMasuk);
+                });
+            } else {
+                $("#Tanggal_Masuk_Memo").val("");
+            }
+        });
+    });
+</script>
+
+
+
+
+
+    @* <div class="form-group">
         <label asp-for="Evaluasi_Planner" class="control-label"></label>
-        <input asp-for="Evaluasi_Planner" class="form-control" required />
+        <input asp-for="Evaluasi_Planner" class="form-control" id="Planner" readonly required />
         <span asp-validation-for="Evaluasi_Planner" class="text-danger"></span>
-    </div>
+    </div> *@
+
+
+<!-- Planner Dropdown -->
+<div class="form-group">
+    <label asp-for="Evaluasi_Planner" class="control-label"></label>
+    <select id="Planner" asp-for="Evaluasi_Planner" class="form-control">
+        <option value="">Pilih Planner</option>
+    </select>
+</div>
+
+<!-- Input Hidden untuk Menyimpan Nama Planner -->
+<input type="hidden" id="SelectedPlanner" name="SelectedPlanner" />
+
+<script>
+    $(document).ready(function () {
+        // Saat No Memo dipilih, ambil Planner berdasarkan Disiplin dari Memo
+        $("#No_Memo_Rekomendasi").change(function () {
+            var noMemo = $(this).val();
+
+            if (noMemo) {
+                $.get("/Termin/GetPlannerByDisiplin", { noMemo: noMemo }, function (data) {
+                    var plannerDropdown = $("#Planner");
+                    plannerDropdown.empty();
+                    plannerDropdown.append('<option value="">Pilih Planner</option>');
+
+                    data.planners.forEach(function (planner) {
+                        plannerDropdown.append('<option value="' + planner + '">' + planner + '</option>');
+                    });
+                });
+            } else {
+                $("#Planner").empty().append('<option value="">Pilih Planner</option>');
+            }
+        });
+
+        // Saat Planner dipilih, simpan ke input hidden
+        $("#Planner").change(function () {
+            $("#SelectedPlanner").val($(this).val());
+        });
+    });
+</script>
 
 
 
@@ -99,15 +175,6 @@
     </div>
 
 
-
-
-
-    <div class="form-group">
-    <label asp-for="Nilai_Plan" class="control-label"></label>
-    <div id="formatted_Nilai_Plan" class="text-primary font-weight-bold"></div>
-    <input asp-for="Nilai_Plan" id="Nilai_Plan" class="form-control" required />
-    <span asp-validation-for="Nilai_Plan" class="text-danger"></span>
-</div>
 
 <div class="form-group">
     <label asp-for="Nilai_Tagihan" class="control-label"></label>
@@ -159,42 +226,246 @@
 
 
     <div class="form-group">
-        <label asp-for="Prosentase_Tagihan" class="control-label"></label>
-        <input asp-for="Prosentase_Tagihan" class="form-control" required type="number" />
-        <span asp-validation-for="Prosentase_Tagihan" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="SA" class="control-label"></label>
-        <input asp-for="SA" class="form-control" required />
-        <span asp-validation-for="SA" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Periode" class="control-label">Tanggal Mulai</label>
+        <label asp-for="Periode" class="control-label">Start Period</label>
         <input asp-for="Periode" class="form-control" required type="date" />
         <span asp-validation-for="Periode" class="text-danger"></span>
     </div>
 
         <div class="form-group">
-        <label asp-for="Periode2" class="control-label">Tanggal Sampai</label>
+        <label asp-for="Periode2" class="control-label">End Period</label>
         <input asp-for="Periode2" class="form-control" required type="date" />
         <span asp-validation-for="Periode2" class="text-danger"></span>
     </div>
 
 
+<div class="form-group">
+    <label asp-for="Keterangan" class="control-label">Keterangan</label>
+    <textarea asp-for="Keterangan" class="form-control" rows="4" required></textarea>
+    <span asp-validation-for="Keterangan" class="text-danger"></span>
+</div>
 
-        <div class="form-group">
-        <label for="Dokumen">Dokumen Tagihan</label>
-        <input type="file" name="dokumenFile" class="form-control" accept=".pdf" id="dokumenInput"  />
-        <span asp-validation-for="Dokumen" class="text-danger"></span>
-           <span id="fileError" class="text-danger" style="display: none;">Hanya file PDF yang diperbolehkan!</span>
-    </div>
+
+
 
 <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-
-
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+    Upload Dokumen
+</button>
 
 </form>
+ 
+
+
+
+ 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Tangkap elemen dropdown Task dan input hidden Task2
+        var taskDropdown = document.getElementById("JenisTermin");
+        var taskHiddenInput = document.getElementById("JenisTermin2");
+
+        // Saat dropdown berubah, ubah nilai input hidden
+        taskDropdown.addEventListener("keyup", function () {
+            taskHiddenInput.value = this.value; 
+        });
+    });
+</script>
+
+
+<!-- Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+
+
+
+    <!-- Form Upload -->
+    <div class="card mt-3">
+        <div class="card-body">
+
+
+                <!-- Input Kode Project -->
+
+        <input type="hidden" class="form-control" id="Kode_Project" readonly required />
+ 
+        <input type="hidden" asp-for="JenisTermin" id="JenisTermin2" class="form-control" readonly required />
+
+
+            <div class="mb-3">
+                <label for="NamaDokumen" class="form-label">Nama Dokumen</label>
+                <input type="text" class="form-control" id="NamaDokumen" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="FileUpload" class="form-label">Pilih Dokumen</label>
+                <input type="file" class="form-control" id="FileUpload" required>
+            </div>
+
+            <button id="btnUpload" class="btn btn-primary">Upload</button>
+
+            <!-- Progress Bar -->
+            <div class="progress mt-3" style="height: 20px; display: none;">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%;">0%</div>
+            </div>
+        </div>
+    </div>
+
+
+     
+        </div>
+    </div>
+</div>
+
+
+    <!-- Tabel Daftar Dokumen -->
+    <h4 class="mt-4">Daftar Dokumen</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+              
+                <th>Nama Dokumen</th>
+                <th>File</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="fileList">
+            <!-- Data akan dimuat dengan AJAX -->
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+
+<script>
+    $(document).ready(function () {
+        loadFiles(); // Load data saat halaman dibuka
+
+        // Upload Dokumen dengan AJAX
+        $("#btnUpload").click(function () {
+            var formData = new FormData();
+            var kodeProject = $("#Kode_Project").val();
+            var jenisTermin = $("#JenisTermin2").val();
+            var namaDokumen = $("#NamaDokumen").val();
+            var file = $("#FileUpload")[0].files[0];
+
+            if (!kodeProject || !namaDokumen || !file) {
+                alert("Kode Project, Nama Dokumen, dan File harus diisi!");
+                return;
+            }
+
+            formData.append("Kode_Project", kodeProject);
+            formData.append("JenisTermin", jenisTermin);
+            formData.append("NamaDokumen", namaDokumen);
+            formData.append("File", file);
+
+            $(".progress").show();
+            $("#progressBar").css("width", "0%").text("0%");
+
+            $.ajax({
+                url: "/Termin/UploadDokumen",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (e) {
+                        if (e.lengthComputable) {
+                            var percentComplete = (e.loaded / e.total) * 100;
+                            $("#progressBar").css("width", percentComplete + "%").text(Math.round(percentComplete) + "%");
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function () {
+                    alert("Upload berhasil!");
+                    $(".progress").hide();
+                    $("#NamaDokumen").val("");
+                    $("#FileUpload").val("");
+                    loadFiles();
+                },
+                error: function () {
+                    alert("Gagal upload!");
+                    $(".progress").hide();
+                }
+            });
+        });
+
+
+
+// Load Daftar Dokumen berdasarkan Kode_Project
+function loadFiles() {
+    var kodeProject = $("#Kode_Project").val(); // Ambil nilai Kode_Project dari input text
+    var jenisTermin = $("#JenisTermin").val(); // Ambil nilai Kode_Project dari input text
+
+    if (kodeProject) {
+        $.ajax({
+            url: "/Termin/GetDokumenList",
+            type: "GET",
+            data: { kodeProject: kodeProject, jenisTermin:jenisTermin }, // Kirim kodeProject ke server
+            success: function (data) {
+                $("#fileList").empty();
+                if (data.length > 0) {
+                    $.each(data, function (index, file) {
+                        $("#fileList").append(`
+                            <tr>
+                                <td>${file.namaDokumen}</td>
+                                <td><a href="${file.path}" download class="btn btn-success btn-sm">Download</a></td>
+                                <td><button class="btn btn-danger btn-sm" onclick="deleteFile(${file.id})">Hapus</button></td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $("#fileList").append(`<tr><td colspan="3" class="text-center">Tidak ada dokumen</td></tr>`);
+                }
+            }
+        });
+    }
+}
+
+// Panggil saat halaman dimuat atau saat Kode_Project berubah
+$(document).ready(function () {
+    loadFiles();
+
+    $("#Kode_Project").on("change", function () {
+        loadFiles(); // Muat ulang dokumen setiap kali Kode_Project berubah
+    });
+});
+
+
+
+        // Hapus Dokumen
+        window.deleteFile = function (id) {
+            if (!confirm("Yakin ingin menghapus file ini?")) return;
+            $.ajax({
+                url: "/Termin/DeleteDokumen/" + id,
+                type: "DELETE",
+                success: function () {
+                    alert("File berhasil dihapus!");
+                    loadFiles();
+                },
+                error: function () {
+                    alert("Gagal menghapus file!");
+                }
+            });
+        };
+    });
+</script>
+
+
+
 
 
 
@@ -202,7 +473,7 @@
     document.getElementById("saveButton").addEventListener("click", function () {
         Swal.fire({
             title: 'Are you sure?',
-            text: "Pastikan data anda sudah benar",
+            text: "Pastikan data anda sudah benar, dan dokumen sudah ditambahkan",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -220,26 +491,3 @@
 
 
 
-<script>
-    document.getElementById("dokumenInput").addEventListener("change", function () {
-        const fileInput = this;
-        const saveButton = document.getElementById("saveButton");
-        const fileError = document.getElementById("fileError");
-        const file = fileInput.files[0];
-
-        if (file) {
-            const fileType = file.type;
-            if (fileType === "application/pdf") {
-                saveButton.disabled = false; // Enable the Save button
-                fileError.style.display = "none"; // Hide the error message
-            } else {
-                fileError.style.display = "block"; // Show the error message
-                saveButton.disabled = true; // Disable the Save button
-                fileInput.value = ""; // Clear the input
-            }
-        } else {
-            saveButton.disabled = true; // Disable the Save button if no file is selected
-            fileError.style.display = "none"; // Hide the error message
-        }
-    });
-</script>

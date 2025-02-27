@@ -34,5 +34,9 @@ namespace Plan.Models
         public string Otorisasi { get; set; } 
         public string Notif { get; set; } 
         public string Buyer { get; set; } 
+        public string PR { get; set; } 
+        public DateTime? PR_Date { get; set; } 
+        public string PO { get; set; } 
+        public DateTime? PO_Date { get; set; } 
     }
 }
