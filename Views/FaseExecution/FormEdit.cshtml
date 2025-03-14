@@ -17,6 +17,9 @@
 <form asp-action="Edit" method="post" id="faseform">
   @Html.AntiForgeryToken()
 
+      <input type="hidden" asp-for="Id" />
+      
+
    <div class="container">
     <div class="row">
         <!-- Kolom pertama -->
@@ -29,7 +32,7 @@
     <div class="input-group">
         <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly/>
         <div class="input-group-append">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal" disabled>Pilih</button>
         </div>
     </div>
     <span asp-validation-for="Kode_Project" class="text-danger"></span>
@@ -110,6 +113,14 @@
         <label asp-for="Amandemen_Waktu"></label>
         <input asp-for="Amandemen_Waktu" class="form-control" id="Amandemen_Waktu" required />
     </div>
+
+
+
+                </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
     <div class="form-group">
         <label asp-for="End_Date"></label>
         <input asp-for="End_Date" class="form-control" required type="date" />
@@ -118,14 +129,6 @@
         <label asp-for="Durasi_Kontrak"></label>
         <input asp-for="Durasi_Kontrak" class="form-control" id="Durasi_Kontrak" readonly required type="number" />
     </div>
-
-
-                </div>
-
-        <!-- Kolom kedua -->
-        <div class="col-md-6">
-
-
 
 
     <div class="form-group">

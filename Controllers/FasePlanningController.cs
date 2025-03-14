@@ -144,11 +144,19 @@ namespace Plan.Controllers
 
 
 
-      var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
+      // var lastNumber = _context.FasePlanning.OrderByDescending(b => b.No).Select(b => b.No).FirstOrDefault();
 
 
-      int nextNumber = lastNumber + 1;
-      ViewBag.NextNumber = nextNumber;
+      // int nextNumber = lastNumber + 1;
+      // ViewBag.NextNumber = nextNumber;
+
+      // Generate angka acak 4 digit
+Random random = new Random();
+int randomNumber = random.Next(100, 999);
+
+   ViewBag.NextNumber = randomNumber;
+
+
 
 
       return View();
@@ -255,13 +263,14 @@ namespace Plan.Controllers
         _context.Add(tahapan);
         await _context.SaveChangesAsync();
 
-
+ 
 
         // Daftar tahapan yang akan diinput otomatis
 var daftarTahapan = new List<string>
 {
     "JOBPLAN - Menyusun GTC dan RAB",
-    "JOBPLAN - Comment Besteck ke Engineer/User",
+    "REKOMENDASI - Comment Bestek ke Engineer/User",
+    "REKOMENDASI - Menunggu Rekomendasi",
     "JOBPLAN - Sourcing",
     "JOBPLAN - Membuat OE",
     "JOBPLAN - Membuat analisa TKDN & Analisa RAM",
@@ -275,7 +284,7 @@ var daftarTahapan = new List<string>
     "TENDER - Open Bid",
     "JOBPLAN - Gagal Tender",
     "TENDER - Penunjukan Pemenang",
-    "TENDER - SPB",
+    "TENDER - SPB dan SP3MK",
     "TENDER - Terbit PO",
     "EKSEKUSI - KOM",
     "RUNNING KONTRAK - Day One",
@@ -308,6 +317,25 @@ foreach (var tahap in daftarTahapan)
 
 // Simpan semua entri ke database sekaligus
 await _context.SaveChangesAsync();
+
+
+
+
+ 
+
+                    //----------------
+                    var historyFasePlanning = new HistoryFasePlanning
+                    {
+                        Kode_Project = fasePlanning.Kode_Project,
+                        Tanggal = DateTime.Now.Date,
+                        Waktu = DateTime.Now.TimeOfDay,
+                        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                        Aksi = "Tambah data"
+                    };
+
+                    // Simpan entitas ke database
+                    _context.Add(historyFasePlanning);
+                    await _context.SaveChangesAsync();
 
 
 
@@ -426,6 +454,23 @@ await _context.SaveChangesAsync();
       await _context.SaveChangesAsync();
 
 
+
+
+                    //----------------
+                    var historyFasePlanning = new HistoryFasePlanning
+                    {
+                        Kode_Project = fasePlanning.Kode_Project,
+                        Tanggal = DateTime.Now.Date,
+                        Waktu = DateTime.Now.TimeOfDay,
+                        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                        Aksi = "Edit data"
+                    };
+
+                    // Simpan entitas ke database
+                    _context.Add(historyFasePlanning);
+                    await _context.SaveChangesAsync();
+
+
       TempData["SuccessMessage"] = "successfully!";
       return RedirectToAction(nameof(Index)); // Redirect to Index if successful
 
@@ -462,6 +507,23 @@ await _context.SaveChangesAsync();
       ViewData["Kategori_Kontrak"] = new SelectList(_context.KategoriKontrakMaster, "Kategori", "Kategori", fasePlanning.Kategori_Kontrak);
 
       ViewData["NoProgram"] = new SelectList(_context.Irkap, "NoProgram", "NoProgram");
+
+
+
+                    //----------------
+                    var historyFasePlanning = new HistoryFasePlanning
+                    {
+                        Kode_Project = fasePlanning.Kode_Project,
+                        Tanggal = DateTime.Now.Date,
+                        Waktu = DateTime.Now.TimeOfDay,
+                        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                        Aksi = "Lihat data"
+                    };
+
+                    // Simpan entitas ke database
+                    _context.Add(historyFasePlanning);
+                    await _context.SaveChangesAsync();
+
 
 
       return View(fasePlanning);
@@ -521,6 +583,26 @@ await _context.SaveChangesAsync();
       var fasePlanning = await _context.FasePlanning.FindAsync(id);
       _context.FasePlanning.Remove(fasePlanning);
       await _context.SaveChangesAsync();
+
+
+
+
+                    //----------------
+                    var historyFasePlanning = new HistoryFasePlanning
+                    {
+                        Kode_Project = fasePlanning.Kode_Project,
+                        Tanggal = DateTime.Now.Date,
+                        Waktu = DateTime.Now.TimeOfDay,
+                        Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value,
+                        Aksi = "Hapus data"
+                    };
+
+                    // Simpan entitas ke database
+                    _context.Add(historyFasePlanning);
+                    await _context.SaveChangesAsync();
+
+
+
       TempData["SuccessMessage"] = "successfully!";
       return RedirectToAction(nameof(Index));
     }
@@ -691,6 +773,30 @@ public IActionResult Timeline(string kodeProject, string noMemo)
 
     return PartialView("_TimelinePartial", model);
 }
+
+
+
+
+
+        public async Task<IActionResult> TampilHistoryFasePlanning(string kodeProject)
+        {
+            var histori = await _context.HistoryFasePlanning
+                .Where(t => t.Kode_Project == kodeProject)
+                .ToListAsync();
+
+            if (histori == null || !histori.Any())
+            {
+                return NotFound("No records found for this project.");
+            }
+
+            // Set Kode_Project in ViewData for display in the view
+            ViewData["KodeProject"] = kodeProject;
+
+            return View(histori);
+
+            //return PartialView("ViewSLA", histori);
+        }
+
 
 
   }

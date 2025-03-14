@@ -22,7 +22,7 @@
 <select id="filterTypeSelect" class="form-control mt-2">
     <option value="RUTIN" selected>RUTIN</option>
     <option value="NON RUTIN" selected>NON RUTIN</option>
-    <option value="OH">OH</option>
+    <option value="OH-PS">OH-PS</option>
 </select>
 
 
@@ -32,26 +32,26 @@
     <div class="card-deck mt-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Total Commitment WBS Rt</h5>
+                <h5 class="card-title">Total Commitment WBS (USD)</h5>
                 <p id="commitmentWbsRt" class="card-text">Loading...</p>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Total ROP WBS Rt</h5>
+                <h5 class="card-title">Total ROP WBS (USD)</h5>
                 <p id="ropWbsRt" class="card-text">Loading...</p>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Total Actual WBS Rt</h5>
+                <h5 class="card-title">Total Actual WBS (USD)</h5>
                 <p id="actualWbsRt" class="card-text">Loading...</p>
             </div>
         </div>
 
                 <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Total Budget WBS</h5>
+                <h5 class="card-title">Total Budget WBS (USD)</h5>
                 <p id="budgetWbs" class="card-text">Loading...</p>
             </div>
         </div>
@@ -119,13 +119,13 @@ document.getElementById('budgetWbs').textContent = formatCurrency(data.budget.bu
 </script>
 
 
-
+ 
 
 <!-- Tempatkan canvas untuk chart -->
 <canvas id="wbsLineChart2" width="400" height="200" class="mt-3"></canvas>
 
 
-
+ 
 <!-- Memuat Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -140,6 +140,8 @@ document.getElementById('budgetWbs').textContent = formatCurrency(data.budget.bu
                         var labels = data.map(d => d.bulan);
                         var percentActual = data.map(d => d.percentActual);
                         var percentForecasting = data.map(d => d.percentForecasting);
+                        var ActualWbsRt = data.map(d => d.ActualWbsRt);
+                       
 
                         var ctx = document.getElementById('wbsLineChart2').getContext('2d');
                         if (window.wbsChart) {
@@ -183,11 +185,21 @@ document.getElementById('budgetWbs').textContent = formatCurrency(data.budget.bu
                                     legend: { position: 'top' },
                                     tooltip: {
                                         callbacks: {
-                                            label: function (context) {
-                                                var label = context.label || '';
-                                                var value = context.raw || 0;
-                                                return label + ': ' + value + '%';
-                                            }
+                            label: function (context) {
+            var index = context.dataIndex;
+            var datasetLabel = context.dataset.label || '';
+            var value = context.raw || 0;
+
+  // Ambil actualWbsRt dari JSON, jika null tampilkan "N/A"
+            var actualWbsRt = data[index]?.actualWbsRt ?? "N/A";
+
+            // Format actualWbsRt ke currency (IDR)
+            if (actualWbsRt !== "N/A") {
+                actualWbsRt = actualWbsRt.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            }
+
+            return `${datasetLabel}: ${value}% | Actual WBS: ${actualWbsRt}`;
+        }
                                         }
                                     }
                                 }

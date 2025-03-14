@@ -5,7 +5,7 @@
 }
 
 <div class="container">
-
+ 
 
         <!-- Kolom pertama -->
 
@@ -141,13 +141,13 @@
 
             <div class="form-group">
                 <label asp-for="No_Vendor" class="control-label">No Vendor</label>
-                <p class="form-control-static">@Model.No_Vendor</p>
+                <p class="form-control-static">@Model.No_Vendor2</p>
                 <hr />
             </div>
 
             <div class="form-group">
                 <label asp-for="Pelaksana" class="control-label">Pelaksana</label>
-                <p class="form-control-static">@Model.Pelaksana</p>
+                <p class="form-control-static">@Model.Pelaksana2</p>
                 <hr />
             </div>
 
@@ -181,6 +181,44 @@
                 <hr />
             </div>
         </div>
+
+
+
+<table class="table mt-4 table-bordered">
+    <tr>
+  
+
+        <th>Component</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Valuation Price</th>
+        <th>Total Price</th>
+        <th>Delivery Date</th>
+    </tr>
+    @if (ViewData["Components"] != null)
+    {
+        foreach (var item in (List<TabelComponent>)ViewData["Components"])
+        {
+            <tr>
+           
+      
+                <td>@item.Component</td>
+                <td>@item.Description</td>
+                <td>@item.Quantity</td>
+                <td>@item.Unit</td>
+                <td>@item.ValuationPrice</td>
+                 <td>@((item.ValuationPrice) * (item.Quantity))</td>
+                <td>@item.DeliveryDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+    }
+</table>
+
+
+
+
+
     </div>
 </div>
 

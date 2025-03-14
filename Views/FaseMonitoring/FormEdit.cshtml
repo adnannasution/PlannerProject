@@ -9,12 +9,20 @@
   @Html.AntiForgeryToken()
 
 
+   <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+      <input type="hidden" asp-for="Id" />
+
+
 <div class="form-group">
     <label asp-for="Kode_Project" class="control-label"></label>
     <div class="input-group">
         <input asp-for="Kode_Project" class="form-control" required id="Kode_Project" readonly/>
         <div class="input-group-append">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal">Pilih</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kodeProjectModal" disabled>Pilih</button>
         </div>
     </div>
     <span asp-validation-for="Kode_Project" class="text-danger"></span>
@@ -144,6 +152,14 @@
         <input asp-for="Count_Days_Over" type="number" class="form-control" required id="Count_Days_Over" />
         <span asp-validation-for="Count_Days_Over" class="text-danger"></span>
     </div>
+
+
+
+               </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
     
 <div class="form-group">
     <label for="Status_Durasi">Status Durasi</label>
@@ -320,7 +336,9 @@ $(document).ready(function () {
   <button type="button" class="btn btn-primary" id="saveButton">Save</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 
-
+        </div>
+    </div>
+   </div>
 
 </form>
 

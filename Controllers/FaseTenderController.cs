@@ -72,7 +72,7 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
     return View();
 }
 
-
+ 
         // POST: FasePlanning/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -82,24 +82,6 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
             {
                 _context.Add(faseTender);
                 await _context.SaveChangesAsync();
-
-        // var tahapan = new Tahapan
-        // {
-        //      Kode_Project = faseTender.Kode_Project,
-        //     Tanggal = DateTime.Now.Date, // Current date
-        //     Waktu = DateTime.Now.TimeOfDay, // Current time
-        //     Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-        //     Tahap = "Created Fase Tender" // A description of the current step
-        // };
-
-        // // Simpan entitas Tahapan
-        // _context.Add(tahapan);
-        // await _context.SaveChangesAsync();
-
-
-
-
-
 
 
                  TempData["SuccessMessage"] = "successfully!";
@@ -135,28 +117,60 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
 
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Detail(int? id)
-        {
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Detail(int? id)
+        // {
 
 
 
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //     if (id == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            var faseTender = await _context.FaseTender.FindAsync(id);
-            if (faseTender == null)
-            {
-                return NotFound();
-            }
+        //     var faseTender = await _context.FaseTender.FindAsync(id);
+        //     if (faseTender == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-                              ViewData["Otorisasi"] = new SelectList(_context.OtorisasiKontrakMaster, "Otorisasi", "Otorisasi", faseTender.Otorisasi);
+        //                       ViewData["Otorisasi"] = new SelectList(_context.OtorisasiKontrakMaster, "Otorisasi", "Otorisasi", faseTender.Otorisasi);
 
-            return View(faseTender);
-        }
+        //     return View(faseTender);
+        // }
+
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Detail(int? id)
+{
+    if (id == null)
+    {
+        return NotFound();
+    }
+
+    // Ambil data FaseTender berdasarkan ID
+    var faseTender = await _context.FaseTender.FindAsync(id);
+    if (faseTender == null)
+    {
+        return NotFound();
+    }
+
+    // Ambil daftar komponen berdasarkan Kode_Project yang sama
+    var components = await _context.TabelComponent
+        .Where(c => c.Kode_Project == faseTender.Kode_Project)
+        .ToListAsync();
+
+    // Kirim data ke View
+    ViewData["Otorisasi"] = new SelectList(_context.OtorisasiKontrakMaster, "Otorisasi", "Otorisasi", faseTender.Otorisasi);
+    ViewData["Components"] = components;
+
+    return View(faseTender);
+}
+
+
+
 
 
         // POST: FaseTender/Edit/5
@@ -212,22 +226,56 @@ ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
             return View(faseTender);
         }
 
-        // POST: FaseTender/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var faseTender = await _context.FaseTender.FindAsync(id);
-            _context.FaseTender.Remove(faseTender);
-            await _context.SaveChangesAsync();
-             TempData["SuccessMessage"] = "successfully!";
-            return RedirectToAction(nameof(Index));
-        }
+        // // POST: FaseTender/Delete/5
+        // [HttpPost, ActionName("Delete")]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> DeleteConfirmed(int id)
+        // {
+        //     var faseTender = await _context.FaseTender.FindAsync(id);
+        //     _context.FaseTender.Remove(faseTender);
+        //     await _context.SaveChangesAsync();
+        //      TempData["SuccessMessage"] = "successfully!";
+        //     return RedirectToAction(nameof(Index));
+        // }
+
+
+// POST: FaseTender/Delete/5
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteConfirmed(int id)
+{
+    var faseTender = await _context.FaseTender.FindAsync(id);
+    if (faseTender == null)
+    {
+        return NotFound();
+    }
+
+    // Ambil Kode_Project dari faseTender
+    string kodeProject = faseTender.Kode_Project;
+
+    // Hapus semua data di TabelComponent yang memiliki Kode_Project yang sama
+    var components = _context.TabelComponent.Where(c => c.Kode_Project == kodeProject);
+    _context.TabelComponent.RemoveRange(components);
+
+    // Hapus faseTender setelah menghapus komponennya
+    _context.FaseTender.Remove(faseTender);
+
+    // Simpan perubahan ke database
+    await _context.SaveChangesAsync();
+
+    // Notifikasi sukses
+    TempData["SuccessMessage"] = "Data berhasil dihapus!";
+
+    return RedirectToAction(nameof(Index));
+}
+
 
         private bool FaseTenderExists(int id)
         {
             return _context.FaseTender.Any(e => e.Id == id);
         }
+
+
 
 
 

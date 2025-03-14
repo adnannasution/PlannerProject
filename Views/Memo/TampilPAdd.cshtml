@@ -1,7 +1,7 @@
 @model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Memorandum";
-    Layout = null;
+   // Layout = null;
 }
 
 
@@ -11,7 +11,18 @@
     }
 </style>
 
-
+<ul class="nav nav-tabs mb-3">
+<li class="nav-item">
+    <a class="nav-link" id="tabNew" href="TampilPNew">
+        <i class="fas fa-inbox text-warning"></i> New
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" id="tabYa" href="TampilPAdd">
+        <i class="fas fa-folder-open text-success"></i> Created Project
+    </a>
+</li>
+</ul>
 
 <table class="table table-bordered mt-3 table-responsive" id="tabelku1">
     <thead>

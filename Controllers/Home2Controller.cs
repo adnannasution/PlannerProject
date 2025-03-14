@@ -446,22 +446,48 @@ public IActionResult DetailDireksi(string direksi, int tahun)
 
 
 
+// public JsonResult GetChartData(int year, string filterType)
+// {
+//     var data = _context.WbsData
+//         .Where(w => w.JenisBiaya == filterType && w.Tahun == year)  // Filter berdasarkan JenisBiaya = RUTIN dan tahun
+//         .Select(w => new
+//         {
+//             w.Bulan,
+//             w.PercentActual,
+//             w.PercentForecasting
+//         })
+//         .OrderBy(w => w.Bulan)  // Mengurutkan berdasarkan bulan
+//         .ToList();
+
+//     return Json(data);
+// }
+
+ 
+
 public JsonResult GetChartData(int year, string filterType)
 {
+    // List urutan bulan dalam bahasa Inggris
+    var monthOrder = new List<string>
+    {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+
     var data = _context.WbsData
-        .Where(w => w.JenisBiaya == filterType && w.Tahun == year)  // Filter berdasarkan JenisBiaya = RUTIN dan tahun
+        .Where(w => w.JenisBiaya == filterType && w.Tahun == year)
         .Select(w => new
         {
             w.Bulan,
             w.PercentActual,
-            w.PercentForecasting
+            w.PercentForecasting,
+            w.ActualWbsRt
         })
-        .OrderBy(w => w.Bulan)  // Mengurutkan berdasarkan bulan
+        .AsEnumerable() // Ambil data dulu, baru urutkan di memori
+        .OrderBy(w => monthOrder.IndexOf(w.Bulan)) // Urutkan berdasarkan indeks bulan
         .ToList();
 
     return Json(data);
 }
-
 
 
 

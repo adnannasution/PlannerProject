@@ -6,6 +6,8 @@
 <form asp-action="Edit" method="post" enctype="multipart/form-data" id="terminform">
     @Html.AntiForgeryToken()
 
+        <input type="hidden" asp-for="Id" />
+
     <div class="form-group">
         <label asp-for="No_Memo_Rekomendasi" class="control-label"></label>
         <input asp-for="No_Memo_Rekomendasi" class="form-control" required />

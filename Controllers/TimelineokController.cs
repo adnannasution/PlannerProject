@@ -181,40 +181,40 @@ ViewData["Task"] = new SelectList(taskList, "Task", "Task");
             if (ModelState.IsValid)
             {
 
-                // Cari entri di TabelSla berdasarkan Kode_Project dan Task
-                var tabelSla = await _context.TabelSla
-                    .FirstOrDefaultAsync(t => t.Kode_Project == model.Kode_Project && t.Task == model.Task);
+                // // Cari entri di TabelSla berdasarkan Kode_Project dan Task
+                // var tabelSla = await _context.TabelSla
+                //     .FirstOrDefaultAsync(t => t.Kode_Project == model.Kode_Project && t.Task == model.Task);
 
-                if (tabelSla != null)
-                {
-                    model.Target = tabelSla.Target; // Set kolom Target berdasarkan TabelSla
+                // if (tabelSla != null)
+                // {
+                //     model.Target = tabelSla.Target; // Set kolom Target berdasarkan TabelSla
 
-                    // Bandingkan Tanggal dengan Target untuk menentukan Status
-                    if (model.Tanggal != default(DateTime) && tabelSla.Target != default(DateTime))
-                    {
-                        var daysDifference = (tabelSla.Target - model.Tanggal).Days;
+                //     // Bandingkan Tanggal dengan Target untuk menentukan Status
+                //     if (model.Tanggal != default(DateTime) && tabelSla.Target != default(DateTime))
+                //     {
+                //         var daysDifference = (tabelSla.Target - model.Tanggal).Days;
 
-                        if (daysDifference >= 3)
-                        {
-                            model.Status = "Ontime";
-                        }
+                //         if (daysDifference >= 3)
+                //         {
+                //             model.Status = "Ontime";
+                //         }
 
-                        else
-                        {
-                            model.Status = "Overdue";
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Tanggal", "Tanggal or Target date is not valid.");
-                        return View(model);
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("Task", "Task or Kode_Project not found in TabelSla.");
-                    return View(model);
-                }
+                //         else
+                //         {
+                //             model.Status = "Overdue";
+                //         }
+                //     }
+                //     else
+                //     {
+                //         ModelState.AddModelError("Tanggal", "Tanggal or Target date is not valid.");
+                //         return View(model);
+                //     }
+                // }
+                // else
+                // {
+                //     ModelState.AddModelError("Task", "Task or Kode_Project not found in TabelSla.");
+                //     return View(model);
+                // }
 
 
 
@@ -291,7 +291,7 @@ if (tahapan != null) // Jika sudah ada, lakukan update
     await _context.SaveChangesAsync();
 }
 
-
+ 
 
                     //----------------
 
@@ -373,6 +373,9 @@ if (tahapan != null) // Jika sudah ada, lakukan update
                 existingTimelineok.Kode_Project = model.Kode_Project;
                 existingTimelineok.Task = model.Task;
                 existingTimelineok.Tanggal = model.Tanggal;
+                existingTimelineok.Pic = model.Pic;
+                existingTimelineok.ResumeStatusPekerjaan = model.ResumeStatusPekerjaan;
+                existingTimelineok.Keterangan = model.Keterangan;
 
                 // Handle file upload
                 if (dokumenFile != null && dokumenFile.Length > 0)
@@ -467,8 +470,36 @@ if (tahapan != null) // Jika sudah ada, lakukan update
                 }
             }
 
+
+
+
+            var tahapan = await _context.Tahapan
+.FirstOrDefaultAsync(t => t.Kode_Project == timelineok.Kode_Project && t.Tahap == $"{timelineok.ResumeStatusPekerjaan} - {timelineok.Task}");
+
+if (tahapan != null) // Jika sudah ada, lakukan update
+{
+    tahapan.Kode_Project = timelineok.Kode_Project;
+    tahapan.Tanggal = null;
+    tahapan.Waktu = null;
+    tahapan.Email = null;
+    tahapan.Status = "Not yet"; // Set status default
+    tahapan.Tahap = $"{timelineok.ResumeStatusPekerjaan} - {timelineok.Task}"; // Set status default
+    tahapan.Keterangan = null;
+    
+    _context.Update(tahapan); // Tandai untuk update
+    await _context.SaveChangesAsync();
+}
+
+
+
             _context.Timelineok.Remove(timelineok);
             await _context.SaveChangesAsync();
+
+
+
+
+
+
 
 
 
@@ -639,34 +670,78 @@ if (tahapan != null) // Jika sudah ada, lakukan update
 
 
 
-         [HttpPost]
-    public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, string Task)
+    //      [HttpPost]
+    // public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, string Task)
+    // {
+    //     if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
+    //     {
+    //         return BadRequest("Semua field harus diisi!");
+    //     }
+
+    //     var filePath = Path.Combine("wwwroot/uploads", File.FileName);
+    //     using (var stream = new FileStream(filePath, FileMode.Create))
+    //     {
+    //         File.CopyTo(stream);
+    //     }
+
+    //     var dokumen = new TabelDokumenTimelineok
+    //     {
+    //         Kode_Project = Kode_Project,
+    //         Task = Task,
+    //         NamaDokumen = NamaDokumen,
+    //         NamaFile = File.FileName,
+    //         Path = "/uploads/" + File.FileName
+    //     };
+
+    //     _context.TabelDokumenTimelineok.Add(dokumen);
+    //     _context.SaveChanges();
+
+    //     return Ok();
+    // }
+
+
+
+
+[HttpPost]
+public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, string Task)
+{
+    if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
     {
-        if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
-        {
-            return BadRequest("Semua field harus diisi!");
-        }
-
-        var filePath = Path.Combine("wwwroot/uploads", File.FileName);
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            File.CopyTo(stream);
-        }
-
-        var dokumen = new TabelDokumenTimelineok
-        {
-            Kode_Project = Kode_Project,
-            Task = Task,
-            NamaDokumen = NamaDokumen,
-            NamaFile = File.FileName,
-            Path = "/uploads/" + File.FileName
-        };
-
-        _context.TabelDokumenTimelineok.Add(dokumen);
-        _context.SaveChanges();
-
-        return Ok();
+        return BadRequest("Semua field harus diisi!");
     }
+
+    // Ekstrak ekstensi file (misalnya .pdf, .jpg, .docx)
+    var fileExtension = Path.GetExtension(File.FileName);
+
+    // Buat nama file unik dengan GUID
+    var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+
+    // Tentukan path penyimpanan
+    var filePath = Path.Combine("wwwroot/uploads", uniqueFileName);
+
+    // Simpan file ke folder tujuan
+    using (var stream = new FileStream(filePath, FileMode.Create))
+    {
+        File.CopyTo(stream);
+    }
+
+    // Simpan ke database
+    var dokumen = new TabelDokumenTimelineok
+    {
+        Kode_Project = Kode_Project,
+        Task = Task,
+        NamaDokumen = NamaDokumen,
+        NamaFile = uniqueFileName,  // Simpan nama file baru
+        Path = "/uploads/" + uniqueFileName
+    };
+
+    _context.TabelDokumenTimelineok.Add(dokumen);
+    _context.SaveChanges();
+
+    return Ok(new { message = "File berhasil diunggah!", fileName = uniqueFileName });
+}
+
+
  
 [HttpGet]
 public IActionResult GetDokumenList(string kodeProject, string Task)

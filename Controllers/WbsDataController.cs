@@ -47,14 +47,39 @@ public IActionResult Index()
 
 
 
+// public IActionResult Details(string jenisBiaya, int tahun)
+// {
+//     // Gunakan `jenisBiaya` dan `tahun` untuk mendapatkan data spesifik.
+//     var data = _context.WbsData
+//         .Where(x => x.JenisBiaya == jenisBiaya && x.Tahun == tahun)
+//         .ToList();
+
+//     if (data == null)
+//     {
+//         return NotFound();
+//     }
+
+//     return View(data);
+// }
+
+
 public IActionResult Details(string jenisBiaya, int tahun)
 {
-    // Gunakan `jenisBiaya` dan `tahun` untuk mendapatkan data spesifik.
+    // List urutan bulan dalam bahasa Inggris
+    var monthOrder = new List<string>
+    {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+
+    // Ambil data dari database tanpa sorting dulu
     var data = _context.WbsData
         .Where(x => x.JenisBiaya == jenisBiaya && x.Tahun == tahun)
+        .AsEnumerable() // Gunakan client-side sorting setelah ini
+        .OrderBy(x => monthOrder.IndexOf(x.Bulan)) // Urutkan berdasarkan indeks bulan
         .ToList();
 
-    if (data == null)
+    if (!data.Any())
     {
         return NotFound();
     }
@@ -184,7 +209,7 @@ public IActionResult GetBudgetWbs(string jenisBiaya, int tahun)
     return Json(new { budgetWbs });
 }
 
-
+ 
 
     }
 }

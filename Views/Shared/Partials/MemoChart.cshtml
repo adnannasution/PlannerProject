@@ -1,4 +1,4 @@
-
+@* 
     <canvas id="memoChart" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -41,4 +41,70 @@
     });
 });
 
+</script> *@
+
+
+
+<canvas id="memoChart" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+   $(document).ready(function () {
+    $.ajax({
+        url: '@Url.Action("GetMemoStatistics", "Memo")',
+        type: 'GET',
+        success: function (data) {
+            console.log("Data dari server:", data);
+
+            var ctx = document.getElementById('memoChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Belum Didisposisi", "Sudah Didisposisi", "Created Project"],
+                    datasets: [{
+                        label: 'Jumlah Memo',
+                        data: [data.emailNull, data.emailNotNull, data.fasePlanning], 
+                        backgroundColor: ['#ff6384', '#36a2eb', '#ffcc56'],
+                        borderColor: ['#ff6384', '#36a2eb', '#ffcc56'],
+                        borderWidth: 1,
+                        barThickness: 30,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    onClick: function (event, elements) {
+                        if (elements.length > 0) {
+                            var index = elements[0].index;
+                            var label = chart.data.labels[index];
+                            
+                            // Tentukan halaman tujuan berdasarkan label yang diklik
+                            var urlMap = {
+                                "Belum Didisposisi": "/Home/TampilNew",
+                                "Sudah Didisposisi": "/Home/TampilYa",
+                                "Created Project": "/Home/TampilPAdd"
+                            };
+
+                            var targetUrl = urlMap[label];
+                            if (targetUrl) {
+                                window.location.href = targetUrl;
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", status, error);
+        }
+    });
+});
 </script>
+

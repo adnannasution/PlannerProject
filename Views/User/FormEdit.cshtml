@@ -34,7 +34,7 @@
 
     <div class="form-group">
     <label asp-for="Email"></label>
-    <input asp-for="Email" type="email" id="emailInput" class="form-control" />
+    <input asp-for="Email" type="email" id="emailInput" class="form-control" readonly/>
          <span asp-validation-for="Email" class="text-danger"></span>
     <span id="emailError" class="text-danger" style="display: none;">Email must end with pertamina.com</span>
 </div>
@@ -66,7 +66,7 @@
 
 
 
-<div class="form-group">
+@* <div class="form-group">
     <label asp-for="Pass"></label>
     <div class="input-group">
         <input asp-for="Pass" type="password" class="form-control" id="Pass" />
@@ -77,30 +77,40 @@
         </div>
     </div>
     <span asp-validation-for="Pass" class="text-danger"></span>
-</div>
-
-<div class="form-group">
-    <label asp-for="RetypePass"></label>
-    <div class="input-group">
-        <input asp-for="RetypePass" type="password" class="form-control" id="RetypePass" />
-        <div class="input-group-append">
-            <span class="input-group-text" onclick="togglePassword('RetypePass')">
-                <i class="fas fa-eye" id="toggleRetypePassIcon"></i>
-            </span>
-        </div>
-    </div>
-    <span asp-validation-for="RetypePass" class="text-danger"></span>
-</div>
+</div> *@
 
 
-    <div class="form-group">
+        <input asp-for="RetypePass" type="hidden" class="form-control"  id="Pass" readonly/>
+
+
+    @* <div class="form-group">
         <label asp-for="Disiplin" class="control-label"></label>
         <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin">
              <option value="All">All</option>
         </select>
       
         <span asp-validation-for="Disiplin" class="text-danger"></span>
-    </div>
+    </div> *@
+
+    <div class="form-group">
+    <label asp-for="Disiplin" class="control-label">Disiplin</label>
+    <select asp-for="Disiplin" class="form-select" id="multiple-select-field2" multiple asp-items="ViewBag.Disiplin" required>
+        <option value="">Pilih</option>
+        <option value="All">All</option>
+    </select>
+    <span asp-validation-for="Disiplin" class="text-danger"></span>
+</div>
+
+
+<script>
+    $( '#multiple-select-field2' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+} );
+</script>
+
     
 
 <div class="form-group">

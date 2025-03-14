@@ -14,6 +14,9 @@
   @Html.AntiForgeryToken()
 
 
+      <input type="hidden" asp-for="Id" />
+
+
   <div class="container">
     <div class="row">
         <!-- Kolom pertama -->
@@ -29,38 +32,21 @@
 
 <div class="form-group">
     <label asp-for="Planner" class="control-label"></label>
-    <input type="text" asp-for="Planner" class="form-control" value="@User.Claims.FirstOrDefault(c => c.Type == "Nama")?.Value" readonly />
+    <input type="text" asp-for="Planner" class="form-control" readonly />
     <span asp-validation-for="Planner" class="text-danger"></span>
 </div>
 
 
 
 
-@* <div class="form-group">
-    <label asp-for="No_Memo_Rekomendasi" class="control-label">No Memo Rekomendasi</label>
-    <select asp-for="No_Memo_Rekomendasi" class="form-control" asp-items="ViewBag.NoMemoRekomendasi" required>
-        <option value="">Pilih</option>
-    </select>
-    <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
-</div> *@
-
-
 <div class="form-group">
     <label asp-for="No_Memo_Rekomendasi" class="control-label">No Memo Rekomendasi</label>
-    
-    @if (!string.IsNullOrEmpty(idMemo))
-    {
-        <input asp-for="No_Memo_Rekomendasi" class="form-control" value="@idMemo" readonly />
-    }
-    else
-    {
-        <select asp-for="No_Memo_Rekomendasi" class="form-control" asp-items="ViewBag.NoMemoRekomendasi" required>
-            <option value="">Pilih</option>
-        </select>
-    }
-    
+    <input asp-for="No_Memo_Rekomendasi" class="form-control" required readonly/>
     <span asp-validation-for="No_Memo_Rekomendasi" class="text-danger"></span>
 </div>
+
+
+
 
 
 
@@ -281,7 +267,7 @@
 
 <div class="form-group">
     <label asp-for="Status_kontrak" class="control-label"></label>
-    <select asp-for="Status_kontrak" class="form-control" id="Status_kontrak" asp-items="ViewBag.Status_Kontrak" required>
+    <select asp-for="Status_kontrak" class="form-control" id="Status_kontrak" asp-items="ViewBag.Status_Kontrak" required readonly>
          <option value="">Pilih</option>
     </select>
     <span asp-validation-for="Status_kontrak" class="text-danger"></span>
