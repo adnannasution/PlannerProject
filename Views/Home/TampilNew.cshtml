@@ -1,10 +1,8 @@
 @model IEnumerable<Plan.Models.Memo>
 @{
     ViewData["Title"] = "Memorandum";
-    //Layout = null;
+   
 }
-
-<!-- DataTables CSS -->
 
 
 <style>
@@ -13,32 +11,15 @@
     }
 </style>
 
-<ul class="nav nav-tabs mb-3">
-<li class="nav-item">
-    <a class="nav-link " id="tabNew" href="TampilNew">
-        <i class="fas fa-inbox text-warning"></i> New
-    </a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" id="tabYa" href="TampilYa" >
-        <i class="fas fa-check-circle text-success"></i> Sudah Didisposisi
-    </a>
-</li>
-<li class="nav-item">
-    <a class="nav-link active" id="tabTidak" href="TampilTidak">
-        <i class="fas fa-times-circle text-danger"></i> Tidak Didisposisi
-    </a>
-</li>
 
-</ul>
 
-<table class="table table-bordered mt-3 table-responsive" id="tabelku13">
+<table class="table table-bordered mt-3 table-responsive" id="tabelku11">
     <thead>
         <tr>
             <th>No Memo Rekomendasi</th>
             <th>Judul</th>
              <th>Disiplin</th>
-             <th>AreaProses</th>
+             <th>Area Proses</th>
              <th>Maintenance Area</th>
             <th>Tanggal Masuk Memo</th>
            
@@ -47,7 +28,7 @@
             <th>Dokumen</th>
             <th>Kebutuhan Kontrak</th>
             <th>Komentar</th>
-            <th>Actions</th>
+         
         </tr>
     </thead>
     <tbody>
@@ -64,9 +45,7 @@
                 <td style="text-transform: lowercase;">@memo?.Email</td>
 
 
-
-
-@* <td>
+                @* <td>
 
  @if (memo.TabelDokumen != null && memo.TabelDokumen.Any())
     {
@@ -86,11 +65,13 @@
                 </td> *@
 
 
+
 <td>
 <a href="#" data-toggle="modal" data-target="#dokumenModal" onclick="loadDokumen(@memo.Id)">
     Detail Dokumen
 </a>
 </td>
+
 
 
 
@@ -100,21 +81,11 @@
  <td>@memo.Komentar</td>
  
 
-                <td>
 
-
-
-                        <button class="btn btn-secondary btn-sm timeline-btn" data-id="@memo.Id">
-                            Disposisi
-                        </button>
-
-
-                </td>
             </tr>
         }
     </tbody>
 </table>
-
 
 
 
@@ -146,10 +117,15 @@
 
 
 
+
+
+
+
+
 <script>
     $(document).ready(function () {
         // Inisialisasi DataTables
-        var table = $('#tabelku13').DataTable({
+        var table = $('#tabelku11').DataTable({
             paging: true,
             searching: true,
             ordering: true,

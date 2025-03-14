@@ -33,6 +33,10 @@
     <label asp-for="Email"></label>
     <input asp-for="Email" type="email" id="emailInput" class="form-control" />
          <span asp-validation-for="Email" class="text-danger"></span>
+         @if (TempData["ErrorMessage"] != null)
+    {
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+    }
     <span id="emailError" class="text-danger" style="display: none;">Email must end with pertamina.com</span>
 </div>
 
@@ -90,13 +94,34 @@
 </div>
 
 
-    <div class="form-group">
+    @* <div class="form-group">
         <label asp-for="Disiplin" class="control-label"></label>
         <select asp-for="Disiplin" class="form-control" id="Disiplin" asp-items="ViewBag.Disiplin" >
         <option value="All">All</option>
         </select>
         <span asp-validation-for="Disiplin" class="text-danger"></span>
-    </div>
+    </div> *@
+
+
+<div class="form-group">
+    <label asp-for="Disiplin" class="control-label">Disiplin</label>
+    <select asp-for="Disiplin" class="form-select" id="multiple-select-field2" multiple asp-items="ViewBag.Disiplin" required>
+        <option value="">Pilih</option>
+        <option value="All">All</option>
+    </select>
+    <span asp-validation-for="Disiplin" class="text-danger"></span>
+</div>
+
+
+<script>
+    $( '#multiple-select-field2' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+} );
+</script>
+
 
     
 

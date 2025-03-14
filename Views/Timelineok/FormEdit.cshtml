@@ -9,7 +9,7 @@
 <form asp-action="Edit" enctype="multipart/form-data" method="post" id="terminform">
     @Html.AntiForgeryToken()
 
-
+  <input type="hidden" asp-for="Id" class="form-control" readonly required />
 
     <div class="form-group">
         <label asp-for="Kode_Project" class="control-label"></label>
@@ -17,7 +17,7 @@
             <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly required />
             <div class="input-group-append">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#kodeProjectModal">Pilih</button>
+                    data-bs-target="#kodeProjectModal" disabled>Pilih</button>
             </div>
         </div>
         <span asp-validation-for="Kode_Project" class="text-danger"></span>
@@ -84,14 +84,78 @@
     </script>
 
 
+       <div class="form-group">
+    <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
+    <input type="text" asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan" readonly>
+    <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
+</div>
 
-    <div class="form-group">
-        <label asp-for="Task" class="control-label"></label>
-        <select asp-for="Task" class="form-control" id="Task" asp-items="ViewBag.Task" required>
-            <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="Task" class="text-danger"></span>
-    </div>
+<div class="form-group">
+    <label asp-for="Task" class="control-label"></label>
+    <input type="text" asp-for="Task" class="form-control" id="Task" readonly>
+    <span asp-validation-for="Task" class="text-danger"></span>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Data task berdasarkan ResumeStatusPekerjaan
+    let taskOptions = {
+        "JOBPLAN": [
+            "Menyusun GTC dan RAB",
+            "Comment Besteck ke Engineer/User",
+            "Sourcing",
+            "Membuat OE",
+            "Membuat analisa TKDN & Analisa RAM",
+            "Membuat ijin persetujuan / prinsip",
+            "Jobplan (Ext), mengajukan release dan print PR",
+            "Menyiapkan memo pengantar DP3 Paket",
+            "Kirim Paket Kontrak",
+            "Revisi GTC & RAB pasca prebid",
+            "Gagal Tender"
+        ],
+        "TENDER": [
+            "Pre Bid Meeting",
+            "Approval HPS OE",
+            "Open Bid",
+            "Penunjukan Pemenang",
+            "SPB",
+            "Terbit PO"
+        ],
+        "EKSEKUSI": [
+            "KOM"
+        ],
+        "RUNNING KONTRAK": [
+            "Day One"
+        ],
+        "SELESAI": [
+            "Selesai"
+        ]
+    };
+
+    // Saat ResumeStatusPekerjaan berubah
+    $("#ResumeStatusPekerjaan").change(function () {
+        let selectedResume = $(this).val(); // Ambil nilai Resume yang dipilih
+        let $taskDropdown = $("#Task");
+
+        // Kosongkan dropdown Task
+        $taskDropdown.empty();
+        $taskDropdown.append('<option value="">Pilih</option>'); // Tambah opsi default
+
+        // Jika ada task terkait, tambahkan ke dropdown
+        if (taskOptions[selectedResume]) {
+            taskOptions[selectedResume].forEach(function (task) {
+                $taskDropdown.append(new Option(task, task));
+            });
+        }
+    });
+
+    // Jalankan trigger untuk menyesuaikan Task jika ada nilai default saat halaman dimuat
+    $("#ResumeStatusPekerjaan").trigger("change");
+});
+</script>
 
 
 
@@ -112,14 +176,14 @@
 
 
 
-    <div class="form-group">
-        <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
-        <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan"
-            asp-items="ViewBag.Resume" required>
-            <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
-    </div>
+
+
+
+
+
+
+
+    
 
 
 <div class="form-group">
@@ -185,15 +249,11 @@
             </div>
             <div class="modal-body">
                 <!-- Input Kode Project -->
-                <div class="form-group">
-                    <label for="Kode_Project" class="control-label">Kode Project</label>
+         
                     <input type="hidden" class="form-control" id="Kode_Project" readonly required />
-                </div>
 
-                                <div class="form-group">
-                    <label for="Kode_Project" class="control-label">Task</label>
-                    <input type="text" class="form-control" id="Task2" readonly required />
-                </div>
+                    <input type="hidden" class="form-control" id="Task2" readonly required />
+             
 
 
                 <!-- Form Upload -->

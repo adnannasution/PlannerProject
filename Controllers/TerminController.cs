@@ -81,15 +81,17 @@ var memos = _context.Memo
     .Where(m => m.Email == userEmail)
     .Select(m => new 
     { 
-        m.No_Memo_Rekomendasi
+        m.No_Memo_Rekomendasi,
+        m.Judul,
+        DisplayText = m.No_Memo_Rekomendasi + " - " + m.Judul
     })
     .ToList();
 
-ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
+ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "DisplayText");
 
 
 var users = _context.User
-    .Where(u => u.Rule == "2")
+
     .Select(u => new 
     { 
         u.Id, 
@@ -98,7 +100,7 @@ var users = _context.User
     })
     .ToList();
 
-ViewBag.Planner = new SelectList(users, "Nama", "Nama");
+ViewBag.Evaluasi_Planner = new SelectList(users, "Email", "Email");
 
 
         return View();
@@ -282,6 +284,48 @@ if (tahapan != null) // Jika sudah ada, lakukan update
         {
             return NotFound();
         }
+
+
+var claimDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+// Query LINQ yang memfilter berdasarkan klaim 'disiplin'
+var kodeProjects = _context.FasePlanning
+    .Where(p => claimDisiplin == "All" || p.Disiplin == claimDisiplin)
+    .OrderByDescending(p => p.Id)  // Order by Id in descending order
+    .Select(p => new { p.Kode_Project, p.Pekerjaan })
+    .ToList();
+
+// Serialize data to be used in JavaScript
+ViewBag.KodeProjects = JsonConvert.SerializeObject(kodeProjects);
+
+
+
+var userEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+
+var memos = _context.Memo
+    .Where(m => m.Email == userEmail)
+    .Select(m => new 
+    { 
+        m.No_Memo_Rekomendasi
+    })
+    .ToList();
+
+ViewBag.NoMemoRekomendasi = new SelectList(memos, "No_Memo_Rekomendasi", "No_Memo_Rekomendasi");
+
+
+        var users = _context.User
+
+    .Select(u => new 
+    { 
+        u.Id, 
+        u.Nama,
+        u.Email
+    })
+    .ToList();
+
+ViewBag.Evaluasi_Planner = new SelectList(users, "Email", "Email");
+
+
         return View(termin);
     }
 
@@ -358,6 +402,27 @@ if (tahapan != null) // Jika sudah ada, lakukan update
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var termin = await _context.Termin.FindAsync(id);
+
+
+
+
+var tahapan = await _context.Tahapan
+.FirstOrDefaultAsync(t => t.Kode_Project == termin.Kode_Project && t.Tahap == $"Termin ke {termin.JenisTermin}");
+
+if (tahapan != null) // Jika sudah ada, lakukan update
+{
+  
+    tahapan.Tanggal = null; // Perbarui tanggal
+    tahapan.Waktu = null; // Perbarui waktu
+    tahapan.Email = null; // Perbarui email
+    tahapan.Status = "Not yet"; // Set status default
+    
+    _context.Update(tahapan); // Tandai untuk update
+    await _context.SaveChangesAsync();
+}
+
+
+
         _context.Termin.Remove(termin);
         await _context.SaveChangesAsync();
 
@@ -442,34 +507,77 @@ public async Task<IActionResult> Detail(string kode_project)
  
 
 
+    // [HttpPost]
+    // public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, int JenisTermin)
+    // {
+    //     if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
+    //     {
+    //         return BadRequest("Semua field harus diisi!");
+    //     }
+
+    //     var filePath = Path.Combine("wwwroot/uploads", File.FileName);
+    //     using (var stream = new FileStream(filePath, FileMode.Create))
+    //     {
+    //         File.CopyTo(stream);
+    //     }
+
+    //     var dokumen = new TabelDokumenTermin
+    //     {
+    //         Kode_Project = Kode_Project,
+    //         JenisTermin = JenisTermin,
+    //         NamaDokumen = NamaDokumen,
+    //         NamaFile = File.FileName,
+    //         Path = "/uploads/" + File.FileName
+    //     };
+
+    //     _context.TabelDokumenTermin.Add(dokumen);
+    //     _context.SaveChanges();
+
+    //     return Ok();
+    // }
+
+
+
+
     [HttpPost]
-    public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, int JenisTermin)
+public IActionResult UploadDokumen(IFormFile File, string NamaDokumen, string Kode_Project, int JenisTermin)
+{
+    if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
     {
-        if (File == null || string.IsNullOrEmpty(NamaDokumen) || string.IsNullOrEmpty(Kode_Project))
-        {
-            return BadRequest("Semua field harus diisi!");
-        }
-
-        var filePath = Path.Combine("wwwroot/uploads", File.FileName);
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            File.CopyTo(stream);
-        }
-
-        var dokumen = new TabelDokumenTermin
-        {
-            Kode_Project = Kode_Project,
-            JenisTermin = JenisTermin,
-            NamaDokumen = NamaDokumen,
-            NamaFile = File.FileName,
-            Path = "/uploads/" + File.FileName
-        };
-
-        _context.TabelDokumenTermin.Add(dokumen);
-        _context.SaveChanges();
-
-        return Ok();
+        return BadRequest("Semua field harus diisi!");
     }
+
+    // Ambil ekstensi file (misalnya .pdf, .jpg, .docx)
+    var fileExtension = Path.GetExtension(File.FileName);
+
+    // Buat nama file unik dengan GUID
+    var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+
+    // Tentukan path penyimpanan
+    var filePath = Path.Combine("wwwroot/uploads", uniqueFileName);
+
+    // Simpan file ke folder tujuan
+    using (var stream = new FileStream(filePath, FileMode.Create))
+    {
+        File.CopyTo(stream);
+    }
+
+    // Simpan informasi file ke database
+    var dokumen = new TabelDokumenTermin
+    {
+        Kode_Project = Kode_Project,
+        JenisTermin = JenisTermin,
+        NamaDokumen = NamaDokumen,
+        NamaFile = uniqueFileName,  // Simpan nama file yang sudah diubah
+        Path = "/uploads/" + uniqueFileName
+    };
+
+    _context.TabelDokumenTermin.Add(dokumen);
+    _context.SaveChanges();
+
+    return Ok(new { message = "File berhasil diunggah!", fileName = uniqueFileName });
+}
+
 
 [HttpGet]
 public IActionResult GetDokumenList(string kodeProject, int JenisTermin)

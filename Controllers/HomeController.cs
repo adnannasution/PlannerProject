@@ -357,17 +357,43 @@ public IActionResult DetailDireksi(string direksi, int tahun)
 
 
 
+// public JsonResult GetChartData(int year, string filterType)
+// {
+//     var data = _context.WbsData
+//         .Where(w => w.JenisBiaya == filterType && w.Tahun == year)  // Filter berdasarkan JenisBiaya = RUTIN dan tahun
+//         .Select(w => new
+//         {
+//             w.Bulan,
+//             w.PercentActual,
+//             w.PercentForecasting
+//         })
+//         .OrderBy(w => w.Bulan)  // Mengurutkan berdasarkan bulan
+//         .ToList();
+
+//     return Json(data);
+// }
+
+
 public JsonResult GetChartData(int year, string filterType)
 {
+    // List urutan bulan dalam bahasa Inggris
+    var monthOrder = new List<string>
+    {
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+
     var data = _context.WbsData
-        .Where(w => w.JenisBiaya == filterType && w.Tahun == year)  // Filter berdasarkan JenisBiaya = RUTIN dan tahun
+        .Where(w => w.JenisBiaya == filterType && w.Tahun == year)
         .Select(w => new
         {
             w.Bulan,
             w.PercentActual,
-            w.PercentForecasting
+            w.PercentForecasting,
+            w.ActualWbsRt
         })
-        .OrderBy(w => w.Bulan)  // Mengurutkan berdasarkan bulan
+        .AsEnumerable() // Ambil data dulu, baru urutkan di memori
+        .OrderBy(w => monthOrder.IndexOf(w.Bulan)) // Urutkan berdasarkan indeks bulan
         .ToList();
 
     return Json(data);
@@ -376,44 +402,77 @@ public JsonResult GetChartData(int year, string filterType)
 
 
 
+// public JsonResult GetSumData(int year, string filterType)
+// {
+//     // Mengambil data dari tabel WbsData berdasarkan tahun dan filter jenis biaya
+//     var wbsData = _context.WbsData
+//         .Where(w => w.JenisBiaya == filterType && w.Tahun == year)
+//         .ToList();
+
+//     // Menghitung SUM untuk CommitmentWbsRt, RopWbsRt, dan ActualWbsRt
+//     var wbsSumData = new
+//     {
+//         commitmentWbsRt = wbsData.Sum(w => w.CommitmentWbsRt),
+//         ropWbsRt = wbsData.Sum(w => w.RopWbsRt),
+//         actualWbsRt = wbsData.Sum(w => w.ActualWbsRt)
+//     };
+
+//     // Mengambil data dari tabel BudgetWbsData berdasarkan tahun
+//     var budgetWbsData = _context.BudgetWbsData
+//         .Where(b => b.Tahun == year)
+//         .ToList();
+
+//     // Menghitung SUM untuk BudgetWbs
+//     var budgetSumData = new
+//     {
+//         budgetWbs = budgetWbsData.Sum(b => b.BudgetWbs)
+//     };
+
+//     // Menggabungkan hasil dari WbsData dan BudgetWbsData
+//     var result = new
+//     {
+//         wbs = wbsSumData,
+//         budget = budgetSumData
+//     };
+
+//     return Json(result);
+// }
+
+
 public JsonResult GetSumData(int year, string filterType)
 {
-    // Mengambil data dari tabel WbsData berdasarkan tahun dan filter jenis biaya
-    var wbsData = _context.WbsData
+    // Mengambil data terakhir dari WbsData berdasarkan Tahun dan JenisBiaya
+    var latestWbsData = _context.WbsData
         .Where(w => w.JenisBiaya == filterType && w.Tahun == year)
-        .ToList();
+        .OrderByDescending(w => w.Id) // Pastikan 'Id' adalah primary key atau gunakan Tanggal jika ada
+        .FirstOrDefault();
 
-    // Menghitung SUM untuk CommitmentWbsRt, RopWbsRt, dan ActualWbsRt
-    var wbsSumData = new
-    {
-        commitmentWbsRt = wbsData.Sum(w => w.CommitmentWbsRt),
-        ropWbsRt = wbsData.Sum(w => w.RopWbsRt),
-        actualWbsRt = wbsData.Sum(w => w.ActualWbsRt)
-    };
+   
+ // Mengambil data terakhir dari BudgetWbsData berdasarkan Tahun dan FilterType (JenisBiaya)
+    var latestBudgetData = _context.BudgetWbsData
+        .Where(b => b.Tahun == year && b.JenisBiaya == filterType) // Sesuaikan dengan jenis biaya
+        .OrderByDescending(b => b.Id) // Sesuaikan dengan kolom yang bisa menentukan urutan
+        .FirstOrDefault();
 
-    // Mengambil data dari tabel BudgetWbsData berdasarkan tahun
-    var budgetWbsData = _context.BudgetWbsData
-        .Where(b => b.Tahun == year)
-        .ToList();
-
-    // Menghitung SUM untuk BudgetWbs
-    var budgetSumData = new
-    {
-        budgetWbs = budgetWbsData.Sum(b => b.BudgetWbs)
-    };
-
-    // Menggabungkan hasil dari WbsData dan BudgetWbsData
+    // Jika tidak ada data, beri nilai default
     var result = new
     {
-        wbs = wbsSumData,
-        budget = budgetSumData
+        wbs = latestWbsData != null ? new
+        {
+            commitmentWbsRt = latestWbsData.CommitmentWbsRt,
+            ropWbsRt = latestWbsData.RopWbsRt,
+            actualWbsRt = latestWbsData.ActualWbsRt
+        } : null, // Jika data kosong, set null
+
+        budget = latestBudgetData != null ? new
+        {
+            budgetWbs = latestBudgetData.BudgetWbs
+        } : null // Jika data kosong, set null
     };
 
     return Json(result);
 }
-
-
-
+ 
 
 
 public JsonResult GetDashboardData(int tahun)
@@ -518,7 +577,7 @@ public IActionResult AmanData(int tahun)
     return View(data); // Menampilkan di view Index seperti halaman utama
 }
 
-
+ 
 [HttpGet]
 public IActionResult TerlambatData(int tahun)
 {
@@ -554,8 +613,112 @@ public IActionResult SelesaiData(int tahun)
 
 
 
+public IActionResult TampilNew()
+{
+    var memo = _context.Memo
+    .Include(m => m.TabelDokumen) 
+                       .Where(m => m.KebutuhanKontrak == null) // Filter KebutuhanKontrak yang null
+                       .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
+                       .ToList();
+    
+    return View(memo);
+}
 
 
+
+
+public IActionResult TampilYa()
+{
+   
+
+    var memo = (from m in _context.Memo
+                join f in _context.FasePlanning 
+                on m.No_Memo_Rekomendasi equals f.No_Memo_Rekomendasi
+               
+                select new
+                {
+                    Id = m.Id,
+                    IdFase = f.Id,
+                    No_Memo_Rekomendasi = m.No_Memo_Rekomendasi,
+                    Judul = m.Judul,
+                    Disiplin = m.Disiplin,
+                    Area = m.Area,
+                    Direksi = m.Direksi,
+                    Tanggal_Masuk_Memo = m.Tanggal_Masuk_Memo,
+                    Kode_Project = f.Kode_Project,
+                    KebutuhanKontrak = m.KebutuhanKontrak,
+                    Komentar = m.Komentar,
+                    Email = m.Email
+
+                }).ToList();
+
+    return View(memo);
+}
+
+
+
+
+public IActionResult TampilPAdd()
+{
+   
+
+    var memo = (from m in _context.Memo
+                join f in _context.FasePlanning 
+                on m.No_Memo_Rekomendasi equals f.No_Memo_Rekomendasi
+             
+                select new
+                {
+                    Id = m.Id,
+                    IdFase = f.Id,
+                    No_Memo_Rekomendasi = m.No_Memo_Rekomendasi,
+                    Judul = m.Judul,
+                    Disiplin = m.Disiplin,
+                    Area = m.Area,
+                    Direksi = m.Direksi,
+                    Tanggal_Masuk_Memo = m.Tanggal_Masuk_Memo,
+                    Kode_Project = f.Kode_Project,
+                    KebutuhanKontrak = m.KebutuhanKontrak,
+                    Komentar = m.Komentar
+
+                }).ToList();
+
+    return View(memo);
+}
+
+
+public IActionResult TampilMemoDisiplin(string disiplin)
+{
+    var memo = _context.Memo
+    .Include(m => m.TabelDokumen) 
+                       .Where(m => m.Disiplin == disiplin) // Filter KebutuhanKontrak yang null
+                       .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
+                       .ToList();
+    
+    return View(memo);
+}
+
+
+
+
+public IActionResult Timeline(string kodeProject, string noMemo)
+{
+    var query = _context.Tahapan.AsQueryable();
+
+    if (!string.IsNullOrEmpty(noMemo))
+    {
+        query = query.Where(t => t.No_Memo_Rekomendasi == noMemo || t.Kode_Project == kodeProject);
+    }
+    else if (!string.IsNullOrEmpty(kodeProject))
+    {
+        query = query.Where(t => t.Kode_Project == kodeProject);
+    }
+
+    var model = query
+        .OrderBy(t => t.Id) // Urutkan berdasarkan ID agar timeline tetap rapi
+        .ToList();
+
+    return View(model);
+}
 
 
     }

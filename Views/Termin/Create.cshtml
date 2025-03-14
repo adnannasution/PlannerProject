@@ -9,6 +9,14 @@
 <form asp-action="Create" id="terminform"  method="post">
   @Html.AntiForgeryToken()
 
+
+  
+   <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+
 <div class="form-group">
     <label asp-for="Kode_Project" class="control-label"></label>
     <div class="input-group">
@@ -116,7 +124,7 @@
 </script>
 
 
-
+ 
 
 
     @* <div class="form-group">
@@ -126,16 +134,22 @@
     </div> *@
 
 
+
+
+
 <!-- Planner Dropdown -->
 <div class="form-group">
     <label asp-for="Evaluasi_Planner" class="control-label"></label>
-    <select id="Planner" asp-for="Evaluasi_Planner" class="form-control">
+    <select id="Planner" asp-for="Evaluasi_Planner" class="form-control" asp-items="ViewBag.Evaluasi_Planner">
         <option value="">Pilih Planner</option>
     </select>
 </div>
 
+
+
+
 <!-- Input Hidden untuk Menyimpan Nama Planner -->
-<input type="hidden" id="SelectedPlanner" name="SelectedPlanner" />
+@* <input type="text" id="SelectedPlanner" name="SelectedPlanner" />
 
 <script>
     $(document).ready(function () {
@@ -163,8 +177,8 @@
             $("#SelectedPlanner").val($(this).val());
         });
     });
-</script>
-
+</script> *@
+ 
 
 
 
@@ -174,7 +188,10 @@
         <span asp-validation-for="No_WO_Tagihan" class="text-danger"></span>
     </div>
 
+           </div>
 
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
 
 <div class="form-group">
     <label asp-for="Nilai_Tagihan" class="control-label"></label>
@@ -183,45 +200,34 @@
     <span asp-validation-for="Nilai_Tagihan" class="text-danger"></span>
 </div>
 
+        
+
+
+
 <script>
-    // Fungsi untuk memformat angka dengan pemisah ribuan
+document.addEventListener("DOMContentLoaded", function () {
+    const inputNilaiTagihan = document.getElementById("Nilai_Tagihan");
+    const formattedNilaiTagihan = document.getElementById("formatted_Nilai_Tagihan");
+
     function formatCurrency(value) {
-        if (!value) return ""; // Jika kosong, kembalikan string kosong
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR"
         }).format(value);
     }
 
-    // Fungsi untuk memperbarui label currency
-    function updateCurrencyLabel(input, labelId) {
-        const value = input.value.replace(/[^0-9]/g, ""); // Ambil hanya angka
-        const formattedValue = formatCurrency(value); // Format angka
-        document.getElementById(labelId).textContent = formattedValue; // Perbarui label
-    }
+    inputNilaiTagihan.addEventListener("input", function () {
+        let rawValue = inputNilaiTagihan.value.replace(/\D/g, ""); // Hanya angka
+        let numericValue = rawValue ? parseFloat(rawValue) : 0;
 
-    // Daftar input yang akan diformat
-    const inputs = [
-        {
-            input: document.getElementById("Nilai_Plan"),
-            labelId: "formatted_Nilai_Plan"
-        },
-        {
-            input: document.getElementById("Nilai_Tagihan"),
-            labelId: "formatted_Nilai_Tagihan"
-        }
-    ];
-
-    // Tambahkan event listener untuk memperbarui label
-    inputs.forEach(({ input, labelId }) => {
-        input.addEventListener("input", function () {
-            updateCurrencyLabel(this, labelId);
-        });
-
-        // Perbarui label saat halaman dimuat
-        updateCurrencyLabel(input, labelId);
+        formattedNilaiTagihan.textContent = formatCurrency(numericValue);
     });
+
+    // Inisialisasi tampilan saat halaman dimuat
+    if (inputNilaiTagihan.value) {
+        formattedNilaiTagihan.textContent = formatCurrency(parseFloat(inputNilaiTagihan.value.replace(/\D/g, "")));
+    }
+});
 </script>
 
 
@@ -252,6 +258,10 @@
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
     Upload Dokumen
 </button>
+
+        </div>
+    </div>
+   </div>
 
 </form>
  

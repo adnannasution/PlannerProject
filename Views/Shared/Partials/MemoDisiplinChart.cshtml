@@ -1,4 +1,4 @@
-<canvas id="memoDisiplinChart" height="400"></canvas>
+@* <canvas id="memoDisiplinChart" height="400"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -42,6 +42,73 @@ $(document).ready(function () {
                     },
                     // Mengatur ketebalan bar
          
+                }
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", status, error);
+        }
+    });
+});
+</script> *@
+
+
+
+<canvas id="memoDisiplinChart" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $.ajax({
+        url: '@Url.Action("GetMemoByDisiplin", "Memo")',
+        type: 'GET',
+        success: function (data) {
+            console.log("Data dari server:", data);
+            
+            var labels = data.map(item => item.disiplin ? item.disiplin : "Tidak Diketahui");
+            var values = data.map(item => item.jumlah);
+            
+            var ctx = document.getElementById('memoDisiplinChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Memo per Disiplin',
+                        data: values,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#ffcc56', '#4bc0c0', '#9966ff'],
+                        borderColor: '#fff',
+                        borderWidth: 1,
+                        barThickness: 30,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    onClick: function (event, elements) {
+                        if (elements.length > 0) {
+                            var index = elements[0].index;
+                            var selectedLabel = chart.data.labels[index];
+
+                            // Tentukan URL tujuan berdasarkan label (disiplin)
+                            var targetUrl = "/Home/TampilMemoDisiplin?disiplin=" + encodeURIComponent(selectedLabel);
+
+                            // Redirect ke halaman yang sesuai
+                            window.location.href = targetUrl;
+                        }
+                    }
                 }
             });
         },

@@ -15,7 +15,7 @@
             <th>Tanggal</th>
             <th>Resume</th>
             <th>Dokumen</th>
-            <th>Status</th>
+            @* <th>Status</th> *@
             <th>Remarks</th>
             <th>Action</th>
         </tr>
@@ -71,7 +71,7 @@
 
 
 
-            <td>
+            @* <td>
     @if (item.Status == "Ontime")
     {
         <span class="badge bg-primary">On time</span>
@@ -81,7 +81,7 @@
     {
         <span class="badge bg-danger">Overdue</span>
     }
-</td>
+</td> *@
 
 
  <td>@item.Keterangan</td>

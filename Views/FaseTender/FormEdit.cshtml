@@ -5,11 +5,13 @@
 }
 
 
-
+ 
 
 
 <form asp-action="Edit" method="post" id="faseform">
     @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
 
     <div class="container">
         <div class="row">
@@ -28,7 +30,7 @@
                         <input asp-for="Kode_Project" class="form-control" id="Kode_Project" readonly>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#kodeProjectModal">Pilih</button>
+                                data-bs-target="#kodeProjectModal" disabled>Pilih</button>
                         </div>
                     </div>
                     <span asp-validation-for="Kode_Project" class="text-danger"></span>
@@ -98,9 +100,18 @@
 
 
 
-       
+            @if (Model.PR == null)
+        {
 
-                <div class="additionalFields2" style="display: none;">
+                <div class="additionalFields2">
+
+
+                                             <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
+
 
                     <div class="form-group">
                         <label for="No_Vendor">No Vendor</label>
@@ -152,6 +163,17 @@
                         <input asp-for="PR_MT" class="form-control" />
                         <span asp-validation-for="PR_MT" class="text-danger"></span>
                     </div>
+
+
+                    
+                               </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+
+
+
 
                     <div class="form-group">
                         <label for="PR_SR">PR SR</label>
@@ -241,32 +263,37 @@
 
                     </div>
 
+                         </div>
+    </div></div>
+    
+
 
                 </div>
 
 
-
+}
 
 
 
                 <!-- Kolom kedua -->
 
 
-
+  @if (Model.PR != null)
+        {
 
 
                 <!-- Container untuk field tambahan -->
-                <div class="additionalFields" style="display: none;">
+                <div class="additionalFields">
 
                     <div class="form-group">
                         <label for="No_Vendor">No Vendor</label>
-                        <input asp-for="No_Vendor" class="form-control">
+                        <input asp-for="No_Vendor2" class="form-control">
                         <span asp-validation-for="No_Vendor" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="Pelaksana">Pelaksana</label>
-                        <input asp-for="Pelaksana" class="form-control" />
+                        <input asp-for="Pelaksana2" class="form-control" />
                         <span asp-validation-for="Pelaksana" class="text-danger"></span>
                     </div>
 
@@ -288,15 +315,16 @@
                     </div>
 
 
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                
+                        <button type="button" class="btn btn-success mb-2" data-bs-toggle="modal"
                             data-bs-target="#componentModal">
                             Tambah Komponen
                         </button>
-            
+
                 </div>
 
 
-
+}
 
                 <div class="form-group">
 

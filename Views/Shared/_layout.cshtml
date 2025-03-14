@@ -1,5 +1,12 @@
 @using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
+@using System.Security.Claims;
+
+
+@{
+    var SemuaDisiplin = User.Claims.FirstOrDefault(c => c.Type == "SemuaDisiplin")?.Value.Split(',') ?? new string[0];
+    var Disiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value ?? "";
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -113,6 +120,49 @@
 
         </a>
       </li>
+
+       
+@if (SemuaDisiplin != null && SemuaDisiplin.Count() > 1)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Pilih Disiplin
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            @foreach (var item in SemuaDisiplin)
+            {
+                <li>
+                    <a class="dropdown-item setDisiplin" href="#" data-disiplin="@item">@item</a>
+                </li>
+            }
+        </ul>
+    </li>
+}
+
+
+
+<script>
+document.querySelectorAll('.setDisiplin').forEach(item => {
+    item.addEventListener('click', function () {
+        var disiplin = this.getAttribute('data-disiplin').trim(); // Hapus spasi ekstra
+        console.log("Mengirim disiplin: '" + disiplin + "'"); // Periksa apakah ada spasi ekstra
+        fetch('/Login/ReloginWithDisiplin?disiplin=' + encodeURIComponent(disiplin), { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    console.error("Gagal mengubah disiplin.");
+                }
+            })
+            .catch(error => console.error("Error: ", error));
+    });
+});
+
+
+</script>
+
+
+
    
     </ul>
 
@@ -388,16 +438,16 @@
 
     if (ruleClaim == "2" || ruleClaim == "5") 
     {
-        memoUrl = "/Memo/TampilP";
+        memoUrl = "/Memo/TampilPNew";
     }
     else if (ruleClaim == "7"){
-        memoUrl = "/Memo/Tampil";
+        memoUrl = "/Memo/TampilNew";
     }
 }
 
  
 
-@if ((ruleClaim == "2") || (ruleClaim == "6") || (ruleClaim == "4") || (ruleClaim == "5") || (ruleClaim == "7"))
+@if ((ruleClaim == "2") || (ruleClaim == "6") || (ruleClaim == "4") || (ruleClaim == "5") || (ruleClaim == "7") || (ruleClaim == "6"))
 {
     <li class="nav-item">
 <a href="@memoUrl" class="nav-link">
@@ -482,7 +532,7 @@
     <!-- TRANSACTION HEADER -->
 
 
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7") || (ruleClaim == "6"))
         {
 
            
@@ -495,7 +545,7 @@
     </li>
     }
 
- @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
+ @if (User.HasClaim("Rule", "2") || User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7") || (ruleClaim == "6"))
         {
 
 
@@ -530,7 +580,7 @@
     </li>
 }
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6")|| User.HasClaim("Rule", "7"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6")|| User.HasClaim("Rule", "7") || User.HasClaim("Rule", "2"))
         {
 
         <li class="nav-item">
@@ -543,7 +593,7 @@
     }
 
 
-  @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7"))
+  @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7") || User.HasClaim("Rule", "2"))
         {
            <li class="nav-item">
       <a href="/Termin" class="nav-link">
@@ -554,7 +604,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7") || User.HasClaim("Rule", "6"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "2"))
         {
         <li class="nav-item">
       <a href="/FaseMonitoring" class="nav-link">
@@ -600,7 +650,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "6") || User.HasClaim("Rule", "7") || (ruleClaim == "2"))
         {
       <li class="nav-item">
       <a href="/LongTermServiceAgreement" class="nav-link">
@@ -611,7 +661,7 @@
     }
 
 
- @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7"))
+ @if (User.HasClaim("Rule", "4") || User.HasClaim("Rule", "5") || User.HasClaim("Rule", "7") || User.HasClaim("Rule", "2"))
         {
      <li class="nav-item">
       <a href="/Resume" class="nav-link">

@@ -8,6 +8,10 @@
 
 <form asp-action="Edit" method="post" id="faseform">
   @Html.AntiForgeryToken()
+
+
+      <input type="hidden" asp-for="Id" />
+      
 <div class="form-group">
     <label for="JenisBiaya">Jenis Biaya</label>
     <select asp-for="JenisBiaya" class="form-control" required>

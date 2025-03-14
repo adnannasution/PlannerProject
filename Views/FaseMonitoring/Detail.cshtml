@@ -5,6 +5,12 @@
 }
 
 <div class="container">
+
+       <div class="container">
+    <div class="row">
+        <!-- Kolom pertama -->
+        <div class="col-md-6">
+
  
     <div class="form-group">
         <label asp-for="Kode_Project" class="control-label"></label>
@@ -36,11 +42,22 @@
         <hr />
     </div>
 
+           </div>
+
+        <!-- Kolom kedua -->
+        <div class="col-md-6">
+
+
     <div class="form-group">
         <label asp-for="Status_Durasi" class="control-label"></label>
         <p class="form-control-static">@Model.Status_Durasi</p>
         <hr />
     </div>
+
+
+           
+
+
 
     <div class="form-group">
         <label asp-for="Status_Kontrak" class="control-label"></label>
@@ -76,3 +93,6 @@
 </div>
 
 
+      </div>
+    </div>
+   </div>

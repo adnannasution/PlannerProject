@@ -98,26 +98,19 @@
 
     <div class="form-group">
         <label asp-for="Start_Date"></label>
-        <input asp-for="Start_Date" class="form-control" required type="date"  id="Start_Date" />
+        <input asp-for="Start_Date" class="form-control" type="date"  id="Start_Date" />
     </div>
 
 
     <div class="form-group">
         <label asp-for="End_Date_MPL"></label>
-        <input asp-for="End_Date_MPL" class="form-control" required type="date" id="End_Date_MPL" readonly />
+        <input asp-for="End_Date_MPL" class="form-control" type="date" id="End_Date_MPL" readonly />
     </div>
     <div class="form-group">
         <label asp-for="Amandemen_Waktu"></label>
-        <input asp-for="Amandemen_Waktu" class="form-control" id="Amandemen_Waktu" required />
+        <input asp-for="Amandemen_Waktu" class="form-control" id="Amandemen_Waktu"  />
     </div>
-    <div class="form-group">
-        <label asp-for="End_Date"></label>
-        <input asp-for="End_Date" class="form-control" required type="date" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Durasi_Kontrak"></label>
-        <input asp-for="Durasi_Kontrak" class="form-control" id="Durasi_Kontrak" readonly required type="number" />
-    </div>
+  
 
 
                 </div>
@@ -126,18 +119,25 @@
         <div class="col-md-6">
 
 
-
+  <div class="form-group">
+        <label asp-for="End_Date"></label>
+        <input asp-for="End_Date" class="form-control"  type="date" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Durasi_Kontrak"></label>
+        <input asp-for="Durasi_Kontrak" class="form-control" id="Durasi_Kontrak" readonly  type="number" />
+    </div>
 
     <div class="form-group">
         <label asp-for="Date_LKP"></label>
-        <input asp-for="Date_LKP" class="form-control" required type="date"  />
+        <input asp-for="Date_LKP" class="form-control"  type="date"  />
     </div>
 
 
 <div class="form-group">
     <label asp-for="Progress_Fisik">Progress Fisik %</label>
     <div class="input-group">
-        <input asp-for="Progress_Fisik" id="Progress_Fisik" class="form-control" required type="number" readonly />
+        <input asp-for="Progress_Fisik" id="Progress_Fisik" class="form-control"  type="number" readonly />
         <button type="button" id="editProgress" class="btn btn-outline-secondary">
             <i class="fas fa-edit"></i>
         </button>

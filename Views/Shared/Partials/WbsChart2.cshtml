@@ -26,19 +26,22 @@
 <canvas id="wbsLineChart2" width="400" height="200"></canvas>
 
 <!-- Memuat Chart.js -->
+<!-- Memuat Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Fungsi untuk memuat data dan memperbarui chart
-        function loadChartData2(year) {
-            fetch(`/Home/GetChartData2?year=${year}`)
+        function loadChartData(year, filterType) {
+            fetch(`/Home/GetChartData?year=${year}&filterType=${filterType}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.length > 0) {
-                        var labels2 = data.map(d => d.bulan);
-                        var percentActual2 = data.map(d => d.percentActual2);
-                        var percentForecasting2 = data.map(d => d.percentForecasting2);
+                        var labels = data.map(d => d.bulan);
+                        var percentActual = data.map(d => d.percentActual);
+                        var percentForecasting = data.map(d => d.percentForecasting);
+                        var ActualWbsRt = data.map(d => d.ActualWbsRt);
+                       
 
                         var ctx = document.getElementById('wbsLineChart2').getContext('2d');
                         if (window.wbsChart) {
@@ -47,21 +50,23 @@
                         window.wbsChart = new Chart(ctx, {
                             type: 'line',
                             data: {
-                                labels: labels2,
+                                labels: labels,
                                 datasets: [{
                                     label: 'Percent Actual',
                                     data: percentActual,
                                     backgroundColor: 'rgba(75, 192, 192)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
                                     borderWidth: 2,
-                                    fill: false
+                                    fill: false,
+                                       tension: 0.4 // Tambahkan properti tension untuk garis ini juga
                                 }, {
                                     label: 'Percent Forecasting',
                                     data: percentForecasting,
                                     backgroundColor: 'rgba(255, 159, 64)',
                                     borderColor: 'rgba(255, 159, 64, 1)',
                                     borderWidth: 2,
-                                    fill: false
+                                    fill: false,
+                                       tension: 0.4 // Tambahkan properti tension untuk garis ini juga
                                 }]
                             },
                             options: {
@@ -80,29 +85,43 @@
                                     legend: { position: 'top' },
                                     tooltip: {
                                         callbacks: {
-                                            label: function (context) {
-                                                var label = context.label || '';
-                                                var value = context.raw || 0;
-                                                return label + ': ' + value + '%';
-                                            }
+                            label: function (context) {
+            var index = context.dataIndex;
+            var datasetLabel = context.dataset.label || '';
+            var value = context.raw || 0;
+
+  // Ambil actualWbsRt dari JSON, jika null tampilkan "N/A"
+            var actualWbsRt = data[index]?.actualWbsRt ?? "N/A";
+
+            // Format actualWbsRt ke currency (IDR)
+            if (actualWbsRt !== "N/A") {
+                actualWbsRt = actualWbsRt.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            }
+
+            return `${datasetLabel}: ${value}% | Actual WBS: ${actualWbsRt}`;
+        }
                                         }
                                     }
                                 }
                             }
                         });
                     } else {
-                        alert("Data tidak tersedia untuk tahun tersebut");
+                        //alert("Data tidak tersedia untuk tahun dan filter tersebut");
                     }
                 })
                 .catch(error => console.error("Terjadi kesalahan saat memuat data:", error));
         }
 
-        // Event listener untuk dropdown tahun
-        document.getElementById('yearSelect2').addEventListener('change', function () {
-            loadChartData2(this.value);
+        // Event listener untuk dropdown tahun dan filter
+        document.getElementById('yearSelect').addEventListener('change', function () {
+            loadChartData(this.value, document.getElementById('filterTypeSelect').value);
         });
 
-        // Memuat data untuk tahun pertama kali (default)
-        loadChartData2(document.getElementById('yearSelect2').value);
+        document.getElementById('filterTypeSelect').addEventListener('change', function () {
+            loadChartData(document.getElementById('yearSelect').value, this.value);
+        });
+
+        // Memuat data untuk tahun dan filter pertama kali (default)
+        loadChartData(document.getElementById('yearSelect').value, document.getElementById('filterTypeSelect').value);
     });
 </script>

@@ -55,16 +55,32 @@ public IActionResult Tampil()
 
 
 
+// public IActionResult TampilNew()
+// {
+//     var memo = _context.Memo
+//     .Include(m => m.TabelDokumen) 
+//                        .Where(m => m.KebutuhanKontrak == null) // Filter KebutuhanKontrak yang null
+//                        .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
+//                        .ToList();
+    
+//     return View(memo);
+// }
+
+ 
+
 public IActionResult TampilNew()
 {
+    var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
     var memo = _context.Memo
-    .Include(m => m.TabelDokumen) 
-                       .Where(m => m.KebutuhanKontrak == null) // Filter KebutuhanKontrak yang null
-                       .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
-                       .ToList();
-    
+        .Include(m => m.TabelDokumen)
+        .Where(m => m.KebutuhanKontrak == null && m.Disiplin == userDisiplin) // Filter berdasarkan Disiplin
+        .OrderByDescending(m => m.Id)
+        .ToList();
+
     return View(memo);
 }
+
 
 
 // public IActionResult TampilYa()
@@ -77,15 +93,75 @@ public IActionResult TampilNew()
     
 //     return View(memo);
 // }
+ 
+// public IActionResult TampilYa()
+// {
+   
+   
+
+//     var memo = (from m in _context.Memo
+//                 join f in _context.FasePlanning 
+//                 on m.No_Memo_Rekomendasi equals f.No_Memo_Rekomendasi
+               
+//                 select new
+//                 {
+//                     Id = m.Id,
+//                     IdFase = f.Id,
+//                     No_Memo_Rekomendasi = m.No_Memo_Rekomendasi,
+//                     Judul = m.Judul,
+//                     Disiplin = m.Disiplin,
+//                     Area = m.Area,
+//                     Direksi = m.Direksi,
+//                     Tanggal_Masuk_Memo = m.Tanggal_Masuk_Memo,
+//                     Kode_Project = f.Kode_Project,
+//                     KebutuhanKontrak = m.KebutuhanKontrak,
+//                     Komentar = m.Komentar,
+//                     Email = m.Email
+
+//                 }).ToList();
+
+//     return View(memo);
+// }
+
+
+
+// public IActionResult TampilYa()
+// {
+//     var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+//     var memo = (from m in _context.Memo
+//                 join f in _context.FasePlanning
+//                 on m.No_Memo_Rekomendasi equals f.No_Memo_Rekomendasi
+//                 where m.Disiplin == userDisiplin // Filter berdasarkan Disiplin
+//                 select new
+//                 {
+//                     Id = m.Id,
+//                     IdFase = f.Id,
+//                     No_Memo_Rekomendasi = m.No_Memo_Rekomendasi,
+//                     Judul = m.Judul,
+//                     Disiplin = m.Disiplin,
+//                     Area = m.Area,
+//                     Direksi = m.Direksi,
+//                     Tanggal_Masuk_Memo = m.Tanggal_Masuk_Memo,
+//                     Kode_Project = f.Kode_Project,
+//                     KebutuhanKontrak = m.KebutuhanKontrak,
+//                     Komentar = m.Komentar,
+//                     Email = m.Email
+//                 }).ToList();
+
+//     return View(memo);
+// }
+
+
 
 public IActionResult TampilYa()
 {
-   
+    var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
 
     var memo = (from m in _context.Memo
-                join f in _context.FasePlanning 
+                join f in _context.FasePlanning
                 on m.No_Memo_Rekomendasi equals f.No_Memo_Rekomendasi
-               
+                where m.Disiplin == userDisiplin && m.Email != null // Tambahkan filter Email null
                 select new
                 {
                     Id = m.Id,
@@ -100,7 +176,6 @@ public IActionResult TampilYa()
                     KebutuhanKontrak = m.KebutuhanKontrak,
                     Komentar = m.Komentar,
                     Email = m.Email
-
                 }).ToList();
 
     return View(memo);
@@ -109,14 +184,14 @@ public IActionResult TampilYa()
 
 
 
-
-
-
 public IActionResult TampilTidak()
 {
+
+    var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
     var memo = _context.Memo
     .Include(m => m.TabelDokumen) 
-                       .Where(m => m.Email == null && m.KebutuhanKontrak != null) // Filter KebutuhanKontrak yang null
+                       .Where(m => m.Email == null && m.KebutuhanKontrak != null && m.Disiplin == userDisiplin) // Filter KebutuhanKontrak yang null
                        .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
                        .ToList();
     
@@ -240,11 +315,23 @@ if (memo == null) return NotFound();
 
 var activeEmail = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
 
+// ViewBag.Users = new SelectList(
+//     _context.User.Where(u => u.Email != activeEmail && (u.Rule == "2" || u.Rule == "3" || u.Rule == "5" || u.Rule == "6")), 
+//     "Email",
+//     "Email"
+// ); 
+
 ViewBag.Users = new SelectList(
-    _context.User.Where(u => u.Email != activeEmail && (u.Rule == "2" || u.Rule == "3" || u.Rule == "5" || u.Rule == "6")), 
-    "Email",
-    "Email"
-); 
+    _context.User
+        .Where(u => u.Email != activeEmail && (u.Rule == "2" || u.Rule == "3" || u.Rule == "5" || u.Rule == "6"))
+        .Select(u => new { 
+            Email = u.Email, 
+            DisplayText = u.Email + " - " + u.Disiplin 
+        }), 
+    "Email", 
+    "DisplayText"
+);
+
 
 //return View(memo);
 
@@ -362,9 +449,27 @@ public IActionResult SubmitDisposisi(Memo model)
 
 
 
+// public IActionResult TampilTidak()
+// {
+
+//     var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+//     var memo = _context.Memo
+//     .Include(m => m.TabelDokumen) 
+//                        .Where(m => m.Email == null && m.KebutuhanKontrak != null && m.Disiplin == userDisiplin) // Filter KebutuhanKontrak yang null
+//                        .OrderByDescending(m => m.Id) // Mengurutkan berdasarkan Id secara descending
+//                        .ToList();
+    
+//     return View(memo);
+// }
+
+ 
+
 public IActionResult GetJumlahMemoBaru()
 {
-    int jumlahMemoBaru = _context.Memo.Count(m => m.Email == null);
+    var userDisiplin = User.Claims.FirstOrDefault(c => c.Type == "Disiplin")?.Value;
+
+    int jumlahMemoBaru = _context.Memo.Count(m => m.Email == null && m.Disiplin == userDisiplin && m.KebutuhanKontrak == null);
     return Json(jumlahMemoBaru);
 }
 
@@ -513,59 +618,134 @@ public IActionResult Import()
 
 
 
+// [HttpPost]
+// public async Task<IActionResult> Create(Memo memo, List<IFormFile> files, List<string> namaDokumen)
+// {
+//     if (ModelState.IsValid)
+//     {
+//         _context.Memo.Add(memo);
+//         await _context.SaveChangesAsync();
+
+//         if (files != null && files.Count > 0)
+//         {
+//             for (int i = 0; i < files.Count; i++)
+//             {
+//                 var file = files[i];
+//                 var filePath = Path.Combine("wwwroot/uploads", file.FileName);
+
+//                 using (var stream = new FileStream(filePath, FileMode.Create))
+//                 {
+//                     await file.CopyToAsync(stream);
+//                 }
+
+//                 var dokumen = new TabelDokumen
+//                 {
+//                     MemoId = memo.Id,
+//                     NamaDokumen = namaDokumen[i], // Simpan nama dokumen yang diinput user
+//                     NamaFile = file.FileName,
+//                     Path = "/uploads/" + file.FileName
+//                 };
+
+//                 _context.TabelDokumen.Add(dokumen);
+//             }
+//             await _context.SaveChangesAsync();
+//         }
+
+
+//         // Create a new Tahapan entity
+//         var tahapan = new Tahapan
+//         {
+//             No_Memo_Rekomendasi = memo.No_Memo_Rekomendasi,
+//             Tanggal = DateTime.Now.Date, // Current date
+//             Waktu = DateTime.Now.TimeOfDay, // Current time
+//             Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
+//             Tahap = "Created Memo", // A description of the current step
+//             Status = "Done"
+//         };
+
+//         // Simpan entitas Tahapan
+//         _context.Add(tahapan);
+//         _context.SaveChanges();
+        
+//         return RedirectToAction("Index");
+//     }
+//     return View(memo);
+// }
+
+
+
+
 [HttpPost]
 public async Task<IActionResult> Create(Memo memo, List<IFormFile> files, List<string> namaDokumen)
 {
     if (ModelState.IsValid)
     {
         _context.Memo.Add(memo);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); // Simpan memo dulu untuk dapat MemoId
 
         if (files != null && files.Count > 0)
         {
+            var uploadFolder = Path.Combine("wwwroot/uploads");
+
+            // Cek apakah folder uploads ada, jika tidak buat
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            List<TabelDokumen> dokumenList = new List<TabelDokumen>();
+
             for (int i = 0; i < files.Count; i++)
             {
                 var file = files[i];
-                var filePath = Path.Combine("wwwroot/uploads", file.FileName);
+                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}"; // Buat nama file unik
+                var filePath = Path.Combine(uploadFolder, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                var dokumen = new TabelDokumen
+                // Pastikan file benar-benar tersimpan sebelum ke database
+                if (System.IO.File.Exists(filePath))
                 {
-                    MemoId = memo.Id,
-                    NamaDokumen = namaDokumen[i], // Simpan nama dokumen yang diinput user
-                    NamaFile = file.FileName,
-                    Path = "/uploads/" + file.FileName
-                };
-
-                _context.TabelDokumen.Add(dokumen);
+                    dokumenList.Add(new TabelDokumen
+                    {
+                        MemoId = memo.Id,
+                        NamaDokumen = namaDokumen[i], // Nama dokumen input dari user
+                        NamaFile = uniqueFileName, // Gunakan nama unik
+                        Path = "/uploads/" + uniqueFileName
+                    });
+                }
             }
-            await _context.SaveChangesAsync();
+
+            if (dokumenList.Count > 0)
+            {
+                _context.TabelDokumen.AddRange(dokumenList);
+                await _context.SaveChangesAsync(); // Simpan semua dokumen setelah file berhasil diupload
+            }
         }
 
-
-        // Create a new Tahapan entity
+        // Buat dan simpan Tahapan setelah semua dokumen berhasil disimpan
         var tahapan = new Tahapan
         {
             No_Memo_Rekomendasi = memo.No_Memo_Rekomendasi,
-            Tanggal = DateTime.Now.Date, // Current date
-            Waktu = DateTime.Now.TimeOfDay, // Current time
-            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Get the logged-in user's email
-            Tahap = "Created Memo", // A description of the current step
+            Tanggal = DateTime.Now.Date, // Tanggal saat ini
+            Waktu = DateTime.Now.TimeOfDay, // Waktu saat ini
+            Email = User.Claims.FirstOrDefault(c => c.Type == "Email")?.Value, // Ambil email user yang login
+            Tahap = "Created Memo", // Tahapan proses
             Status = "Done"
         };
 
-        // Simpan entitas Tahapan
         _context.Add(tahapan);
-        _context.SaveChanges();
-        
+        await _context.SaveChangesAsync(); // Simpan tahapan
+
         return RedirectToAction("Index");
     }
+
     return View(memo);
 }
+
 
 
 

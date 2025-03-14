@@ -1,7 +1,7 @@
-@model IEnumerable<Plan.Models.Memo>
+@model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Memorandum";
-    //Layout = null;
+   
 }
 
 
@@ -11,36 +11,27 @@
     }
 </style>
 
-<ul class="nav nav-tabs mb-3">
-<li class="nav-item">
-    <a class="nav-link active" id="tabNew" href="TampilPNew">
-        <i class="fas fa-inbox text-warning"></i> New
-    </a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" id="tabYa" href="TampilPAdd">
-        <i class="fas fa-folder-open text-success"></i> Created Project
-    </a>
-</li>
-</ul>
+
 
 <table class="table table-bordered mt-3 table-responsive" id="tabelku1">
     <thead>
         <tr>
             <th>No Memo Rekomendasi</th>
             <th>Judul</th>
-            <th>Disiplin</th>
-            <th>Area Proses</th>
-            <th>Maintenance Area</th>
+             <th>Disiplin</th>
+             <th>Area Proses</th>
+
+             <th>Maintenance Area</th>
             <th>Tanggal Masuk Memo</th>
-
-
-
+           
+         
+         
             <th>Dokumen</th>
             <th>Kebutuhan Kontrak</th>
             <th>Komentar</th>
-            <th>Action</th>
-
+            <th>Kode Project</th>
+            <th>Project</th>
+   
         </tr>
     </thead>
     <tbody>
@@ -54,6 +45,8 @@
                 <td>@memo.Direksi</td>
                 <td>@memo.Tanggal_Masuk_Memo.ToString("dd/MM/yyyy")</td>
 
+              
+        
 
 
                 @* <td>
@@ -83,19 +76,30 @@
 </td>
 
 
+                
+<td>@memo.KebutuhanKontrak</td>
 
-                <td>@memo.KebutuhanKontrak</td>
+ <td>@memo.Komentar</td>
+ <td>@memo.Kode_Project</td>
 
-                <td>@memo.Komentar</td>
-                <td>
-                    <a asp-action="Create" asp-controller="FasePlanning" asp-route-idmemo="@memo.No_Memo_Rekomendasi"
-                        class="btn btn-info btn-sm">
-                        Create Project
-                    </a>
-                </td>
+                 <td>
+
+@* <a asp-action="DetailByMemo" asp-route-idmemo="@memo.No_Memo_Rekomendasi" class="btn btn-info btn-sm">
+  <i class="fas fa-eye" title="Timeline"></i>
+</a> *@
+
+<a href="/Home/Timeline?kodeProject=@memo.Kode_Project&noMemo=@memo.No_Memo_Rekomendasi" 
+   class="btn btn-secondary btn-sm">
+   Timeline
+</a>
 
 
 
+
+
+
+
+</td>
 
 
             </tr>
@@ -130,6 +134,62 @@
         });
     }
 </script>
+
+
+
+<div class="modal fade" id="dokumenModal" tabindex="-1" role="dialog" aria-labelledby="dokumenModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dokumenModalLabel">Daftar Dokumen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama Dokumen</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dokumenList">
+                        <!-- Daftar dokumen akan dimuat di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $(".view-docs").click(function () {
+            var dokumenData = $(this).data("dokumen");
+            var dokumenList = JSON.parse(dokumenData);
+            var tableBody = $("#dokumenList");
+            tableBody.empty();
+
+            if (dokumenList.length > 0) {
+                dokumenList.forEach(function (dokumen) {
+                    var row = "<tr>" +
+                        "<td>" + dokumen.NamaDokumen + "</td>" +
+                        "<td><a href='" + dokumen.Path + "' target='_blank' class='btn btn-success btn-sm'>Lihat</a></td>" +
+                        "</tr>";
+                    tableBody.append(row);
+                });
+            } else {
+                tableBody.append("<tr><td colspan='2'>Tidak ada dokumen</td></tr>");
+            }
+        });
+    });
+</script>
+
 
 
 
@@ -192,29 +252,29 @@
         });
     </script>
 
-    <script>
+      <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Periksa pesan sukses dari TempData
             @if (TempData["SuccessMessage"] != null)
-                {
-                    <text>
-                        Swal.fire({
-                            title: 'Success!',
-                        icon: 'success',
-                        timer: 3000, // Durasi dalam milidetik (3 detik)
-                        showConfirmButton: false // Tidak menampilkan tombol OK
-                        });
-                    </text>
+            {
+                <text>
+                Swal.fire({
+                    title: 'Success!',
+                    icon: 'success',
+                    timer: 3000, // Durasi dalam milidetik (3 detik)
+                    showConfirmButton: false // Tidak menampilkan tombol OK
+                });
+                </text>
             }
-            });
+        });
     </script>
 
 
-    <script>
+      <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Tangkap semua form dengan class 'delete-form'
             const deleteForms = document.querySelectorAll('.delete-form');
-
+            
             deleteForms.forEach(form => {
                 form.addEventListener('submit', function (event) {
                     // Hentikan pengiriman formulir langsung
@@ -241,3 +301,4 @@
     </script>
 
 }
+ 

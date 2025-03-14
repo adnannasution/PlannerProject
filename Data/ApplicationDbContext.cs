@@ -57,6 +57,8 @@ namespace Plan.Data
             public DbSet<HistoryTermin> HistoryTermin { get; set; }
             public DbSet<HistoryFaseMonitoring> HistoryFaseMonitoring { get; set; }
             public DbSet<HistoryFaseExecution> HistoryFaseExecution { get; set; }
+
+            public DbSet<HistoryFasePlanning> HistoryFasePlanning { get; set; }
             public DbSet<TabelComponent> TabelComponent { get; set; }
 
             public DbSet<TabelDokumenTimelineok> TabelDokumenTimelineok { get; set; }

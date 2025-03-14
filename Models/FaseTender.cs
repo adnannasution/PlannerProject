@@ -14,6 +14,11 @@ namespace Plan.Models
 
         public string Pelaksana { get; set; }  // Pelaksana Tender
 
+           
+        public string No_Vendor2 { get; set; }  // Nomor Vendor
+
+        public string Pelaksana2 { get; set; }  // Pelaksana Tender
+
         public string PO_OA { get; set; }  // Nilai PO OA
         public string PO_SR { get; set; }  // Nilai PO SR
         public string PO_RO { get; set; }  // Nilai PO RO

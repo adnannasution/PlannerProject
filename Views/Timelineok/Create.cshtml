@@ -83,15 +83,156 @@
         });
     </script>
 
+ 
+        <div class="form-group">
+        <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
+        <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan"
+            asp-items="ViewBag.Resume" required>
+            <option value="-">Pilih</option>
+        </select>
+        <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
+    </div>
+
+
 
 
     <div class="form-group">
         <label asp-for="Task" class="control-label"></label>
-        <select asp-for="Task" class="form-control" id="Task" asp-items="ViewBag.Task" required>
-            <option value="">Pilih</option>
+        <select asp-for="Task" class="form-control" id="Task" asp-items="ViewBag.Task">
+            <option value="-">Pilih</option>
         </select>
         <span asp-validation-for="Task" class="text-danger"></span>
     </div>
+
+
+@* 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Data task berdasarkan ResumeStatusPekerjaan
+    let taskOptions = {
+        "JOBPLAN": [
+            "Menyusun GTC dan RAB",
+            "Comment Besteck ke Engineer/User",
+            "Sourcing",
+            "Membuat OE",
+            "Membuat analisa TKDN & Analisa RAM",
+            "Membuat ijin persetujuan / prinsip",
+            "Jobplan (Ext), mengajukan release dan print PR",
+            "Menyiapkan memo pengantar DP3 Paket",
+            "Kirim Paket Kontrak",
+            "Revisi GTC & RAB pasca prebid",
+            "Gagal Tender"
+        ],
+        "TENDER": [
+            "Pre Bid Meeting",
+            "Approval HPS OE",
+            "Open Bid",
+            "Penunjukan Pemenang",
+            "SPB",
+            "Terbit PO"
+        ],
+        "EKSEKUSI": [
+            "KOM"
+        ],
+        "RUNNING KONTRAK": [
+            "Day One"
+        ],
+        "SELESAI": [
+            "Selesai"
+        ]
+    };
+
+    // Saat ResumeStatusPekerjaan berubah
+    $("#ResumeStatusPekerjaan").change(function () {
+        let selectedResume = $(this).val(); // Ambil nilai Resume yang dipilih
+        let $taskDropdown = $("#Task");
+
+        // Kosongkan dropdown Task
+        $taskDropdown.empty();
+        $taskDropdown.append('<option value="">Pilih</option>'); // Tambah opsi default
+
+        // Jika ada task terkait, tambahkan ke dropdown
+        if (taskOptions[selectedResume]) {
+            taskOptions[selectedResume].forEach(function (task) {
+                $taskDropdown.append(new Option(task, task));
+            });
+        }
+    });
+
+    // Jalankan trigger untuk menyesuaikan Task jika ada nilai default saat halaman dimuat
+    $("#ResumeStatusPekerjaan").trigger("change");
+});
+</script> *@
+
+
+<script>
+$(document).ready(function () {
+    // Simulasi claim role dari backend (harus diganti dengan nilai sebenarnya dari server)
+    let userRole = parseInt("@User.Claims.FirstOrDefault(c => c.Type == "Rule")?.Value"); 
+
+    // Data task berdasarkan ResumeStatusPekerjaan
+    let taskOptions = {
+         "REKOMENDASI": [
+            "Comment Bestek ke Engineer/User",
+            "Menunggu Rekomendasi"
+        ],
+        "JOBPLAN": [
+            "Menyusun GTC dan RAB",
+            "Sourcing",
+            "Membuat OE",
+            "Membuat analisa TKDN & Analisa RAM",
+            "Membuat ijin persetujuan / prinsip",
+            "Jobplan (Ext), mengajukan release dan print PR",
+            "Menyiapkan memo pengantar DP3 Paket",
+            "Kirim Paket Kontrak",
+            "Revisi GTC & RAB pasca prebid",
+            "Gagal Tender"
+        ],
+        "TENDER": [
+            "Pre Bid Meeting",
+            "Approval HPS OE",
+            "Open Bid",
+            "Penunjukan Pemenang",
+            "SPB dan SP3MK",
+            "Terbit PO"
+        ],
+        "EKSEKUSI": [
+            "KOM"
+        ],
+        "RUNNING KONTRAK": [
+            "Day One"
+        ],
+        "SELESAI": [
+            "Selesai"
+        ]
+    };
+
+    // Saat ResumeStatusPekerjaan berubah
+    $("#ResumeStatusPekerjaan").change(function () {
+        let selectedResume = $(this).val(); // Ambil nilai Resume yang dipilih
+        let $taskDropdown = $("#Task");
+
+        // Kosongkan dropdown Task
+        $taskDropdown.empty();
+        $taskDropdown.append('<option value="">Pilih</option>'); // Tambah opsi default
+
+        // Jika ada task terkait, tambahkan ke dropdown
+        if (taskOptions[selectedResume]) {
+            taskOptions[selectedResume].forEach(function (task) {
+                // Filter task tertentu hanya untuk user dengan claim rule 2 atau 7
+                if (["Menyusun GTC dan RAB", "Membuat OE", "Revisi GTC & RAB pasca prebid"].includes(task) && !(userRole === 2 || userRole === 7)) {
+                    return; // Jangan tambahkan task jika bukan role 2 atau 7
+                }
+                $taskDropdown.append(new Option(task, task));
+            });
+        }
+    });
+
+    // Jalankan trigger untuk menyesuaikan Task jika ada nilai default saat halaman dimuat
+    $("#ResumeStatusPekerjaan").trigger("change");
+});
+</script>
 
 
 
@@ -112,14 +253,14 @@
 
 
 
-    <div class="form-group">
-        <label asp-for="ResumeStatusPekerjaan" class="control-label">Resume Status Pekerjaan</label>
-        <select asp-for="ResumeStatusPekerjaan" class="form-control" id="ResumeStatusPekerjaan"
-            asp-items="ViewBag.Resume" required>
-            <option value="">Pilih</option>
-        </select>
-        <span asp-validation-for="ResumeStatusPekerjaan" class="text-danger"></span>
-    </div>
+
+
+
+
+
+
+
+    
 
 
 <div class="form-group">

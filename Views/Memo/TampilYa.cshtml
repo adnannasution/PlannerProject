@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Memorandum";
-    Layout = null;
+    //Layout = null;
     
 }
 
@@ -18,6 +18,25 @@
     }
 </style>
 
+
+<ul class="nav nav-tabs mb-3">
+<li class="nav-item">
+    <a class="nav-link " id="tabNew" href="TampilNew">
+        <i class="fas fa-inbox text-warning"></i> New
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" id="tabYa" href="TampilYa" >
+        <i class="fas fa-check-circle text-success"></i> Sudah Didisposisi
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" id="tabTidak" href="TampilTidak">
+        <i class="fas fa-times-circle text-danger"></i> Tidak Didisposisi
+    </a>
+</li>
+
+</ul>
 
 
 <table class="table table-bordered mt-3 table-responsive" id="tabelku12">
